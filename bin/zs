@@ -1,0 +1,3 @@
+#!/bin/bash
+FILTER=$(bash .zsx || echo "\.hg")
+find . -regextype posix-extended -not -regex "\./($FILTER)($|/.*)" -print0 | xargs -0 grep -s -n "$@" #| colout '^.*\:[0-9]+\:' 3 | colout 'Binary.file.*matches$' 1 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+count=0
+while read -r line || [[ -n $LINE ]]; do
+	OPTIONS[count]=$line
+	let "count++"
+done < $1
+select choice in "${OPTIONS[@]}";do
+	echo $choice
+	exit
+done
