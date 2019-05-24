@@ -39,7 +39,8 @@ add:
 update: 
 	@#todo only expand text if you need too
 	@grep -qF "$(A)" .iplist || echo $(TEXT) >> .iplist
-	@#todo fix wrong hostname
+	@cat .iplist | sed 's/^.*$(A).*$$/$(TEXT)/' > .iplist_
+	@mv .iplist_ .iplist
 	@echo $(A) > .iplatest
 
 unmount: update
@@ -52,4 +53,4 @@ unmountall: update
 
 cleanfs:
 	@-rmdir ~/mnt/*
-	
+
