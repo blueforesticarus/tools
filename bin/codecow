@@ -1,2 +1,4 @@
-python3 .cowsay.py | cowsay
+#!/bin/bash
+D=`dirname "$(readlink -f "$0")"`
+python3 $D/.codecow.py
 
