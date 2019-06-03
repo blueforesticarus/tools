@@ -6,7 +6,7 @@ if ! [ -z "$2" ]; then
 	echo "setting $1 to $2"
 	echo $1 >> $ROOT/index
 	echo $1 >> $ROOT/index
-	cat $ROOT/index | sort | rev | uniq -f 1 | rev > $ROOT/index
+	cat $ROOT/index | sort | uniq -f 1 > $ROOT/index
 	echo "$1	`realpath $2`" >> $ROOT/index	
 elif [ -z "$1" ]; then
 	cat $ROOT/index
