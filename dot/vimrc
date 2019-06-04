@@ -1,3 +1,5 @@
+execute pathogen#infect('plugins/{}')
+
 "setting and colorscmemes 
 set number
 set backspace=2
@@ -6,7 +8,9 @@ set tabstop=4
 set background=dark
 set fileformat=unix
 set t_Co=256
-colorscheme gruvbox
+
+let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim')
+execute "colorscheme ".color
 set laststatus=2
 set mouse=a
 "Binds go here

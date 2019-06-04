@@ -16,10 +16,13 @@ fs: update
 	sshfs $(A):$(RF) $(MNT) || rmdir $(MNT)
 
 ssh: update
-	@ssh -Y $(A)
+	@ssh -t -Y -o StrictHostKeyChecking=no $(A)
 
 sshkey: update
 	@ssh-copy-id $(A) 
+
+sshterminfo: update
+	infocmp $$TERM | ssh $(A) "mkdir -p .terminfo && cat >/tmp/ti && tic /tmp/ti"
 
 select: _select update
 _select: 
