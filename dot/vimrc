@@ -12,7 +12,7 @@ set t_Co=256
 	
 colorscheme jellybeans "default
 function! s:color_override()
-	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim')
+	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim | grep -v _unused')
 	if color != ""
 		execute "colorscheme ".color
 	endif
