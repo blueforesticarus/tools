@@ -9,8 +9,16 @@ set background=dark
 set fileformat=unix
 set t_Co=256
 
-let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim')
-execute "colorscheme ".color
+	
+colorscheme jellybeans "default
+function! s:color_override()
+	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim')
+	if color != ""
+		execute "colorscheme ".color
+	endif
+endfunction
+call s:color_override() "if there is a colorscheme in .vim/colors it is used
+
 set laststatus=2
 set mouse=a
 "Binds go here

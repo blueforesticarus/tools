@@ -5,5 +5,5 @@
 	path = dot/vim/plugins/vim-signify
 	url = https://github.com/mhinz/vim-signify
 [submodule "dot/vim/colors/submodules/jellybeans.vim"]
-	path = dot/vim/colors/submodules/jellybeans.vim
+	path = dot/vim/plugins/jellybeans.vim
 	url = https://github.com/nanotech/jellybeans.vim
