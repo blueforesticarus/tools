@@ -5,7 +5,8 @@
 #if [ -x `command -v colout` ]; then
 #	COLOUT='| colout '^.*\:[0-9]+\:' 3 | colout 'Binary.file.*matches$' 1'
 #fi
-ignore .zsx `i root`/conf/zsx.default | xargs grep --color=auto -s -n "$@" $COLOUT
+OPT="$@"
+ignore .zsx `i root`/conf/zsx.default | xargs grep --color=auto -s -n "$OPT"
 
 
 

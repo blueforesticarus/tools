@@ -4,7 +4,12 @@ execute pathogen#infect('plugins/{}')
 set number
 set backspace=2
 syntax on
+
 set tabstop=4
+set shiftwidth=4
+set expandtab
+set smarttab
+
 set background=dark
 set fileformat=unix
 set t_Co=256
@@ -29,3 +34,7 @@ nmap <C-k> HkM
 
 "magic
 noremap <C-Z> "kyiw :vnew sview \| 0read ! zs <C-r>k <CR><CR> <C-w>r :setlocal buftype=nofile<CR> <C-w><C-h> 
+
+vnoremap <C-j> :m '>+1<CR>gv
+vnoremap <C-k> :m '<-2<CR>gv
+
