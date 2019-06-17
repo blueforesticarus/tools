@@ -37,4 +37,17 @@ noremap <C-Z> "kyiw :vnew sview \| 0read ! zs <C-r>k <CR><CR> <C-w>r :setlocal b
 
 vnoremap <C-j> :m '>+1<CR>gv
 vnoremap <C-k> :m '<-2<CR>gv
+vnoremap <C-l> > gv
+vnoremap <C-h> < gv
 
+vnoremap <S-i> <ESC>O<ESC>gv
+vnoremap <S-o> <ESC>o<ESC>gv
+
+:set esckeys
+
+"comment box
+nnoremap ,co ^v$h"by<Esc>O#<Esc>100A=<Esc>100\|D<CR>i#<CR><Esc>i##<Esc>100a=<Esc>100\|D<Esc>kA <Tab><Tab><Tab><Tab><Tab><Esc>"bp`[i
+
+"TODO: stack copy/paste, append copy
+
+autocmd BufNewFile,BufRead *.eas setf eas
