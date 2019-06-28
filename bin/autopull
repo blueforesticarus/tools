@@ -1,0 +1,4 @@
+IP=`choosefrom ~/.iplist | cut -d " " -f1 | cut -d "@" -f2`
+echo "hg pull http://$IP:8000"
+hg pull http://$IP:8000
+

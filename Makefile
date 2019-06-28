@@ -1,6 +1,6 @@
 LATEST = $(shell cat .iplatest)
 
-ip ?=   $(shell echo $(LATEST) | cut -d @ -f2)
+ip ?=	$(shell echo $(LATEST) | cut -d @ -f2)
 user ?= $(shell echo $(LATEST) | cut -d @ -f1)
 A = $(user)@$(ip)
 
@@ -17,8 +17,13 @@ fs: update
 ssh: update
 	@ssh -t -Y -o StrictHostKeyChecking=no $(A)
 
-sshkey: update
+sshkey: update sshfix
 	@ssh-copy-id $(A) 
+
+sshfix:    
+	@test `grep -F "$(ip)" ~/.ssh/known_hosts | wc -l` != "0" || echno "ERR: $(ip) not in ~/.ssh/known_hosts"	
+	@test `grep -F "$(ip)" ~/.ssh/known_hosts | wc -l` == "1" || echno "ERR: $(ip) hs multible entries in ~/.ssh/known_hosts"
+	@grep -v "$(ip)" ~/.ssh/known_hosts | tee ~/.ssh/known_hosts
 
 sshterminfo: update
 	infocmp $$TERM | ssh $(A) "mkdir -p .terminfo && cat >/tmp/ti && tic /tmp/ti"

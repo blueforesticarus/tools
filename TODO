@@ -1,2 +1,6 @@
 - less-style output scrolling with programable actions (I want to be able to specify e=open vim, c=copy etc.) (an interface builder)
 - program to move file to archive and handle multible archives (like how downloads work: myfile.c, myfile.c.1, myfile.c.2)
+- tarball style archive that can assert file-nonexistance, and write writetimes, permissions, etc independantly
+    -action archive, which is a sequence of above archives, essencially archives sequence of filesystem actions
+        - might be useful for cases where the filesystem is not an actual filesystem
+

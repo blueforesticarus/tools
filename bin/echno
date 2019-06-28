@@ -1,0 +1,10 @@
+#echo with error code
+#USAGE: echno "text to pring" [optional: retcode]
+
+echo $1
+
+if [ -z $2 ]; then
+    exit 1
+else
+    exit $2
+fi
