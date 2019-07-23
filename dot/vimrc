@@ -40,8 +40,8 @@ vnoremap <C-k> :m '<-2<CR>gv
 vnoremap <C-l> > gv
 vnoremap <C-h> < gv
 
-vnoremap <S-i> <ESC>O<ESC>gv
-vnoremap <S-o> <ESC>o<ESC>gv
+vnoremap <C-i> <ESC>O<ESC>gv
+vnoremap <C-o> <ESC>o<ESC>gv
 
 :set esckeys
 

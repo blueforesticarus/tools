@@ -1,6 +1,6 @@
 #!/bin/bash
 #Adapted from: http://www.zephyrizing.net/presentations/reimplementing-gitignore-in-15-lines-of-bash/ 
-
+#TODO rewrite in haskell
 FILENAME=${1-".hgignore"}
 DEFAULT=${2-""}
 {

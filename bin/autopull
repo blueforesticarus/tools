@@ -1,4 +1,21 @@
-IP=`choosefrom ~/.iplist | cut -d " " -f1 | cut -d "@" -f2`
+LINE=`choosefrom ~/.iplist`
+IP=`echo "$LINE" | cut -d " " -f1 | cut -d "@" -f2`
+
+URL=`echo "$LINE" | cut -d " " -f1`
+DIR=`basename "$PWD"`
+temp=`mktemp`
+
 echo "hg pull http://$IP:8000"
 hg pull http://$IP:8000
+
+if [ $? -ne 0 ]; then
+    echo "remote is not serving... sshing in"
+    ssh "$URL" -t $'cd $DIR; bash --init-file <(echo \'PS1="navigate to repo$ "; trap /usr/bin/pwd EXIT\')' | tee $temp
+    AUTODIR=`cat $temp | tail -1 | tr -d '\r' | tr -d '\n'`
+    echo "serving from $AUTODIR"
+
+    ssh "$URL" -C "cd $AUTODIR && hg serve -p 8001" || exit &
+    sleep 1
+    hg pull http://$IP:8001 && ssh "$URL" -C 'kill `lsof -t -i:8001 || fuser -n tcp 8001`' && exit
+fi
 

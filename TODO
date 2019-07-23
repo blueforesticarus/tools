@@ -3,4 +3,7 @@
 - tarball style archive that can assert file-nonexistance, and write writetimes, permissions, etc independantly
     -action archive, which is a sequence of above archives, essencially archives sequence of filesystem actions
         - might be useful for cases where the filesystem is not an actual filesystem
-
+- automatically run all images put in wallpapers through an upscaler/vectoriser
+- version  control with ability to specify file as a set of lines (order irrelevant)
+- multilevel diff (block, line, unit, word, char, program, module, class, function, variable)
+- vim blovk mode selection (ie, i can enter a mode where I can jump around git merge markers)
