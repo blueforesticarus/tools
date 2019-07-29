@@ -8,7 +8,7 @@ MNT ?= ~/mnt/$(RHOSTNAME)#
 RF?=/home/$(user)#
 
 TEXT = $(A) $(RHOSTNAME)#
-RHOSTNAME = $(eval RHOSTNAME := $(shell ssh $(A) "hostname" 2> .blah))$(OUTPUT)
+RHOSTNAME = $(eval RHOSTNAME := $(shell ssh -o ConnectTimeout=2 $(A) "hostname" 2> .blah))$(OUTPUT)
 
 mount mnt fs: update
 	@mkdir -p $(MNT)
@@ -78,17 +78,31 @@ unmount: update
 	@fusermount -zu $(MNT)
 	@rmdir $(MNT)
 
-unmountall: update
+unmountall:
 	@-for i in ~/mnt/*; do fusermount -zu "$$i"; done
 	@-rmdir ~/mnt/*
 
 cleanfs:
 	@-rmdir ~/mnt/*
 
-avail:
+doall:
 	@mv .iplatest .iplatest.save
-	@cat .iplist | cut -d \  -f1 | sed -e 's/^/LATEST=/' | xargs -I 'VAR' env VAR $(MAKE) --no-print-directory -s update 2>/dev/null ||:
+	@cat .iplist | cut -d \  -f1 | sed -e 's/^/LATEST=/' | xargs -I 'VAR' env VAR $(MAKE) --no-print-directory $(COMMAND) ||: 
 	@mv .iplatest.save .iplatest
+
+avail:
+	@COMMAND=update $(MAKE) doall --no-print-directory 2>/dev/null | tee .avail
+	@cat .avail | grep "^\[UP\]" | cut -d " " -f 4,7 > .iplist.avail 
+
+iplist:
+	@echo "Grabbing .iplist from $(A)"	
+	@scp $(A):.iplist ~/.iplist_ || echno "    $(A) has no .iplist"
+	@cat ~/.iplist >> ~/.iplist_
+	@cat .iplist_ | sort | rev | uniq -f 1 | rev > .iplist__
+	@mv .iplist__ .iplist && rm .iplist_
+
+iplistall:
+	COMMAND=iplist $(MAKE) avail --no-print-directory 2>/dev/null
 	
 
 .PHONY:mount mnt fs mount.root mnt.root fs.root mounted rmount rmnt rfs clean_mounted clean_rmount clean_rmnt clean_rfs ssh sshkey sshfix sshterminfo select _select add update unmount unmountall cleanfs rsshkey
