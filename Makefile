@@ -23,7 +23,7 @@ RMNT=~/mnt/$(HOSTNAME)#
 RRF=/home/$(USER)#
 RIP=`cut -d \  -f1 <<< $$SSH_CLIENT`#
 mounted rmount rfs rmnt: update
-	@ssh -v -t -o StrictHostKeyChecking=no $(A) 'set -x; mkdir -p $(RMNT) && nohup sshfs $(USER)@$(RIP):$(RRF) $(RMNT) -o allow_other && ln -sf -T $(RMNT) dev || rmdir $(RMNT)'	
+	@ssh -t -o StrictHostKeyChecking=no $(A) 'set -x; mkdir -p $(RMNT) && nohup sshfs $(USER)@$(RIP):$(RRF) $(RMNT) -o allow_other && ln -sf -T $(RMNT) dev || rmdir $(RMNT)'	
 
 clean_mounted clean_rmount clean_rfs clean_rmnt:
 	@ssh -o StrictHostKeyChecking=no $(A) 'set -x; fusermount -zu $(RMNT); rmdir $(RMNT)'

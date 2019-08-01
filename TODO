@@ -7,3 +7,11 @@
 - version  control with ability to specify file as a set of lines (order irrelevant)
 - multilevel diff (block, line, unit, word, char, program, module, class, function, variable)
 - vim blovk mode selection (ie, i can enter a mode where I can jump around git merge markers)
+- vim "thumb" (look at new part of document then jump back)
+- vim change paren type
+- vim copy and paste line above quick shortcut
+- makefile style application which is unit centric instead of recipe centric (ie. I can first define the files as units, but also system state as a unit, and then have units have state and state transform recipes which can depend on other system state in arbitary ways.)
+    - distinguish existance dependancy from content dependancy
+    - recipe inheritance, so I can do things like easy links
+    - written in c or haskell so it is fast, python too slow
+    - is this just cabal
