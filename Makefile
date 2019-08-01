@@ -8,7 +8,7 @@ MNT ?= ~/mnt/$(RHOSTNAME)#
 RF?=/home/$(user)#
 
 TEXT = $(A) $(RHOSTNAME)#
-RHOSTNAME = $(eval RHOSTNAME := $(shell ssh -o ConnectTimeout=2 $(A) "hostname" 2> .blah))$(OUTPUT)
+RHOSTNAME = $(eval RHOSTNAME := $(shell ssh -o StrictHostKeyChecking=no $(A) "hostname" 2> .blah))$(OUTPUT)
 
 mount mnt fs: update
 	@mkdir -p $(MNT)
