@@ -6,15 +6,16 @@ avail=$DIR/avail
 scan=$DIR/scan
 passfail=$DIR/passfail
 
-search () {
-    echo $1
-}
-
-if [ "$1" == "--find" ]; then
+if [ "$1" == "--scan" ]; then
     COMM='ping -c 1 {} >/dev/null 2>&1 && echo {}'
     COMM2='sshtest {} debian temppwd | xargs iplist --update'
     echo {1..255} | xargs -n 1 printf "10.30.1.%s\n" | xargs -n 1 -P 255 -I {} bash -c "$COMM" | xargs -P 100 -n 1 -I {} bash -c "$COMM2"
     exit 0
+fi 
+
+if [ "$1" == "--status" ]; then
+	iplist --active | xargs sshtest >/dev/null | grep -v '^\*' | xargs -r iplist --update 
+	exit 0
 fi 
 
 export NOPROMPT=True

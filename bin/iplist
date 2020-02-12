@@ -6,17 +6,19 @@ list=$DIR/list
 online=$DIR/online
 avail=$DIR/avail
 passfail=$DIR/passfail
-
+active=$DIR/active
+save=$DIR/list.0
+temp=$DIR/list.temp #TODO unused
 
 arg=""
 filter=""
 while test $# -gt 0; do
     case "$1" in
-        --ip | --addr | --old | --user )
+        --ip | --addr | --old | --user | --pretty | --rpretty )
             arg="$1"
             shift
             ;;
-        --online | --avail )
+        --online | --avail | --active | --auth )
             filter="$1"
             shift
             ;; 
@@ -30,7 +32,76 @@ while test $# -gt 0; do
             mv -f $tmp $avail
             exit 0
             ;;
-    esac 
+		--set )
+            IP=$2
+            USER=$3
+			grep -F "$IP $USER" $list || ( echo "ip:$IP user:$USER not in list" && exit 1 )
+			echo -F "$IP $USER" > $active
+			exit 0
+			;;
+		--add )
+            IP=$2
+            USER=$3
+            PASS=$4
+			tmp=`mktemp`
+			echo "$IP $USER $PASS" > $tmp
+			grep -v "$IP $USER" $list >> $tmp
+			mv $tmp $list
+			exit 0
+			;;
+		--load )
+			if test "$2" == "_"; then
+				iplist --load
+				exit 0
+			fi
+			if [ ! -f "$save$2" ]; then
+				echo "no iplist named default"
+				exit 1
+			fi
+			tac $save$2 | while read line; do
+    			echo $line | xargs iplist --add
+			done
+			exit 0
+			;;
+		--save )
+			cp $list $save$2
+			exit 0
+			;;	
+		--clear )
+			: > $list
+			exit 0
+			;;	
+		--reset )
+			iplist --clear
+			cat `i root`/conf/iplist.default | grep -v '#.*'| xargs -I {} iplist --load {}
+			exit 0
+			;;
+		--menu )
+			shift
+			tmp=`mktemp`
+			#filter must be set before
+			#arg before applys to choice list
+			iplist --old $arg $filter > $tmp
+			choice="`choosefrom $tmp | tr -d '[:blank:]'`"
+			number=$(grep -n -F "$choice" <(cat $tmp | tr -d '[:blank:]') | cut -d ":" -f1 )
+			if ! [ $number -lt `wc -l $tmp | cut -d ' ' -f1` ]; then
+				exit 1
+			fi 2>/dev/null
+			#arg after applys to final output
+			iplist --user $@ $filter | awk "NR == $number"
+			exit 0
+			;;
+		--select )
+			shift 
+			iplist $arg $filter $@ --menu --user | xargs -r iplist --set
+			exit 0
+			;;
+
+    	* )
+			echo "UNSUPPORTED ARG: $1"
+			exit 1
+			;;
+	esac 
 done
 
 parser () {
@@ -47,6 +118,9 @@ parser () {
             ;;
         --auth )
             grep -q -F "$IP $USER" "$passfail" || return
+			;;
+		--active ) 
+            grep -q -F "$IP $USER" "$active" || return
     esac
     case "$arg" in
         --ip )
@@ -62,6 +136,18 @@ parser () {
             HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
             echo "$USER@$IP $HOSTNAME"   
             ;;
+		--pretty )
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            H=`maxstrlen 13 "$HOSTNAME" -13`
+            echo "$H : $USER@$IP"   
+            ;;	
+		--rpretty ) 
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+			U=`maxstrlen 10 "$USER" -10`
+			I=`maxstrlen 15 "$IP" 15`
+            H=`maxstrlen 13 "$HOSTNAME" 13`
+			echo "$U @ $I : $H"  
+            ;;	
         *)
             HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
             echo "$IP $USER $HOSTNAME"
@@ -72,5 +158,6 @@ parser () {
 while read in; do
     parser $in
 done < $list
-    
+   
+exit 0 
 

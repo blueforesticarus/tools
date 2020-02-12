@@ -1,0 +1,5 @@
+#iplists to load when calling "iplist --reset"
+#_ is default
+#lines starting with "#" ignored
+_
+default

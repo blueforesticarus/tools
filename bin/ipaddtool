@@ -1,0 +1,60 @@
+#!/bin/bash
+
+user=debian
+
+read -p "Enter User (default: $user): " line;
+user=${line:-$user};
+read -p "Enter IP: " -i "10.30.1." -e line;
+IP=${line?Error: must supply an IP};
+A=$user@$IP;
+
+sshtest --poke $IP
+RET=$?
+
+test $RET -eq 0 && ssh -o BatchMode=yes "$A" true  && echo "Private Key Authentication Successful"
+
+while true; do 
+	read -p "Enter Password (optional): " line;
+	pass="$line"
+
+	if [ $RET -ne 0 ]; then
+		yesno -Y "Server down, save anyway?" || exit 1
+	else
+		if [ ! -z "$pass" ]; then
+			hostname=`sshpass -p "$pass" ssh $A "hostname" | grep "." | tail -1`
+			if [ -z "$hostname" ]; then
+				echo "Error: authentication failed."
+				continue;
+			elif yesno -Y "copy publickey?"; then
+				sshpass -p "$pass" ssh-copy-id $A
+			fi
+		else
+			if yesno -Y "copy publickey?"; then
+				ssh-copy-id $A || exit 1 
+			fi
+			
+			hostname=`ssh $A "hostname" | grep "." | tail -1`
+			if [ -z "$hostname" ]; then
+				echo "Error: authentication failed."
+				yesno -N "save anyway?" && break;
+				exit 1
+			fi
+		fi 
+		
+		 
+		if [ ! -z "$hostname" ]; then
+			echo "Hostname: $hostname"
+			sshtest $IP $user $pass
+		fi
+	fi
+	break;
+done 
+
+iplist --add "$IP" "$user" "$pass"
+
+if yesno -Y "set active?"; then
+	iplist --set "$IP" "$user"
+	if [ $RET -eq 0 ]; then 
+		avail --status
+	fi
+fi

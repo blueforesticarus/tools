@@ -7,34 +7,48 @@ if [ "$1" == "--fix" ]; then
     exit $?
 fi
 
-run () {
+poke () {
+	tmp=`mktemp`
+	ssh-keyscan -H $1 2>/dev/null > $tmp || return 1
+	ssh-keygen -R $1  2>/dev/null 1>&2
+	cat $tmp >> ~/.ssh/known_hosts 
+	rm $tmp 
+}
 
-tmp=`mktemp`
-ssh-keyscan -H $1 2>/dev/null > $tmp || return 1
-ssh-keygen -R $1  2>/dev/null 1>&2
-cat $tmp >> ~/.ssh/known_hosts 
-rm $tmp 
-
-if which sshpass >/dev/null 2>&1 && test ! -z "$3"; then
-    SSHPASS="sshpass -p $3"
-fi 
-
-if [ -z "$NOCOPYID" ]; then
-    if [ ! -z "$SSHPASS" ]; then
-        timeout $TIMEOUT $SSHPASS ssh-copy-id $2@$1 >/dev/null 2>&1
-        if [ $? -ne 0 ]; then 
-            return 2
-        fi 
-    elif [ -z "$NOPROMPT" ]; then
-        ssh-copy-id $2@$1 2>&1 | grep "password:" 1>&2 
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then 
-            return 2
-        fi 
-    fi 
+if [ "$1" == "--poke" ]; then
+	ping -c 1 $2 >/dev/null 2>&1 || exit 1
+	if poke $2; then 
+		echo "UP $2"
+		exit 0
+	else
+		echo "no ssh server at $2"
+		exit 1
+	fi
 fi
 
-timeout $TIMEOUT $SSHPASS ssh $2@$1 "hostname" > $tmp || return 3
-HOSTNAME=`cat $tmp`
+run () {
+	poke $@ || return 1
+
+	if which sshpass >/dev/null 2>&1 && test ! -z "$3"; then
+		SSHPASS="sshpass -p $3"
+	fi 
+
+	if [ -z "$NOCOPYID" ]; then
+		if [ ! -z "$SSHPASS" ]; then
+			timeout $TIMEOUT $SSHPASS ssh-copy-id $2@$1 >/dev/null 2>&1
+			if [ $? -ne 0 ]; then 
+				return 2
+			fi 
+		elif [ -z "$NOPROMPT" ]; then
+			ssh-copy-id $2@$1 2>&1 | grep "password:" 1>&2
+			if [ ${PIPESTATUS[0]} -ne 0 ]; then 
+				return 2
+			fi 
+		fi 
+	fi
+
+	timeout $TIMEOUT $SSHPASS ssh -o BatchMode=yes $2@$1 "hostname" > $tmp || return 3
+	HOSTNAME=`cat $tmp`
 }
 run $@
 RET=$?
