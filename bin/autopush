@@ -1,0 +1,4 @@
+#!/bin/bash
+REPO=`hg root`
+cd ~/sonic
+hg pull "$REPO"

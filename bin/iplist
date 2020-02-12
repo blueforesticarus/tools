@@ -1,0 +1,76 @@
+#!/bin/bash
+DIR=`i root`/data/ip
+mkdir -p $DIR
+
+list=$DIR/list
+online=$DIR/online
+avail=$DIR/avail
+passfail=$DIR/passfail
+
+
+arg=""
+filter=""
+while test $# -gt 0; do
+    case "$1" in
+        --ip | --addr | --old | --user )
+            arg="$1"
+            shift
+            ;;
+        --online | --avail )
+            filter="$1"
+            shift
+            ;; 
+        --update )
+            IP=$2
+            USER=$3
+            HOST=$4
+            tmp=`mktemp`
+            echo "$IP $USER $HOST"> $tmp
+            grep -v "^$IP $USER" $avail >> $tmp
+            mv -f $tmp $avail
+            exit 0
+            ;;
+    esac 
+done
+
+parser () {
+    IP="$1" 
+    USER="$2"
+    PASSWORD="$3"  
+
+    case "$filter" in
+        --online )
+            grep -q -F "$IP" "$online" || return 
+            ;;
+        --avail ) 
+            grep -q -F "$IP $USER " "$avail" || return
+            ;;
+        --auth )
+            grep -q -F "$IP $USER" "$passfail" || return
+    esac
+    case "$arg" in
+        --ip )
+            echo "$IP"
+            ;;
+        --addr )
+            echo "$USER@$IP"
+            ;;
+        --user )
+            echo "$IP $USER $PASSWORD"
+            ;;
+        --old )
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            echo "$USER@$IP $HOSTNAME"   
+            ;;
+        *)
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            echo "$IP $USER $HOSTNAME"
+            ;;
+    esac
+}
+
+while read in; do
+    parser $in
+done < $list
+    
+

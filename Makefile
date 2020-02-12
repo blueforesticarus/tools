@@ -1,3 +1,5 @@
+MAKE=make -f $(shell i root)/Makefile #
+
 LATEST ?= $(shell cat .iplatest)#
 
 ip ?=	$(shell echo $(LATEST) | cut -d @ -f2)#

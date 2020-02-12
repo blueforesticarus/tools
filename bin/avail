@@ -1,0 +1,42 @@
+#!/bin/bash
+
+DIR=`i root`/data/ip/
+online=$DIR/online
+avail=$DIR/avail
+scan=$DIR/scan
+passfail=$DIR/passfail
+
+search () {
+    echo $1
+}
+
+if [ "$1" == "--find" ]; then
+    COMM='ping -c 1 {} >/dev/null 2>&1 && echo {}'
+    COMM2='sshtest {} debian temppwd | xargs iplist --update'
+    echo {1..255} | xargs -n 1 printf "10.30.1.%s\n" | xargs -n 1 -P 255 -I {} bash -c "$COMM" | xargs -P 100 -n 1 -I {} bash -c "$COMM2"
+    exit 0
+fi 
+
+export NOPROMPT=True
+if [ "$1" == "-I" ]; then 
+    export NOPROMPT=
+fi 
+
+xfilter () {
+    xargs -n 1 -P 18 -I {} bash -c "$1 && $2 || $3"
+}
+
+echo "pinging..."
+rm -f "$online"
+
+PING='ping -c 1 {} >/dev/null 2>&1'
+IFDOWN='echo -e "\tDOWN {}" 1>&2'
+IFUP='echo -e "\tUP   {}" 1>&2 && echo {}'
+
+iplist --ip | xfilter "$PING" "$IFUP" "$IFDOWN" > $online
+
+echo 
+echo "ssh access..."
+rm -f "$avail" "$passfail"
+
+iplist --user --online | xargs -n 1 -P 18 -I {} sshtest --fix {} | tee >(grep '^\*' | cut -c 2- > $passfail) | grep -v '^\*' > $avail
