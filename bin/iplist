@@ -22,6 +22,12 @@ while test $# -gt 0; do
             filter="$1"
             shift
             ;; 
+		--host )
+			filter="$1"
+			shift
+			host="$1"
+			shift
+			;;
         --update )
             IP=$2
             USER=$3
@@ -78,17 +84,11 @@ while test $# -gt 0; do
 			;;
 		--menu )
 			shift
-			tmp=`mktemp`
+
 			#filter must be set before
 			#arg before applys to choice list
-			iplist --old $arg $filter > $tmp
-			choice="`choosefrom $tmp | tr -d '[:blank:]'`"
-			number=$(grep -n -F "$choice" <(cat $tmp | tr -d '[:blank:]') | cut -d ":" -f1 )
-			if ! [ $number -lt `wc -l $tmp | cut -d ' ' -f1` ]; then
-				exit 1
-			fi 2>/dev/null
 			#arg after applys to final output
-			iplist --user $@ $filter | awk "NR == $number"
+			choosefrom <(iplist --old $arg $filter) <(iplist --user $@ $filter)
 			exit 0
 			;;
 		--select )
@@ -96,7 +96,42 @@ while test $# -gt 0; do
 			iplist $arg $filter $@ --menu --user | xargs -r iplist --set
 			exit 0
 			;;
-
+		--gethost )
+			shift
+			IP=$1
+			USER=$2
+			if [ -z "$USER" ] && [[ ! "$IP" =~ '\.' ]]; then 
+				USER="$IP"
+				IP=
+				P='[^\s]\+'
+			fi
+			h=$(iplist | grep "^$P`esc "$IP $USER"`" | cut -d ' ' -f3)
+			if [ -z "$h" ]; then
+				echo "HOSTNAME UNKNOWN" 1>&2
+				exit 1
+			else
+				echo "$h"
+				exit 0
+			fi
+			;;
+		--getpass )
+			shift
+			IP=$1
+			USER=$2
+			if [ -z "$USER" ] && ! [[ $IP =~ '.' ]]; then 
+				USER="$IP"
+				IP=
+				P='[^\s]\+'
+			fi
+			h=$(iplist --user | grep "^$P`esc "$IP $USER"`" | cut -d ' ' -f3)
+			if [ -z "$h" ]; then
+				echo "PASSWORD UNKNOWN" 1>&2
+				exit 1
+			else
+				echo "$h"
+				exit 0
+			fi
+			;;
     	* )
 			echo "UNSUPPORTED ARG: $1"
 			exit 1
@@ -114,13 +149,18 @@ parser () {
             grep -q -F "$IP" "$online" || return 
             ;;
         --avail ) 
-            grep -q -F "$IP $USER " "$avail" || return
+            grep -q -F "$IP $USER" "$avail" || return
             ;;
         --auth )
             grep -q -F "$IP $USER" "$passfail" || return
 			;;
 		--active ) 
             grep -q -F "$IP $USER" "$active" || return
+			;;
+		--host )
+            grep -F "$IP $USER" "$avail" | cut -d ' ' -f3 | grep -q -F "$host" || return
+			;;
+			
     esac
     case "$arg" in
         --ip )

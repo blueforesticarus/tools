@@ -14,9 +14,20 @@ if [ "$1" == "--scan" ]; then
 fi 
 
 if [ "$1" == "--status" ]; then
-	iplist --active | xargs sshtest >/dev/null | grep -v '^\*' | xargs -r iplist --update 
+	iplist --active --user | xargs sshtest >/dev/null | grep -v '^\*' | xargs -r iplist --update 
+	exit 0
+elif [ "$1" == "--hostname" ]; then 
+	IP="$2"
+	USER="$3"
+	PASS="$4" 
+	if [ -z "$PASS" ]; then
+		pass=`iplist --pass "$IP" "$USER"`
+	fi
+	sshtest $IP $USER $PASS	| xargs iplist --update
 	exit 0
 fi 
+
+
 
 export NOPROMPT=True
 if [ "$1" == "-I" ]; then 

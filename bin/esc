@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#escape string for regex
+printf '%s\n' "$1" | sed 's/[[^.\$*]/\\&/g'
+

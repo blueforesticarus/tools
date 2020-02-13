@@ -1,11 +1,44 @@
 #!/bin/bash
 
+TMP=`mktemp`
+cat $1 > $TMP
+lines=`cat $TMP | wc -l `
+let lines-=1
+spaces=`echo "$lines" | wc -c`
+let spaces+=1
+
+TXT=$TMP
+if [ -z "$2" ] || [ "$2" = "-" ]; then
+	VAL=$TMP
+else
+	VAL=$2
+fi
+
+IFS=
+
 count=0
-while read -r line || [[ -n $LINE ]]; do
-	OPTIONS[count]=$line
+while read -r LINE; do
+	#test ! -n "$LINE" && break
+	if [ "$2" == "-" ]; then
+		OPTIONS[count]="$count"
+	else
+		OPTIONS[count]="$LINE"
+	fi
 	let "count++"
-done < $1
-select choice in "${OPTIONS[@]}";do
-	echo $choice
-	exit
-done
+done < $VAL
+
+count=0
+while read -r LINE; do
+	#test ! -n "$LINE" && break
+	printf "%-${spaces}s%s\n" "$count)" "$LINE" 1>&2
+	let "count++"
+done < $TMP
+
+read -p "==> " num
+if  [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt $count ]; then
+	echo ${OPTIONS[$num]}
+else
+	exit 1
+fi
+
+
