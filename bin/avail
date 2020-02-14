@@ -21,13 +21,16 @@ elif [ "$1" == "--hostname" ]; then
 	USER="$3"
 	PASS="$4" 
 	if [ -z "$PASS" ]; then
-		pass=`iplist --pass "$IP" "$USER"`
+		PASS=`iplist --getpass "$IP" "$USER"`
 	fi
-	sshtest $IP $USER $PASS	| xargs iplist --update
+	tmp=`mktemp`
+	( sshtest --quick $IP $USER $PASS || exit 1 ) | tee $tmp | xargs iplist --update
+	echo `cat $tmp | cut -d ' ' -f3`
 	exit 0
+elif [ "$1" == "--getlists" ]; then 
+    iplist --avail --user | xargs -P 18 -I {} xfix ipgetlist {} 2>/dev/null
+    exit 0
 fi 
-
-
 
 export NOPROMPT=True
 if [ "$1" == "-I" ]; then 

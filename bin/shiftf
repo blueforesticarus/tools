@@ -1,0 +1,17 @@
+F=`mktemp`
+cat > $F
+N=$1
+
+LINES=`wc -l < $F`
+let N="N%LINES"
+
+if [ $N -lt 0 ]; then
+	let N=$N*-1
+	tail -n $N $F;
+	head -n -$N $F;
+else
+	let NN=$N+1
+	tail -n +$NN $F;
+	head -n $N $F; 
+fi	
+rm $F

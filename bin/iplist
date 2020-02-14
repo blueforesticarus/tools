@@ -7,7 +7,8 @@ online=$DIR/online
 avail=$DIR/avail
 passfail=$DIR/passfail
 active=$DIR/active
-save=$DIR/list.0
+save=$DIR/save/list.0
+remote=$DIR/remote/
 temp=$DIR/list.temp #TODO unused
 
 arg=""
@@ -59,18 +60,34 @@ while test $# -gt 0; do
 			if test "$2" == "_"; then
 				iplist --load
 				exit 0
-			fi
-			if [ ! -f "$save$2" ]; then
-				echo "no iplist named default"
-				exit 1
-			fi
-			tac $save$2 | while read line; do
+			fi	
+            
+            if [ -z $3 ]; then
+                f=$remote$2.$3
+			    test -f $f || echo "no remote iplist from $2@$3" 
+            else
+                f=$save$2
+				test -f $f || echo "no iplist named $2"
+            fi
+
+			test -f $f || exit 1
+            
+			tac $f | while read line; do
     			echo $line | xargs iplist --add
 			done
 			exit 0
 			;;
 		--save )
-			cp $list $save$2
+            echo "$@"
+            if [ ! -z "$4" ]; then
+                mkdir -p `dirname $remote$3.$4`
+                cp $2 $remote$3.$4
+            elif [ ! -z "$3" ]; then
+                mkdir -p `dirname $save$3`
+                cp $2 $save$3 
+            else
+			    cp $list $save$2
+            fi
 			exit 0
 			;;	
 		--clear )
@@ -100,7 +117,7 @@ while test $# -gt 0; do
 			shift
 			IP=$1
 			USER=$2
-			if [ -z "$USER" ] && [[ ! "$IP" =~ '\.' ]]; then 
+			if [ -z "$USER" ] && [[ ! "$IP" =~ '.' ]]; then 
 				USER="$IP"
 				IP=
 				P='[^\s]\+'
@@ -195,6 +212,7 @@ parser () {
     esac
 }
 
+#TODO, print most recently used first
 while read in; do
     parser $in
 done < $list

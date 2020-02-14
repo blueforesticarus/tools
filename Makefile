@@ -21,15 +21,11 @@ add:
 	@ipaddtool
 
 ssh:
-	@conn --command "ssh -t -Y -o StrictHostKeyChecking=no"
+	@conn --ssh
 	
-fs:
-	@conn --fs
-
-rfs:
-	@
+fs rfs ffs xfs xffs xrfs keys rkey fkey:
+	@conn --$@
 
 sshkey:
-	@conn --copy
-
+	@conn --copyid
 

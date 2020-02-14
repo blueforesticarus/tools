@@ -7,6 +7,12 @@ if [ "$1" == "--fix" ]; then
     exit $?
 fi
 
+QUICK=
+if [ "$1" == "--quick" ]; then
+    shift
+    QUICK=True
+fi
+
 poke () {
 	tmp=`mktemp`
 	ssh-keyscan -H $1 2>/dev/null > $tmp || return 1
@@ -27,13 +33,15 @@ if [ "$1" == "--poke" ]; then
 fi
 
 run () {
-	poke $@ || return 1
+	if [ -z "$QUICK" ];then
+		poke $@ || return 1
+	fi
 
 	if which sshpass >/dev/null 2>&1 && test ! -z "$3"; then
 		SSHPASS="sshpass -p $3"
 	fi 
 
-	if [ -z "$NOCOPYID" ]; then
+	if [ -z "$NOCOPYID" ] && [ -z "$QUICK" ]; then
 		if [ ! -z "$SSHPASS" ]; then
 			timeout $TIMEOUT $SSHPASS ssh-copy-id $2@$1 >/dev/null 2>&1
 			if [ $? -ne 0 ]; then 
@@ -47,8 +55,10 @@ run () {
 		fi 
 	fi
 
-	timeout $TIMEOUT $SSHPASS ssh -o BatchMode=yes $2@$1 "hostname" > $tmp || return 3
+	tmp=`mktemp`
+	timeout $TIMEOUT $SSHPASS ssh -o StrictHostKeyChecking=no $2@$1 "hostname" > $tmp || return 3
 	HOSTNAME=`cat $tmp`
+	rm $tmp
 }
 run $@
 RET=$?

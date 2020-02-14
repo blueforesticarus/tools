@@ -1,0 +1,5 @@
+#!/bin/bash
+
+CMD="$1"
+shift
+echo "$@" | xargs $CMD
