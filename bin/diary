@@ -1,0 +1,82 @@
+#!/bin/bash
+#protects thoughts with rsa keypair
+FILE="`i root`/data/diary/id_rsa"
+
+oneday () {
+    CMD="openssl rsautl -decrypt -inkey $FILE"
+    while read -r line; do
+        echo "$line" | base64 -d > $tmp
+        $CMD -in "$tmp"  
+    done < "$1"
+}
+
+case "$1" in 
+    -r | --read )
+        tmp=`mktemp`
+        if [ -z "$2" ]; then
+            : 
+        else
+            oneday "`i diary`"/$2  
+        fi 
+        rm $tmp
+        exit 0
+        ;;
+    -* )
+        echo "Bad arg: $1"
+        exit 1
+        ;;
+esac
+
+if [ ! -z "$2" ]; then
+    echo "Too many args! Abort."
+    exit 2
+fi
+
+mkdir -p "`dirname $FILE`"
+if ! [ -f $FILE.pub ]; then
+    ssh-keygen -t rsa -C "$USER@$HOSTNAME" -f "$FILE" -b 4096
+    rm $FILE.pem.pub
+fi
+
+if ! [ -f $FILE.pem.pub ]; then
+    ssh-keygen -f "$FILE".pub -e -m PKCS8 > "$FILE".pem.pub
+fi
+
+if [ -z "`i diary`" ]; then
+    read -p "Enter diary destination: " dest
+    dest="${dest//\~/$HOME}"
+    mkdir -p "$dest"
+    sudo i diary "$dest"
+fi
+
+tmp="`mktemp`"
+
+HEAD="[$USER@$HOSTNAME `date +'%T'`]"
+echo "$HEAD" > $tmp
+if [ -z "$1" ];then
+    vim $tmp
+else
+    echo "$1" >> "$tmp" 
+fi
+echo "--" >> $tmp
+
+DIR="`i diary`"
+mkdir -p "$DIR"
+
+DATE="`date +'%F'`"
+DF="$DIR"/"$DATE"
+
+CMD="openssl rsautl -encrypt -pubin -inkey $FILE.pem.pub -ssl"
+
+out="`mktemp`"
+if ! [ -f "$DF" ]; then
+    txt="`mktemp`"
+    echo "[`date +'%a, %b, %Y'`]" > $txt 
+    $CMD -in "$txt" -out "$out"
+    base64 -w 0 < "$out" > "$DF"
+    rm -f "$txt" "$out"
+fi
+
+$CMD -in "$tmp" -out "$out"
+base64 -w 0 < "$out" >> "$DF"
+rm -f "$tmp" "$out"
