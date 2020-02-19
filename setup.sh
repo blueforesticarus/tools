@@ -3,43 +3,29 @@ echo "$D"
 PATH=$PATH:$D/bin
 
 chmod +x $D/bin/*
+sudo i root "`realpath $D`"
 
-read -p "Create symlink to tools/bin? (Y/n): " YN
-case ${YN:0:1} in
-    n|N )
-        SYM=$D/bin
-    ;;
-    * )
-        read -e -p "Symlink location: " -i "~/.tools" SYM 
-        SYM=${SYM/#\~/$HOME}
-        ln -s -Tf "$D/bin" $SYM
-    ;;
-esac
+if yesno -Y "Symlink to tools/bin"; then
+    read -e -p "Symlink location: " -i "~/.tools" SYM 
+    SYM=${SYM/#\~/$HOME}
+    ln -s -Tf "$D/bin" $SYM
+fi
 
-read -p "Create symlink to Makefile to home dir? (Y/n): " YN
-case ${YN:0:1} in
-    n|N )
-            
-    ;;
-    * )
-        ln -s $D/Makefile ~
-    ;;
-esac
+rc () {
+    if ! [ -f $1 ]; then
+        return 
+    fi
 
+    echo "You need to add this line to your $1:"
+    S="source $D/conf/shellrc"
+    echo "$S"
 
-echo "You need to add this line to your .bashrc:"
-echo "PATH=\$PATH:$SYM"
+    if yesno -Y "Add automatically?" ; then
+        grep -F "$S" $1 || echo "$S" >> $1
+    fi
+}
 
-read -p "Add automatically? (Y/n):  " YN
-case ${YN:0:1} in
-    n|N )
-        
-    ;;
-    * )
-        S="PATH=\$PATH:$SYM"
-        grep "$S" ~/.bashrc || echo "$S" >> ~/.bashrc
-    ;;
-esac
-sudo $D/bin/i root $D
+rc ~/.bashrc
+rc ~/.zshrc
 
-./external.sh
+bash external.sh

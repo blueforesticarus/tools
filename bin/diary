@@ -3,16 +3,20 @@
 FILE="`i root`/data/diary/id_rsa"
 
 oneday () {
-    CMD="openssl rsautl -decrypt -inkey $FILE"
+    CMD="openssl smime -decrypt -binary -inform DER -passin pass:$PASS"
     while read -r line; do
         echo "$line" | base64 -d > $tmp
-        $CMD -in "$tmp"  
+        cp $tmp testb
+        $CMD -in "$tmp" -inkey $FILE.pem
     done < "$1"
 }
 
 case "$1" in 
     -r | --read )
         tmp=`mktemp`
+        read -s -p "private key password: " PASS
+        echo -e '\n' >&2
+
         if [ -z "$2" ]; then
             : 
         else
@@ -33,13 +37,11 @@ if [ ! -z "$2" ]; then
 fi
 
 mkdir -p "`dirname $FILE`"
-if ! [ -f $FILE.pub ]; then
-    ssh-keygen -t rsa -C "$USER@$HOSTNAME" -f "$FILE" -b 4096
-    rm $FILE.pem.pub
-fi
-
-if ! [ -f $FILE.pem.pub ]; then
-    ssh-keygen -f "$FILE".pub -e -m PKCS8 > "$FILE".pem.pub
+if ! [ -f $FILE.pem ]; then
+    openssl genrsa -out $FILE.pem.unlocked 4096
+    openssl rsa -in $FILE.pem.unlocked -pubout -out $FILE.pem.pub
+    openssl rsa -aes256 -in $FILE.pem.unlocked -out $FILE.pem
+    shred -u $FILE.pem.unlocked
 fi
 
 if [ -z "`i diary`" ]; then
@@ -51,14 +53,18 @@ fi
 
 tmp="`mktemp`"
 
-HEAD="[$USER@$HOSTNAME `date +'%T'`]"
+HEAD="-- `date +'%T'` $USER@$HOSTNAME"
 echo "$HEAD" > $tmp
 if [ -z "$1" ];then
     vim $tmp
 else
     echo "$1" >> "$tmp" 
 fi
-echo "--" >> $tmp
+
+tmp2="`mktemp`"
+awk 'NF {p=1} p' <<<"$(< $tmp)" > $tmp2
+printf '\n' >> $tmp2
+
 
 DIR="`i diary`"
 mkdir -p "$DIR"
@@ -66,17 +72,19 @@ mkdir -p "$DIR"
 DATE="`date +'%F'`"
 DF="$DIR"/"$DATE"
 
-CMD="openssl rsautl -encrypt -pubin -inkey $FILE.pem.pub -ssl"
+CMD="openssl smime -encrypt -binary -aes-256-cbc -outform DER -inkey $FILE.pem.pub "
 
 out="`mktemp`"
 if ! [ -f "$DF" ]; then
     txt="`mktemp`"
-    echo "[`date +'%a, %b, %Y'`]" > $txt 
-    $CMD -in "$txt" -out "$out"
+    echo "[`date +'%a %m %b %Y'`]" > $txt
+    $CMD -in "$txt" -out "$out" $FILE.pem.cert
     base64 -w 0 < "$out" > "$DF"
+    printf '\n' >> "$DF"
     rm -f "$txt" "$out"
 fi
-
-$CMD -in "$tmp" -out "$out"
+$CMD -in "$tmp2" -out "$out" $FILE.pem.cert
+cp $out testa
 base64 -w 0 < "$out" >> "$DF"
-rm -f "$tmp" "$out"
+printf '\n' >> "$DF"
+rm -f "$tmp" "$out" "$txt"

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DIR="`i wallpaper`/0_collections"
+OUT="`i wallpaper`/0_manifest"
+CURRENT="`cat $OUT`"
+N=$(ls | wc -l)
+ARGS=
+while read line; do 
+	SEL=$(test "$line" == "$CURRENT" && echo on || echo off)
+	ARGS="$ARGS $line $line $SEL"
+done <<<$(ls "$DIR")
+
+echo "$ARGS"
+
+DIALOGRC=`i root`/conf/dialogrc dialog --nocancel --no-shadow --notags --nook --radiolist "Wallpaper Collections" 20 30 $N $ARGS 2> $OUT
+
+

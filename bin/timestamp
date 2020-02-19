@@ -1,0 +1,8 @@
+#!/bin/python3
+import rfc3161ng 
+
+cert = open(sys.argv[1], 'rb').read()
+rt = rfc3161ng.RemoteTimestamper('http://time.certum.pl', certificate=cert)
+data = open(sys.argv[2], 'rb').read()
+rt.timestamp(data=data)
+

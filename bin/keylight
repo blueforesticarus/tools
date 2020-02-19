@@ -1,0 +1,42 @@
+#!/bin/bash 
+SYS=/sys/class/leds/tpacpi::kbd_backlight
+
+max=`cat $SYS/max_brightness`
+save=`cat $SYS/brightness`
+case $max in 
+    1 )
+        on=1
+        alert=0
+        ;;
+    * )
+        let "on = $max / 2"
+        alert=$max
+        ;;
+esac
+
+if [ $save -gt $(( $alert / 2 )) ]; then
+    alert=0
+fi
+
+case $1 in 
+    on )
+        echo $on | sudo tee $SYS/brightness
+        ;;
+    off )
+        echo 0 | sudo tee $SYS/brightness
+        ;;
+    alert )
+        echo $alert | sudo tee $SYS/brightness
+        echo $save | sudo tee $SYS/brightness
+        ;;
+    max )
+        echo $max | sudo tee $SYS/brightness
+        ;;
+    toggle )
+        if [ $save -eq 0 ]; then
+            echo $on | sudo tee $SYS/brightness
+        else
+            echo 0 | sudo tee $SYS/brightness
+        fi 
+        ;;
+ esac

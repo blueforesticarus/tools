@@ -1,0 +1,5 @@
+D=`dirname "$(readlink -f "$0")"`/../
+D="`realpath $D`"
+export PATH=$PATH:$D/bin
+
+for f in $D/bin/source/*; do source $f; done

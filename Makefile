@@ -29,3 +29,8 @@ fs rfs ffs xfs xffs xrfs keys rkey fkey:
 sshkey:
 	@conn --copyid
 
+path PATH:
+	@echo "$$USER:"
+	@echo $$PATH | grep --color -F -e "`i root`/bin" -e ''
+	@echo -e "\nroot:"
+	@sudo bash -c 'echo $$PATH' | grep --color -F -e "`i root`/bin" -e ''

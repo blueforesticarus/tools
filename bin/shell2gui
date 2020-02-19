@@ -1,0 +1,2 @@
+#!/bin/bash
+kitty --class=$1 zsh -c "source ~/.zshrc; $1" 
