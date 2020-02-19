@@ -1,0 +1,36 @@
+#!/bin/bash
+#this tool uses pactree to generate dependancy/dependant graphs for all packages
+
+FOLDER=`i pacview`
+EXCLUDE=`i pacview_x`
+function process () {
+    FOLDER=$2
+    EXCLUDE=$3
+    BUILD=$FOLDER/.temp
+   
+    #echo $BUILD $FOLDER $EXCLUDE 
+    if [ -z "`grep -F "$1" $EXCLUDE`" ]; then
+        mkdir -p $BUILD
+        
+        pactree --graph -d3 "$1" | grep -v -Ff $EXCLUDE  | head -n -1  > $BUILD/$1.f.dot 
+        pactree --graph -d3 -r "$1" | grep -v -Ff $EXCLUDE | awk ' { t = $1; $1 = $3; $3=t; print } ' | grep -F " -> " > $BUILD/$1.r.dot
+
+        echo "digraph G { \"$1\" [color=$4, style=filled];" > $BUILD/$1.dot
+        cat $BUILD/$1.f.dot $BUILD/$1.r.dot | grep -v "START" >> $BUILD/$1.dot
+        echo '}' >> $BUILD/$1.dot
+
+        if grep -F " -> " $BUILD/$1.dot 2>1 >/dev/null; then
+            cat $BUILD/$1.dot | dot -Tpng -o $FOLDER/$1.png
+            echo $1
+        fi
+    fi
+}
+
+if [ "$1" == "--build" ] || [ "$1" == "-b" ]; then 
+    export -f process 
+    rm -r $FOLDER/*
+    pacman -Qe | cut -d ' ' -f1 | parallel -P `nproc --all` process "{}" $FOLDER $EXCLUDE red
+    pacman -Qd | cut -d ' ' -f1 | parallel -P `nproc --all` process "{}" $FOLDER $EXCLUDE blue    
+else
+    `i root`/bin/viewfinder "$FOLDER" $1.png
+fi

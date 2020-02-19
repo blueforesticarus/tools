@@ -1,0 +1,8 @@
+action="echo "%F" && xdotool key Escape"
+cd $1
+if [ ! -z "$2" ]; then
+	feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" --start-at "$2" .
+else
+	feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" .
+fi
+

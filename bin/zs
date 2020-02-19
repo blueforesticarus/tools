@@ -1,3 +1,12 @@
 #!/bin/bash
-FILTER=$(bash .zsx || echo "\.hg")
-find . -regextype posix-extended -not -regex "\./($FILTER)($|/.*)" -print0 | xargs -0 grep -s -n "$@" #| colout '^.*\:[0-9]+\:' 3 | colout 'Binary.file.*matches$' 1 
+#FILTER=$(bash .zsx || echo "\.hg")
+#find . -regextype posix-extended -not -regex "\./($FILTER)($|/.*)" -print0 | xargs -0 grep -s -n "$@" #| colout '^.*\:[0-9]+\:' 3 | colout 'Binary.file.*matches$' 1
+
+#if [ -x `command -v colout` ]; then
+#	COLOUT='| colout '^.*\:[0-9]+\:' 3 | colout 'Binary.file.*matches$' 1'
+#fi
+OPT="$@"
+ignore .zsx `i root`/conf/zsx.default | xargs -P `nproc --all` grep --color=always -s -n "$OPT"
+
+
+

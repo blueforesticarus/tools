@@ -1,0 +1,55 @@
+execute pathogen#infect('plugins/{}')
+
+"setting and colorscmemes 
+set number
+set backspace=2
+syntax on
+
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set smarttab
+
+set background=dark
+set fileformat=unix
+set t_Co=256
+
+	
+colorscheme jellybeans "default
+function! s:color_override()
+	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim | grep -v _unused')
+	if color != ""
+		execute "colorscheme ".color
+	endif
+endfunction
+call s:color_override() "if there is a colorscheme in .vim/colors it is used
+
+set laststatus=2
+set mouse=a
+"Binds go here
+inoremap <C-S> <Esc> :update<CR>
+noremap <C-S> :update<CR>
+nmap <C-j> LjM
+nmap <C-k> HkM
+
+"magic
+noremap <C-Z> "kyiw :vnew sview \| 0read ! zs <C-r>k <CR><CR> <C-w>r :setlocal buftype=nofile<CR> <C-w><C-h> 
+
+vnoremap <C-j> :m '>+1<CR>gv
+vnoremap <C-k> :m '<-2<CR>gv
+vnoremap <C-l> > gv
+vnoremap <C-h> < gv
+
+vnoremap <C-i> <ESC>O<ESC>gv
+vnoremap <C-o> <ESC>o<ESC>gv
+
+:set esckeys
+
+"comment box
+nnoremap ,co ^v$h"by<Esc>O#<Esc>100A=<Esc>100\|D<CR>i#<CR><Esc>i##<Esc>100a=<Esc>100\|D<Esc>kA <Tab><Tab><Tab><Tab><Tab><Esc>"bp`[i
+
+"TODO: stack copy/paste, append copy
+
+autocmd BufNewFile,BufRead *.eas setf eas
+au FileType * syntax region Box  start=/#=\+/ end=/##=\+/ | hi def Box ctermfg=Brown
+

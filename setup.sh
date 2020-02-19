@@ -40,3 +40,6 @@ case ${YN:0:1} in
         grep "$S" ~/.bashrc || echo "$S" >> ~/.bashrc
     ;;
 esac
+sudo $D/bin/i root $D
+
+./external.sh

@@ -1,0 +1,17 @@
+- less-style output scrolling with programable actions (I want to be able to specify e=open vim, c=copy etc.) (an interface builder)
+- program to move file to archive and handle multible archives (like how downloads work: myfile.c, myfile.c.1, myfile.c.2)
+- tarball style archive that can assert file-nonexistance, and write writetimes, permissions, etc independantly
+    -action archive, which is a sequence of above archives, essencially archives sequence of filesystem actions
+        - might be useful for cases where the filesystem is not an actual filesystem
+- automatically run all images put in wallpapers through an upscaler/vectoriser
+- version  control with ability to specify file as a set of lines (order irrelevant)
+- multilevel diff (block, line, unit, word, char, program, module, class, function, variable)
+- vim blovk mode selection (ie, i can enter a mode where I can jump around git merge markers)
+- vim "thumb" (look at new part of document then jump back)
+- vim change paren type
+- vim copy and paste line above quick shortcut
+- makefile style application which is unit centric instead of recipe centric (ie. I can first define the files as units, but also system state as a unit, and then have units have state and state transform recipes which can depend on other system state in arbitary ways.)
+    - distinguish existance dependancy from content dependancy
+    - recipe inheritance, so I can do things like easy links
+    - written in c or haskell so it is fast, python too slow
+    - is this just cabal

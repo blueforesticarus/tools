@@ -1,0 +1,9 @@
+[submodule "dot/vim/pathogen"]
+	path = dot/vim/pathogen
+	url = https://github.com/tpope/vim-pathogen.git
+[submodule "dot/vim/plugins/vim-signify"]
+	path = dot/vim/plugins/vim-signify
+	url = https://github.com/mhinz/vim-signify
+[submodule "dot/vim/colors/submodules/jellybeans.vim"]
+	path = dot/vim/plugins/jellybeans.vim
+	url = https://github.com/nanotech/jellybeans.vim
