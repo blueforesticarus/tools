@@ -1,0 +1,28 @@
+#!/bin/bash
+IP=$1
+USER=$2
+PASS=$3
+
+tmp=`mktemp`
+tmp2=`mktemp`
+
+if which sshpass >/dev/null 2>&1 && test ! -z "$3"; then
+    SSHPASS="sshpass -p $3"
+fi 
+
+echo 'echo "ERICHDEVTOOLS"; hostname; cat `i root`/data/ip/list' | $SSHPASS ssh -o StrictHostKeyChecking=no "$USER@$IP" | sed -e '1,/ERICHDEVTOOLS/d' > $tmp
+
+
+if [ ${PIPESTATUS[1]} -gt 0 ]; then
+    echo "Failed: $USER@$IP probably doesn't have devtools installed" 
+fi
+
+hostname="`head -1 $tmp`"
+tail +2 $tmp > $tmp2
+
+if ! [ -z "$hostname" ] && [ -s $tmp2 ]; then 
+    iplist --save $tmp2 "$USER" "$hostname"
+fi
+
+rm $tmp
+rm $tmp2

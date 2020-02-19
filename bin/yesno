@@ -1,0 +1,34 @@
+
+prompt="y/n"
+case $1 in
+	-Y ) 
+		default=y
+		prompt="Y/n"
+		shift
+		;;
+	-N ) 
+		default=n
+		prompt="y/N"
+		shift
+		;;
+esac
+
+pre=$1
+
+while true; do
+	read -p "$pre ($prompt): " line
+	if [[ -z  "${line// }" ]]; then
+		line="$default"
+	fi
+	
+	case $line in
+		Y | y | yes | Yes | YES )
+			exit 0
+			;;
+		N | n | no  | No  | NO )
+			exit 1
+			;;
+	esac
+	
+	echo "<<< invalid answer (`maxstrlen 7 $line`) >>> "
+done 

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+DIR=`i root`/data/ip/
+online=$DIR/online
+avail=$DIR/avail
+scan=$DIR/scan
+passfail=$DIR/passfail
+
+if [ "$1" == "--scan" ]; then
+    COMM='ping -c 1 {} >/dev/null 2>&1 && echo {}'
+    COMM2='sshtest {} debian temppwd | xargs iplist --update'
+    echo {1..255} | xargs -n 1 printf "10.30.1.%s\n" | xargs -n 1 -P 255 -I {} bash -c "$COMM" | xargs -P 100 -n 1 -I {} bash -c "$COMM2"
+    exit 0
+fi 
+
+if [ "$1" == "--status" ]; then
+	iplist --active --user | xargs sshtest >/dev/null | grep -v '^\*' | xargs -r iplist --update 
+	exit 0
+elif [ "$1" == "--hostname" ]; then 
+	IP="$2"
+	USER="$3"
+	PASS="$4" 
+	if [ -z "$PASS" ]; then
+		PASS=`iplist --getpass "$IP" "$USER"`
+	fi
+	tmp=`mktemp`
+	( sshtest --quick $IP $USER $PASS || exit 1 ) | tee $tmp | xargs iplist --update
+	echo `cat $tmp | cut -d ' ' -f3`
+	exit 0
+elif [ "$1" == "--getlists" ]; then 
+    iplist --avail --user | xargs -P 18 -I {} xfix ipgetlist {} 2>/dev/null
+    exit 0
+fi 
+
+export NOPROMPT=True
+if [ "$1" == "-I" ]; then 
+    export NOPROMPT=
+fi 
+
+xfilter () {
+    xargs -n 1 -P 18 -I {} bash -c "$1 && $2 || $3"
+}
+
+echo "pinging..."
+rm -f "$online"
+
+PING='ping -c 1 {} >/dev/null 2>&1'
+IFDOWN='echo -e "\tDOWN {}" 1>&2'
+IFUP='echo -e "\tUP   {}" 1>&2 && echo {}'
+
+iplist --ip | xfilter "$PING" "$IFUP" "$IFDOWN" > $online
+
+echo 
+echo "ssh access..."
+rm -f "$avail" "$passfail"
+
+iplist --user --online | xargs -n 1 -P 18 -I {} sshtest --fix {} | tee >(grep '^\*' | cut -c 2- > $passfail) | grep -v '^\*' > $avail

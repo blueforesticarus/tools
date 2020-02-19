@@ -3,16 +3,13 @@
 ROOT=/usr/var/local/tools
 mkdir -p $ROOT
 if ! [ -z "$2" ]; then
-    RPTH=`realpath $2`
-	echo "setting $1 to $RPTH"
-    cat $ROOT/index | grep -v "^$1" > $ROOT/index.temp
-	echo "$1	`realpath $RPTH`" >> $ROOT/index.temp
-    cat $ROOT/index.temp | sort | uniq -f1 > $ROOT/index
-    rm $ROOT/index.temp
+	echo "setting $1 to $2"
+    awk -v val="$1" '$1!=val' $ROOT/index > $ROOT/index.new
+	echo "$1	`realpath $2`" >> $ROOT/index.new
+    mv $ROOT/index.new $ROOT/index	
 elif [ -z "$1" ]; then
 	cat $ROOT/index
 	exit 0
 fi
 
-
-cat $ROOT/index | grep "^$1\b" | cut -f2
+awk -v val="$1" '$1==val' $ROOT/index | cut -f2 

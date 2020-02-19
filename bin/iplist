@@ -1,0 +1,221 @@
+#!/bin/bash
+DIR=`i root`/data/ip
+mkdir -p $DIR
+
+list=$DIR/list
+online=$DIR/online
+avail=$DIR/avail
+passfail=$DIR/passfail
+active=$DIR/active
+save=$DIR/save/list.0
+remote=$DIR/remote/
+temp=$DIR/list.temp #TODO unused
+
+arg=""
+filter=""
+while test $# -gt 0; do
+    case "$1" in
+        --ip | --addr | --old | --user | --pretty | --rpretty )
+            arg="$1"
+            shift
+            ;;
+        --online | --avail | --active | --auth )
+            filter="$1"
+            shift
+            ;; 
+		--host )
+			filter="$1"
+			shift
+			host="$1"
+			shift
+			;;
+        --update )
+            IP=$2
+            USER=$3
+            HOST=$4
+            tmp=`mktemp`
+            echo "$IP $USER $HOST"> $tmp
+            grep -v "^$IP $USER" $avail >> $tmp
+            mv -f $tmp $avail
+            exit 0
+            ;;
+		--set )
+            IP=$2
+            USER=$3
+			grep -F "$IP $USER" $list || ( echo "ip:$IP user:$USER not in list" && exit 1 )
+			echo -F "$IP $USER" > $active
+			exit 0
+			;;
+		--add )
+            IP=$2
+            USER=$3
+            PASS=$4
+			tmp=`mktemp`
+			echo "$IP $USER $PASS" > $tmp
+			grep -v "$IP $USER" $list >> $tmp
+			mv $tmp $list
+			exit 0
+			;;
+		--load )
+			if test "$2" == "_"; then
+				iplist --load
+				exit 0
+			fi	
+            
+            if [ -z $3 ]; then
+                f=$remote$2.$3
+			    test -f $f || echo "no remote iplist from $2@$3" 
+            else
+                f=$save$2
+				test -f $f || echo "no iplist named $2"
+            fi
+
+			test -f $f || exit 1
+            
+			tac $f | while read line; do
+    			echo $line | xargs iplist --add
+			done
+			exit 0
+			;;
+		--save )
+            echo "$@"
+            if [ ! -z "$4" ]; then
+                mkdir -p `dirname $remote$3.$4`
+                cp $2 $remote$3.$4
+            elif [ ! -z "$3" ]; then
+                mkdir -p `dirname $save$3`
+                cp $2 $save$3 
+            else
+			    cp $list $save$2
+            fi
+			exit 0
+			;;	
+		--clear )
+			: > $list
+			exit 0
+			;;	
+		--reset )
+			iplist --clear
+			cat `i root`/conf/iplist.default | grep -v '#.*'| xargs -I {} iplist --load {}
+			exit 0
+			;;
+		--menu )
+			shift
+
+			#filter must be set before
+			#arg before applys to choice list
+			#arg after applys to final output
+			choosefrom <(iplist --old $arg $filter) <(iplist --user $@ $filter)
+			exit 0
+			;;
+		--select )
+			shift 
+			iplist $arg $filter $@ --menu --user | xargs -r iplist --set
+			exit 0
+			;;
+		--gethost )
+			shift
+			IP=$1
+			USER=$2
+			if [ -z "$USER" ] && [[ ! "$IP" =~ '.' ]]; then 
+				USER="$IP"
+				IP=
+				P='[^\s]\+'
+			fi
+			h=$(iplist | grep "^$P`esc "$IP $USER"`" | cut -d ' ' -f3)
+			if [ -z "$h" ]; then
+				echo "HOSTNAME UNKNOWN" 1>&2
+				exit 1
+			else
+				echo "$h"
+				exit 0
+			fi
+			;;
+		--getpass )
+			shift
+			IP=$1
+			USER=$2
+			if [ -z "$USER" ] && ! [[ $IP =~ '.' ]]; then 
+				USER="$IP"
+				IP=
+				P='[^\s]\+'
+			fi
+			h=$(iplist --user | grep "^$P`esc "$IP $USER"`" | cut -d ' ' -f3)
+			if [ -z "$h" ]; then
+				echo "PASSWORD UNKNOWN" 1>&2
+				exit 1
+			else
+				echo "$h"
+				exit 0
+			fi
+			;;
+    	* )
+			echo "UNSUPPORTED ARG: $1"
+			exit 1
+			;;
+	esac 
+done
+
+parser () {
+    IP="$1" 
+    USER="$2"
+    PASSWORD="$3"  
+
+    case "$filter" in
+        --online )
+            grep -q -F "$IP" "$online" || return 
+            ;;
+        --avail ) 
+            grep -q -F "$IP $USER" "$avail" || return
+            ;;
+        --auth )
+            grep -q -F "$IP $USER" "$passfail" || return
+			;;
+		--active ) 
+            grep -q -F "$IP $USER" "$active" || return
+			;;
+		--host )
+            grep -F "$IP $USER" "$avail" | cut -d ' ' -f3 | grep -q -F "$host" || return
+			;;
+			
+    esac
+    case "$arg" in
+        --ip )
+            echo "$IP"
+            ;;
+        --addr )
+            echo "$USER@$IP"
+            ;;
+        --user )
+            echo "$IP $USER $PASSWORD"
+            ;;
+        --old )
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            echo "$USER@$IP $HOSTNAME"   
+            ;;
+		--pretty )
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            H=`maxstrlen 13 "$HOSTNAME" -13`
+            echo "$H : $USER@$IP"   
+            ;;	
+		--rpretty ) 
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+			U=`maxstrlen 10 "$USER" -10`
+			I=`maxstrlen 15 "$IP" 15`
+            H=`maxstrlen 13 "$HOSTNAME" 13`
+			echo "$U @ $I : $H"  
+            ;;	
+        *)
+            HOSTNAME=`grep "^$IP $USER" $avail | cut -d ' ' -f3`
+            echo "$IP $USER $HOSTNAME"
+            ;;
+    esac
+}
+
+#TODO, print most recently used first
+while read in; do
+    parser $in
+done < $list
+   
+exit 0 
+

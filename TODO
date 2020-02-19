@@ -15,3 +15,7 @@
     - recipe inheritance, so I can do things like easy links
     - written in c or haskell so it is fast, python too slow
     - is this just cabal
+
+
+-new TODO:
+    - retain old hostnames so we can know what something is supposed to be when it is offline

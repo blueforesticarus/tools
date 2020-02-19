@@ -1,3 +1,5 @@
+#!/bin/bash
+
 LINE=`choosefrom ~/.iplist`
 IP=`echo "$LINE" | cut -d " " -f1 | cut -d "@" -f2`
 

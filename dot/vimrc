@@ -52,4 +52,9 @@ nnoremap ,co ^v$h"by<Esc>O#<Esc>100A=<Esc>100\|D<CR>i#<CR><Esc>i##<Esc>100a=<Esc
 
 autocmd BufNewFile,BufRead *.eas setf eas
 au FileType * syntax region Box  start=/#=\+/ end=/##=\+/ | hi def Box ctermfg=Brown
+	
+vnoremap ; :
+nnoremap ; :
+
+cnoreabbrev vim tab drop
 
