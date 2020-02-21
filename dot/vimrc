@@ -58,3 +58,15 @@ nnoremap ; :
 
 cnoreabbrev vim tab drop
 
+nnoremap <space> i<space><esc>
+nnoremap <S-Space> a<space><esc>
+
+"SPLIT SETTINGS
+
+"open split panes to the right/bottom instead of default left/top
+set splitright
+set splitbelow
+
+
+
+
