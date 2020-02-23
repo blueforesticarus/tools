@@ -7,3 +7,9 @@
 [submodule "dot/vim/colors/submodules/jellybeans.vim"]
 	path = dot/vim/plugins/jellybeans.vim
 	url = https://github.com/nanotech/jellybeans.vim
+[submodule "vim-airline"]
+	path = dot/vim/plugins/vim-airline
+	url = https://github.com/vim-airline/vim-airline.git
+[submodule "dot/vim/plugins/ctrlp"]
+	path = dot/vim/plugins/ctrlp
+	url = https://github.com/ctrlpvim/ctrlp.vim
