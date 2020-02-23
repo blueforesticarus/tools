@@ -1,0 +1,4 @@
+#$(ps -ao pid,tty,args | sort | awk '$1 ~ /#{pane_pid}i/{VAR=$2} $2 ~ VAR && $3 ~ /ssh/{$1=\"\"; $2=\"\"; print}')
+kitty --detach --directory `pwd`
+
+

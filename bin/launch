@@ -1,0 +1,52 @@
+#get ops
+OLD=0
+CLOSE=0
+ATTACH=0
+EXIT=0
+
+while getopts :xin opt; do
+	case $opt in
+		i)
+			ATTACH=1
+			;;
+		x)
+			CLOSE=1
+			;;
+		n)
+			OLD=1
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			EXIT=1
+			;;
+	esac
+done
+
+shift $(($OPTIND - 1))
+
+if [ $# -lt 1 ] || [ $EXIT -eq 1 ]; then
+	echo "usage: latch [-x|-i][-n] program"
+	exit 2
+fi
+
+EXEC=$1
+NAME=$1
+
+#check command is valid
+command -v "$EXEC" || { echo "$EXEC -- command not found"; exit 1; }
+
+if [ $OLD -eq 1 ]; then
+	nohup "$@" > /dev/null 2> /dev/null < /dev/null & disown
+else
+	if [ $ATTACH -eq 1 ]; then
+		screen -A -t $NAME $EXEC
+	else
+		screen -A -d -m -S $NAME $EXEC
+		echo "to re-attach: screen -Ar $NAME"
+	fi
+fi
+
+if [ $CLOSE -eq 1 ]; then
+	kill -6 $PPID
+fi
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+#setcolor 708 '1d/20/21'
+kitty -c=`i root`/dot/kitty.vim.conf --detach /usr/bin/vim "$@"
+ 

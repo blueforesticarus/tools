@@ -1,0 +1,6 @@
+f=`mktemp --suffix=".png"`
+rm $f
+scrot $@ $f
+filename=`date +"%FT%T.png"`
+action="mv %F ~/save/screenshots/$filename"
+feh --no-menus --scale-down --auto-zoom -w -g 1440x810 --action "$action" $f

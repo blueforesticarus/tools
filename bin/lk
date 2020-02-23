@@ -1,0 +1,14 @@
+#!/bin/sh
+#a simple script which either cat's or ls's a path
+#depending on whether it is a file or directory
+#if called without an arg it just runs ls -a on
+#the current directory
+if [[ -f "$1" ]]; then
+	LKLAST=`dirname "$1"`
+	cat $1
+elif [[ -d "$1" ]]; then
+	LKLAST="$1"
+	ls --color -a $1
+else
+	ls --color -a
+fi

@@ -1,0 +1,8 @@
+#bash script to take a screenshot then blur it and display with feh
+#in order to be usefull it will need to be rewritten in c
+f=`mktemp -t 'XXXXX' --suffix=".png"`
+scrot -o "$f"
+#convert $f -blur 24,12 $f
+convert $f -resize 6.25x6.25% -resize 1920x1080! $f
+feh $f
+

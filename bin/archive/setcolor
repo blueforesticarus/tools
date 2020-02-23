@@ -1,0 +1,5 @@
+#to change border $1='708'
+#$2 should be like 'c3/c2/12'
+printf '\033]%s;rgb:%s\007' $1 $2
+
+

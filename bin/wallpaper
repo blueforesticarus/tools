@@ -1,0 +1,36 @@
+#!/bin/bash
+DIR="`i wallpaper`/0_collections"
+OUT="`i wallpaper`/0_manifest"
+CURRENT="`cat $OUT`"
+
+case "$1" in
+    -c | --collection ) 
+        ls "$DIR" | rofi -p "Wallpaper Collection" -dmenu -select $CURRENT > $OUT
+        exit 1
+        ;;
+esac
+
+RAND=0
+BACK="wal"
+
+if [[ $RAND -eq 1 ]]; then
+	image=`shuf -e -n1 "$DIR/$CURRENT"/*`
+else
+	action="echo "%F" > /z/store/image && xdotool key Escape"
+	image=`cat /z/store/image`
+	cd "$DIR/$CURRENT"
+	if [ -f "$image" ]; then
+		feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" --start-at "$image" .
+	else
+		feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" .
+	fi	
+	image=`cat /z/store/image`
+fi
+
+feh --conversion-timeout 1 -z --bg-fill --no-xinerama "$image"
+y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+convert "$image" -resize "$y_res""^" -gravity center -extent "$y_res" "/z/store/bg"
+#convert /z/store/bg -scale 100% -scale 100% /z/store/bg_blur
+#[[ -f $overlay ]] && convert "$file" $1 -gravity center -composite -matte "$file"
+wal --backend "$BACK" -n -i "$image"
+betterlockscreen -u "$image"

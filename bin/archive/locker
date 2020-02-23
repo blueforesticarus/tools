@@ -1,0 +1,37 @@
+#!/bin/bash
+
+betterlockscreen -l blur
+exit 0
+
+#file="/tmp/screen.png"
+#scrot "$file"
+
+#file="/z/store/wp"
+#convert "$file" -scale 10% -scale 1000% "$file"
+#[[ -f $1 ]] && convert "$file" $1 -gravity center -composite -matte "$file"
+#dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Stop
+#NOTE: taken from betterlockscreen
+lock() {
+	#$1 image path
+	letterEnteredColor=d23c3dff
+	letterRemovedColor=d23c3dff
+	passwordCorrect=00000000
+	passwordIncorrect=d23c3dff
+	background=00000000
+	foreground=ffffffff
+	i3lock \
+		-t -i "$1" \
+		--timepos="x-90:h-ch+30" \
+		--datepos="tx+24:ty+25" \
+		--clock --datestr "Type password to unlock..." \
+		--insidecolor=$background --ringcolor=$foreground --line-uses-inside \
+		--keyhlcolor=$letterEnteredColor --bshlcolor=$letterRemovedColor --separatorcolor=$background \
+		--insidevercolor=$passwordCorrect --insidewrongcolor=$passwordIncorrect \
+		--ringvercolor=$foreground --ringwrongcolor=$foreground --indpos="x+280:h-70" \
+		--radius=20 --ring-width=4 --veriftext="" --wrongtext="" \
+		--textcolor="$foreground" --timecolor="$foreground" --datecolor="$foreground" \
+		--force-clock
+}
+
+
+lock /z/store/bg

@@ -1,0 +1,33 @@
+DISP=eDP1
+DIR=$1
+if [ $# -lt 1 ]; then
+	DIR=`` \
+		--print-reply
+		--system
+fi
+case $DIR in
+	0)
+		WROT="none"
+		XROT="normal"
+		;;
+	90)
+		WROT="ccw"
+		XROT="left"
+		;;
+	180)
+		WROT="half"
+		XROT="inverted"
+		;;
+	270)
+		WROT="cw"
+		XROT="right"
+		;;
+	*)
+		echo "usage: tprot [0,90,180,270]"
+		exit 1
+esac
+devices=`xsetwacom --list devices | grep -o 'id: [0-9]*' | grep -o "[0-9]*"`
+echo "$devices" | xargs -I num xsetwacom --set num Rotate $WROT
+#xsetwacom --set 12 Rotate $WROT
+#xsetwacom --set 18 Rotate $WROT
+xrandr --output $DISP --rotate $XROT

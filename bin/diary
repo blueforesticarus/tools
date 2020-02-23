@@ -1,5 +1,6 @@
 #!/bin/bash
 #protects thoughts with rsa keypair
+#TODO overhaul with ellypticurve encryption
 FILE="`i root`/data/diary/id_rsa"
 
 oneday () {
@@ -38,7 +39,8 @@ fi
 
 mkdir -p "`dirname $FILE`"
 if ! [ -f $FILE.pem ]; then
-    openssl genrsa -out $FILE.pem.unlocked 4096
+    openssl 
+    genrsa -out $FILE.pem.unlocked 4096
     openssl rsa -in $FILE.pem.unlocked -pubout -out $FILE.pem.pub
     openssl rsa -aes256 -in $FILE.pem.unlocked -out $FILE.pem
     shred -u $FILE.pem.unlocked
@@ -57,6 +59,11 @@ HEAD="-- `date +'%T'` $USER@$HOSTNAME"
 echo "$HEAD" > $tmp
 if [ -z "$1" ];then
     vim $tmp
+    if ! [ `cat $tmp | wc -l` -gt 1 ];then
+        echo "Message empty. Aborting"
+        rm $tmp
+        exit 1 
+    fi
 else
     echo "$1" >> "$tmp" 
 fi

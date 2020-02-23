@@ -1,0 +1,11 @@
+if [[ "$#" -gt 0 ]]; then
+	if [[ "$1" == "-u" ]]; then
+		TEMP=`mktemp`
+		head -n -1 ~/crit/rand > "$TEMP"
+		mv "$TEMP" ~/crit/rand
+	else
+		echo "$@" >> ~/crit/rand 
+	fi;
+else
+	tail -n 10 ~/crit/rand
+fi;

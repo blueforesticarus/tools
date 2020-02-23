@@ -1,0 +1,24 @@
+RAND=0
+BACK="wal"
+
+if [[ $RAND -eq 1 ]]; then
+	image=`shuf -e -n1 ~/save/wallpapers/0_collections/tiled/*`
+else
+	action="echo "%F" > /z/store/image && xdotool key Escape"
+	image=`cat /z/store/image`
+	cd ~/save/wallpapers/0_collections/tiled
+	if [ -f "$image" ]; then
+		feh --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" --start-at "$image" .
+	else
+		feh --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" .
+	fi	
+	image=`cat /z/store/image`
+fi
+
+feh -z --bg-tile --no-xinerama "$image"
+#betterlockscreen -u "$image"
+y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+convert "$image" -resize "$y_res""^" -gravity center -extent "$y_res" "/z/store/bg"
+#convert /z/store/bg -scale 100% -scale 100% /z/store/bg_blur
+#[[ -f $overlay ]] && convert "$file" $1 -gravity center -composite -matte "$file"
+#wal --backend "$BACK" -n -i "$image" 

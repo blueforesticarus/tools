@@ -1,0 +1,49 @@
+#!/bin/bash
+
+if [ `whoami` != 'root'  ]; then
+    sudo "$0" $@
+    exit $?
+fi
+
+NET=`cat /z/.net`
+if [[ "$1" == '--' ]]; then
+	cd /etc/netctl
+    echo "choose network:"
+	select f in *; do
+		NET="$f"
+		break
+	done
+elif [[ "$1" == '+' ]]; then
+    A=$(sudo iw dev wlp4s0 scan | grep SSID: | grep -v \x00 | sed 's/^.*SSID:\ \(.*\)/\1/g' | grep -v "^ *$" | sed 's/^\(.*\)/\1\|/' | xargs)
+    A=$(echo "$A" | sed 's/| /\|/g') 
+    IFS="|"
+    select f in $A; do
+        echo "adding $f"
+        temp=`mktemp`
+        cat /etc/netctl/.template | SSID="$f" DESC="$f" envsubst > $temp
+        sudo mv $temp "/etc/netctl/$f"
+        rm $temp
+        exit 0
+    done
+    echo "no access points"
+    exit 1
+elif [[ "$1" == '--scan' ]]; then
+    while true; do
+        sudo iw dev wlp4s0 scan | grep SSID
+    done
+    exit
+elif [[ -n "$1" ]]; then
+	NET="$1"
+fi
+echo "$NET" > /z/.net
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+sudo killall dhcpcd
+sudo netctl stop-all
+sudo ip link set wlp4s0 down
+sleep .1
+echo "Connecting to $NET..."
+#sudo ip link set wlp4s0 up
+sudo netctl start "$NET"
+iw wlp4s0 link
+echo "[dhcpcd]"
+sudo dhcpcd --noarp --waitip=4 -t 60 #noarp disables probing (speeds up connection)

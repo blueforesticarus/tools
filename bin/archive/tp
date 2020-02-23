@@ -1,0 +1,12 @@
+#must be sourced to work, because bash is retarded
+if [[ $# -eq 2 ]]; then
+	P=`realpath -s "$1"`
+	ln -snf "$P" /z/config/warp.alias/"$2"
+elif [[ $# -eq 1 ]]; then
+	cd `readlink /z/config/warp.alias/"$1"`
+	pwd -P
+else
+	echo 'Usage:'
+fi
+
+

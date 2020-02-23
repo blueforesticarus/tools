@@ -5,6 +5,9 @@ PATH=$PATH:$D/bin
 chmod +x $D/bin/*
 sudo i root "`realpath $D`"
 
+mkdir -p "$D"/data/ip
+touch "$D"/data/ip/list #TODO iplist or conn or avail should do this, not setup
+
 if yesno -Y "Symlink to tools/bin"; then
     read -e -p "Symlink location: " -i "~/.tools" SYM 
     SYM=${SYM/#\~/$HOME}

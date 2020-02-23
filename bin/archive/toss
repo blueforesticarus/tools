@@ -1,0 +1,48 @@
+#!/bin/sh
+
+source /z/bin/zlib.sh
+if ! lock trash ; then	
+	echo "could not get lock on trash table"
+	exit
+fi
+
+if [[ $1 =~ ^(-u|--undo) ]]
+then	
+	LAST="$(tail -1 /z/trash/table)"
+	IFS=' ' read DATE ID ORIGPATH <<<$LAST
+	mv /z/trash/$ID $ORIGPATH
+	TMP=`mktemp`
+	head -n -1 /z/trash/table > $TMP
+	mv $TMP /z/trash/table
+	exit
+fi
+
+for var in "$@"
+do
+	
+	if ! [[ -d "$var" || -f "$var" ]]
+	then
+	       	echo "$var not a file or directory"	
+		exit
+	fi
+
+	ID="$( mktemp -u -p /z/trash XXXXXXXXXX )"
+	ID="$(basename $ID)"
+	ORIGPATH=`realpath "$var" `
+	DATE=`date '+%Y-%m-%d_%H:%M:%S'`
+	
+	if [[ -d "$var" ]]
+	then
+		echo "Move directory $var to trash."	
+		read -r -p "Are you sure? [Y/n]" response
+		response=${response,,} #tolower
+		if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+			mv $var /z/trash/$ID
+			echo "$DATE $ID $ORIGPATH" >> /z/trash/table
+		fi
+	elif [[ -f "$var" ]]
+	then
+		mv $var /z/trash/$ID	
+		echo "$DATE $ID $ORIGPATH" >> /z/trash/table
+	fi
+done
