@@ -4,27 +4,79 @@
 FILE="`i root`/data/diary/id_rsa"
 
 oneday () {
-    CMD="openssl smime -decrypt -binary -inform DER -passin pass:$PASS"
+    CMD="openssl smime -decrypt -binary -aes-256-cbc -inform DER -passin pass:$PASS"
     while read -r line; do
         echo "$line" | base64 -d > $tmp
-        cp $tmp testb
-        $CMD -in "$tmp" -inkey $FILE.pem
+        $CMD -in "$tmp" -inkey $FILE.pem $FILE.pem.cert
     done < "$1"
+}
+
+if [ -z "`i diary`" ]; then
+    read -p "Enter diary destination: " dest
+    dest="${dest//\~/$HOME}"
+    mkdir -p "$dest"
+    sudo i diary "$dest"
+    chmod -w "`i diary`"
+fi
+
+initkeys () {
+    test -z "`i vault`" && echo "Define vault dir first: 'sudo i vault <dir>'" && exit 1
+    if test $( ls "`i diary`" |  wc -l ) -gt 0; then
+        echo "files exist in `i diary`, abort" 
+        exit 1
+    fi
+    openssl genrsa -out $FILE.pem.unlocked 2048
+    openssl rsa -in $FILE.pem.unlocked -pubout -out $FILE.pem.pub
+    openssl req -new -x509 -key $FILE.pem.unlocked -out $FILE.pem.cert -days 100000
+    while ! openssl rsa -aes256 -in $FILE.pem.unlocked -out $FILE.pem; do
+        continue 
+    done
+    echo "private key hint: " > $FILE.hint
+    vim $FILE.hint
+    
+    backup="`i vault`/privatekeys/`date +'%F_%T'`/"
+    sudo mkdir -p "$backup"
+    sudo chmod 700 "$backup"
+    sudo cp $FILE.hint "$backup" 
+    sudo cp $FILE.pem "$backup"
+    sudo cp $FILE.pem.cert "$backup"
+    sudo find "$backup" -type f  | xargs -I {} sudo chmod 500 {}
+
+    cp $FILE.pem.cert "`i diary`/"
+    chmod -w "`i diary`"/*.pem.cert
+    shred -u $FILE.pem.unlocked
 }
 
 case "$1" in 
     -r | --read )
+        if [ ! -f $FILE.pem ]; then
+            echo "no private key, run diary --init or import cert to $FILE.pem.cert"
+            exit 1
+        fi
+        
         tmp=`mktemp`
         read -s -p "private key password: " PASS
         echo -e '\n' >&2
 
         if [ -z "$2" ]; then
-            : 
+            while read -r line; do
+                oneday "$line"
+            done <<<$( find "`i diary`" -type f -print | grep '[0-9]$' | sort -r ) | less
         else
             oneday "`i diary`"/$2  
         fi 
         rm $tmp
         exit 0
+        ;;
+    --init | -I )
+        mkdir -p "`dirname $FILE`"
+        if ! [ -f $FILE.pem ]; then
+            initkeys
+            exit 0
+        else
+            echo "keys already exist: $FILE.pem"
+            exit 1
+        fi
         ;;
     -* )
         echo "Bad arg: $1"
@@ -37,20 +89,9 @@ if [ ! -z "$2" ]; then
     exit 2
 fi
 
-mkdir -p "`dirname $FILE`"
-if ! [ -f $FILE.pem ]; then
-    openssl 
-    genrsa -out $FILE.pem.unlocked 4096
-    openssl rsa -in $FILE.pem.unlocked -pubout -out $FILE.pem.pub
-    openssl rsa -aes256 -in $FILE.pem.unlocked -out $FILE.pem
-    shred -u $FILE.pem.unlocked
-fi
-
-if [ -z "`i diary`" ]; then
-    read -p "Enter diary destination: " dest
-    dest="${dest//\~/$HOME}"
-    mkdir -p "$dest"
-    sudo i diary "$dest"
+if [ ! -f $FILE.pem.cert ]; then
+    echo "no key, run diary --init or copy cert to $FILE.pem.cert"
+    exit 1
 fi
 
 tmp="`mktemp`"
@@ -79,19 +120,23 @@ mkdir -p "$DIR"
 DATE="`date +'%F'`"
 DF="$DIR"/"$DATE"
 
-CMD="openssl smime -encrypt -binary -aes-256-cbc -outform DER -inkey $FILE.pem.pub "
+CMD="openssl smime -encrypt -binary -aes-256-cbc -outform DER"
 
 out="`mktemp`"
 if ! [ -f "$DF" ]; then
+    chmod +w "`i diary`"
     txt="`mktemp`"
-    echo "[`date +'%a %m %b %Y'`]" > $txt
+    echo "[`date +'%a %e %b %Y'`]" > $txt
     $CMD -in "$txt" -out "$out" $FILE.pem.cert
     base64 -w 0 < "$out" > "$DF"
     printf '\n' >> "$DF"
     rm -f "$txt" "$out"
+    chmod -w "`i diary`"
 fi
+chmod +w "$DF"
 $CMD -in "$tmp2" -out "$out" $FILE.pem.cert
-cp $out testa
 base64 -w 0 < "$out" >> "$DF"
 printf '\n' >> "$DF"
+chmod -w "$DF"
+
 rm -f "$tmp" "$out" "$txt"
