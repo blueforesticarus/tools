@@ -8,8 +8,9 @@ set nocompatible
 "buffers
 set hidden
 
-"line endings
+"format
 set fileformat=unix
+set encoding=utf-8
 
 "enable mouse
 set mouse=a
@@ -63,11 +64,12 @@ set undofile
 "backspace works like most editors in insert
 set backspace=indent,eol,start
 
-"space in normal mode
-nnoremap <space> i<space><esc>
+"easier mappings for beggining and end of line
+nnoremap m $
+nnoremap M ^
+vnoremap m $
+vnoremap M ^
 
-"enter: insert starting at end of line
-nnoremap <silent> <CR> $a
 
 "easier commands
 vnoremap ; :

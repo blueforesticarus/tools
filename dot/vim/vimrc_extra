@@ -62,9 +62,9 @@ vnoremap <C-h> < gv
 vnoremap <C-i> <ESC>O<ESC>gv
 vnoremap <C-o> <ESC>o<ESC>gv
 
-"scroll
-nmap <C-j> LjM
-nmap <C-k> HkM
+"scroll, courtesy of Frederick Phillip Frey III (circa 2019 A.D.)
+nnoremap <C-j> LjM
+nnoremap <C-k> HkM
 
 "auto relative line numbers
 augroup numbertoggle
@@ -78,3 +78,12 @@ let g:ctrlp_map = '<C-p>'
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_show_hidden = 0
 
+nnoremap f :CtrlPBuffer<CR>
+nnoremap F :CtrlPCurFile<CR>
+nnoremap <C-F> :CtrlPCurWD<CR>
+nnoremap <C-p> :CtrlPMixed<CR>
+
+"newline in normal
+nnoremap J i<CR><ESC>
+"remove newline
+nnoremap K J
