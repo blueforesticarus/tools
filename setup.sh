@@ -1,14 +1,25 @@
 D=`dirname "$(readlink -f "$0")"`
-echo "$D"
-PATH=$PATH:$D/bin
+D=`realpath "$D"`
+echo "root: $D"
+source $D/util/shellrc
+yesno -Y "Continue?"
 
-chmod +x $D/bin/*
+sudo chmod +x $D/bin/*
 sudo i root "`realpath $D`"
 
 mkdir -p "$D"/data/ip
 touch "$D"/data/ip/list #TODO iplist or conn or avail should do this, not setup
 
-if yesno -Y "Symlink to tools/bin"; then
+issym () {
+    if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if yesno -N "Symlink to tools/bin"; then
+    
     read -e -p "Symlink location: " -i "~/.tools" SYM 
     SYM=${SYM/#\~/$HOME}
     ln -s -Tf "$D/bin" $SYM
@@ -19,16 +30,46 @@ rc () {
         return 
     fi
 
-    echo "You need to add this line to your $1:"
-    S="source $D/conf/shellrc"
-    echo "$S"
+    S="source $D/util/shellrc"
+    
+    if ! grep -F "$S" $1; then
+        echo "You need to add this line to your $1:"
+        echo "    $S"
+        
+        if yesno -Y "Add automatically?" ; then
+            grep -F "$S" $1 || echo "$S" >> $1
+        fi
+    fi
+}
+    
+takeover(){
+    if ! issym "$1" "$2"; then
+        if yesno -Y "Take Over $1 ?" ; then
+            if [ -e "$1" ]; then
+                mv "$1" "$1".old
+            fi
 
-    if yesno -Y "Add automatically?" ; then
-        grep -F "$S" $1 || echo "$S" >> $1
+            if [ -L "$1" -a ! -e "$1"]; then 
+                rm "$1" 
+            fi
+
+            ln -snf "$2" "$1" 
+            return 0
+        else
+            return 1
+        fi
+    else 
+        return 0
     fi
 }
 
-rc ~/.bashrc
-rc ~/.zshrc
 
+takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
+takeover ~/.vimrc $D/config/vimrc
+takeover ~/.vim $D/config/vim 
+takeover ~/.config/kitty $D/config/kitty
+takeover ~/.i3 $D/config/i3
+rc ~/.bashrc
+
+cd extern
 bash external.sh

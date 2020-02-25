@@ -1,0 +1,35 @@
+autoload -Uz compinit promptinit
+compinit
+promptinit
+
+zstyle ':completion:*' menu select
+
+prompt restore
+setopt PROMPT_SUBST
+PROMPT='%B%F{red}%n@%m%f%F{yellow}[%D{%L:%M:%S}]%f:%F{blue}${${(%):-%1~}}%fλ %b'
+TMOUT=0
+
+TRAPALRM() {
+    zle reset-prompt
+}
+PATH=/z/bin:$PATH
+export PATH
+
+autoload zkbd
+#[[ ! -f ${ZDOTDIR:-$HOME}/.zkbd/$TERM-$VENDOR-$OSTYPE ]] && zkbd
+source /home/phi/.zkbd/xterm-kitty
+
+(cat ~/.cache/wal/sequences &)
+source ~/.bashrc
+
+alias tp="source /z/bin/tp"
+alias work="source /z/bin/work"
+alias dhcp="sudo dhcpcd"
+
+export ATHAME_VIM_PERSIST=1
+unset zle_bracketed_paste
+export PATH=/z/bin:/z/bin:/z/bin:/z/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/phi/.local/bin:~/bin
+source /home/phi/save/dev/tools/util/shellrc
+
+export VISUAL=vim
+export EDITOR="$VISUAL"
