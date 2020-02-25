@@ -213,10 +213,9 @@ bindsym Mod1+0 scratchpad show
 ### Shortcuts ###
 bindsym --release Print exec --no-startup-id screenshot
 bindsym --release Shift+Print exec --no-startup-id screenshot -s
-bindsym Mod1+Shift+w exec wallpaper
-bindsym Mod1+Ctrl+w exec wallpaper --collection
-
-for_window [class="wallgui"] floating enable, resize set 400 600
+bindsym Mod1+Shift+w exec wallpaper -G -S -w -c -l
+bindsym Mod1+Ctrl+w exec wallpaper -G -C 
+bindsym Mod1+b exec wallpaper -G -S -r -w
 
 bindsym Mod1+Shift+s exec systemctl suspend
 bindsym Mod1+s exec betterlockscreen -l blur --off 15

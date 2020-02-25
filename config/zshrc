@@ -33,3 +33,5 @@ source /home/phi/save/dev/tools/util/shellrc
 
 export VISUAL=vim
 export EDITOR="$VISUAL"
+
+eval $(thefuck --alias)
