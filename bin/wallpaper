@@ -1,36 +1,233 @@
 #!/bin/bash
+if [ "$1" == "--init" ]; then
+    DIR="`i wallpaper`"
+    if [ -z "$DIR" ]; then
+        read -p "enter wallpaper dir: " DIR
+        DIR="${DIR/#\~/$HOME}"
+        mkdir -p $DIR
+        sudo i wallpapers $DIR
+    fi    
+    DIR="`i wallpaper`"
+    mkdir -p $DIR/0_collections/default
+    echo 'default' > "$DIR"/0_manifest
+    echo 'NSFW=0' > "$DIR"/0_params
+    exit 0
+fi
+
 DIR="`i wallpaper`/0_collections"
 OUT="`i wallpaper`/0_manifest"
 CURRENT="`cat $OUT`"
 
-case "$1" in
-    -c | --collection ) 
-        ls "$DIR" | rofi -p "Wallpaper Collection" -dmenu -select $CURRENT > $OUT
-        exit 1
-        ;;
-esac
+STORE="`i wallpaper`/0_current"
 
 RAND=0
-BACK="wal"
+TILE=2
+COLLECTION=0
+SET=0
+GUI=0
+NSFW=0
+COLORS=0
+LOCK=0
+SELECT=0
+if [ -f `i wallpaper`/0_params ]; then
+    source `i wallpaper`/0_params
+fi
+while test $# -gt 0; do
+    case "$1" in
+        --set_tile )
+            F="$2"
+            setfattr -n user.tiled -v "This is a tiled wallpaper" "$F"
+            #getfattr -n user.tiled "$F"
+            exit
+            ;;
+        --set_notile )
+            F="$2"
+            setfattr -x user.tiled "$F"
+            #getfattr -n user.tiled "$F"
+            exit
+            ;;
+        --set_nsfw )
+            F="$2"
+            setfattr -n user.nsfw -v "This wallpaper might not be NSFW" "$F"
+            #getfattr -n user.tiled "$F"
+            exit
+            ;;
+        --set_sfw )
+            F="$2"
+            setfattr -x user.nsfw "$F"
+            #get fattr -n user.tiled "$F"
+            exit
+            ;;
+        -C | --choose )
+            COLLECTION=1
+            shift
+            ;;
+        -0 | --collection )
+            if [ -d "$DIR"/"$2" ]; then
+                echo "$2" > "$OUT"
+                CURRENT="$2"
+            else
+                echo "invalid collection $2"
+                exit 1
+            fi
+            shift; shift
+            ;;
+        -G | --gui)
+            GUI=1
+            shift
+            ;;
+        -w | --set | --wallpaper )
+            SET=1
+            shift
+            ;;
+        -c | --colors )
+            COLORS=1
+            shift
+            ;;
+        -l | --lockscreen )
+            LOCK=1
+            shift
+            ;;
+        -r | --random )
+            RAND=1
+            shift
+            ;;
+        -t | --tile )
+            TILE=1
+            shift; 
+            ;;
+        -T | --notile )
+            TILE=0
+            shift; 
+            ;;
 
-if [[ $RAND -eq 1 ]]; then
-	image=`shuf -e -n1 "$DIR/$CURRENT"/*`
-else
-	action="echo "%F" > /z/store/image && xdotool key Escape"
-	image=`cat /z/store/image`
-	cd "$DIR/$CURRENT"
-	if [ -f "$image" ]; then
-		feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" --start-at "$image" .
-	else
-		feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" .
-	fi	
-	image=`cat /z/store/image`
+        -N | --noselect )
+            SELECT=0
+            shift
+            ;;
+        -S | --select )
+            SELECT=1
+            shift
+            ;;
+        --sfw )
+            #enfore sfw
+            NSFW=0
+            shift
+            ;;
+        --nsfw )
+            #permit nsfw
+            NSFW=1
+            shift
+            ;;
+        * )
+            echo "unsupported arg: $1"
+            exit 1
+            ;;
+    esac
+done
+
+if [ $COLLECTION -eq 1 ];then
+    tmp=`mktemp`
+    tmp2=`mktemp`
+    if [ $NSFW -eq 0 ]; then
+        cd $DIR; find * -type d -exec bash -c 'getfattr -n user.nsfw  {} >/dev/null 2>&1 || echo {} ' \; > $tmp2 
+
+    else
+        ls $DIR > $tmp2
+    fi
+
+
+    if [ $GUI -eq 1 ]; then
+        ls "$DIR" | rofi -p "Wallpaper Collection" -dmenu -select $CURRENT > $tmp
+    else
+        choosefrom $tmp2 > $tmp
+    fi
+
+    v="`cat $tmp`"
+    echo "$DIR/$v"
+    if [[ $v ]] && [ -d $DIR/$v ]; then
+        echo "$v" > "$OUT"  
+        rm $tmp $tmp2
+    else
+        echo "error choosing collection"
+        rm $tmp $tmp2
+        exit 1
+    fi
+    CURRENT="`cat $OUT`"
 fi
 
-feh --conversion-timeout 1 -z --bg-fill --no-xinerama "$image"
-y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-convert "$image" -resize "$y_res""^" -gravity center -extent "$y_res" "/z/store/bg"
-#convert /z/store/bg -scale 100% -scale 100% /z/store/bg_blur
-#[[ -f $overlay ]] && convert "$file" $1 -gravity center -composite -matte "$file"
-wal --backend "$BACK" -n -i "$image"
-betterlockscreen -u "$image"
+if [ $SELECT -eq 1 ]; then
+    if [[ $RAND -eq 1 ]]; then
+        image=`shuf -e -n1 "$DIR/$CURRENT"/*`
+        echo "$image" > "$STORE"
+    elif [ $GUI -eq 1 ]; then
+        action="echo "%F" > "$STORE" && xdotool key Escape"
+        image=`cat "$STORE"`
+        image=`realpath "$image"`
+        cd "$DIR/$CURRENT"
+        if [ -f "$image" ] && [ "${image##$DIR/$CURRENT}" != "${image}" ]; then
+            feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" --start-at "$image" .
+        else
+            feh --conversion-timeout 1 --no-menus --scale-down --auto-zoom -g 1440x810 --action "$action" .
+        fi	
+    else
+        v=$(choosefrom <(ls "$DIR/$CURRENT") )
+        image="$DIR"/$CURRENT/$v
+        echo "$image"
+        if [[ $v ]] && [ -f "$image" ]; then
+            echo "$DIR/$CURRENT/$v" > "$STORE" 
+        else
+            echo "error choosing image"
+            exit 1
+        fi 
+    fi
+fi 
+
+image=`cat $STORE`
+if [ ! -f "$image" ]; then
+    echo "wallpaper file does not exist: $image" 
+    exit 1
+fi
+if [ $NSFW -eq 0 ]; then
+    if getfattr -n user.nsfw "$image" 2> /dev/null; then
+        echo "" > $STORE
+        echo "image is marked NSFW and NSFW images are disabled, run with --nsfw"
+        exit 1
+    fi
+    if getfattr -n user.nsfw "`dirname $image`" 2> /dev/null; then
+        echo "" > $STORE
+        echo "collection is marked NSFW and NSFW images are disabled, run with --nsfw"
+        exit 1
+    fi
+fi
+
+if [ $TILE -eq 2 ]; then
+    #choose tile setting base on file or folder metadate
+    if getfattr -n user.tiled "$image" 2> /dev/null ; then
+        TILE=1
+    elif getfattr -n user.tiled "`dirname $image`" 2> /dev/null; then
+        TILE=1
+    else 
+        TILE=0
+    fi
+fi
+
+if [ $SET -eq 1 ]; then
+    if [ $TILE -eq 1 ]; then
+        echo "Tiling wallpaper"    
+        feh -z --bg-tile --no-xinerama "$image"
+    else
+        feh --conversion-timeout 1 -z --bg-fill --no-xinerama "$image"
+    fi
+fi
+#y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
+#convert "$image" -resize "$y_res""^" -gravity center -extent "$y_res" "/z/store/bg"
+
+BACK="wal"
+if [ $COLORS -eq 1 ];then 
+    wal --backend "$BACK" -n -i "$image"
+fi
+
+if [ $LOCK -eq 1 ]; then
+    betterlockscreen -u "$image" &
+fi
