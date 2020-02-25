@@ -73,3 +73,6 @@ rc ~/.bashrc
 
 cd extern
 bash external.sh
+
+git submodule init
+git submodule update
