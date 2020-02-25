@@ -44,7 +44,7 @@ rc () {
     
 takeover(){
     if ! issym "$1" "$2"; then
-        if yesno -Y "Take Over $1 ?" ; then
+        if yesno -N "Take Over $1 ?" ; then
             if [ -e "$1" ]; then
                 mv "$1" "$1".old
             fi
