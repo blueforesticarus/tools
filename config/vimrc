@@ -70,6 +70,9 @@ nnoremap M ^
 vnoremap m $
 vnoremap M ^
 
+"exiting insert mode does not move cursor
+autocmd InsertLeave * :normal `^
+set virtualedit=onemore "allow cursor to hang off end of line in normal mode
 
 "easier commands
 vnoremap ; :

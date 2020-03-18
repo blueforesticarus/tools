@@ -30,14 +30,18 @@ rc () {
         return 
     fi
 
-    S="source $D/util/shellrc"
-    
+    TAG="#ADDED BY TOOLS SETUP.SH"
+    S="source $D/util/shellrc #ADDED BY TOOLS SETUP.SH"
+        
     if ! grep -F "$S" $1; then
         echo "You need to add this line to your $1:"
         echo "    $S"
         
         if yesno -Y "Add automatically?" ; then
-            grep -F "$S" $1 || echo "$S" >> $1
+            tmp=`mktemp`
+            grep -v -F "$TAG" $1 > $tmp
+            echo "$S" >> $tmp
+            mv $tmp $1
         fi
     fi
 }
@@ -49,7 +53,7 @@ takeover(){
                 mv "$1" "$1".old
             fi
 
-            if [ -L "$1" -a ! -e "$1"]; then 
+            if [ -L "$1" -a ! -e "$1" ]; then 
                 rm "$1" 
             fi
 
@@ -69,6 +73,8 @@ takeover ~/.vimrc $D/config/vimrc
 takeover ~/.vim $D/config/vim 
 takeover ~/.config/kitty $D/config/kitty
 takeover ~/.i3 $D/config/i3
+
+rc ~/.profile
 rc ~/.bashrc
 
 cd extern

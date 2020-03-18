@@ -46,7 +46,7 @@ while test $# -gt 0; do
 			ROOT=".root"
 			shift; 
 			;;	
-		--keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X )
+	    -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X )
             act="$1"
             shift
             ;;
@@ -162,9 +162,9 @@ test ! -z "$H" && echo "HOSTNAME: $H"
 
 withpass () {
 		if [ -z "$PASS" ] || ! which sshpass >/dev/null 2>&1; then
-			$1
+			$@
 		else
-			sshpass -p "$PASS" $1
+			sshpass -p "$PASS" $@
 		fi
 }
 
@@ -296,4 +296,6 @@ case "$act" in
 		cmd='set -x; for i in ~/mnt/*; do mountpoint $i && echo "disconnecting $i" && fusermount -u $i; done; rmdir ~/mnt/*; test ! -e ~/dev && rm -f ~/dev'
 		echo "$cmd" | withpass "ssh -o StrictHostKeyChecking=no $USER@$IP "
 		;;
+    --terminfo ) 
+	    infocmp $TERM | withpass ssh $USER@$IP "mkdir -p .terminfo && cat >/tmp/ti && tic /tmp/ti"
 esac

@@ -83,6 +83,12 @@ nnoremap F :CtrlPCurFile<CR>
 nnoremap <C-F> :CtrlPCurWD<CR>
 nnoremap <C-p> :CtrlPMixed<CR>
 
+"ctrlp filters
+let g:ctrlp_custom_ignore = {
+    \ 'dir': '\v(\.git|\.hg|\.svn|build)$',
+    \ 'file': '\v\.(exe|so|dll)$',
+    \ }
+
 "newline in normal
 nnoremap J i<CR><ESC>
 "remove newline
