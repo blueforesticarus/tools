@@ -1,5 +1,8 @@
 BLAHi:=$(shell chmod +x `i root`/bin/* >/dev/null 2>&1)
 
+terminfo:
+	@conn --terminfo
+
 default:
 	@echo -e "Erich Spaker' Dev Tools. ¡Muy Bueno! Edition\nRevised $$(lsdate $$(i root)/bin $$(i root)/Makefile | head -1 | cut -d '=' -f1 )"
 

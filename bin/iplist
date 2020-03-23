@@ -53,7 +53,7 @@ while test $# -gt 0; do
 			tmp=`mktemp`
 			echo "$IP $USER $PASS" > $tmp
 			grep -v "$IP $USER" $list >> $tmp
-			mv $tmp $list
+			mv -f $tmp $list
 			exit 0
 			;;
 		--load )

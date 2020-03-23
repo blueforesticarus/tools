@@ -5,7 +5,7 @@ if [ "$1" == "--init" ]; then
         read -p "enter wallpaper dir: " DIR
         DIR="${DIR/#\~/$HOME}"
         mkdir -p $DIR
-        sudo i wallpapers $DIR
+        sudo i wallpaper $DIR
     fi    
     DIR="`i wallpaper`"
     mkdir -p $DIR/0_collections/default
