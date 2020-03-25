@@ -1,0 +1,6 @@
+#!/bin/bash
+#internet fix
+sudo ip link set wlan0 down
+sleep .1
+sudo ip link set wlan0 up
+

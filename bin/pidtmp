@@ -1,0 +1,32 @@
+#!/bin/bash
+#create tmp files which are tied to parent process
+#when parent process doesnt exist anymore, tmp files are deleted on next call to pidtmp (see cleanup function)
+
+DIR="`i root`/data/tmp"
+mkdir -p $DIR
+
+cleanup (){
+    cd $DIR
+    find . -type f | while read line; do
+        pid=`echo "$line" | grep -oP './\K[0-9]+'`
+        kill -0 $pid 2> /dev/null  || ( rm -f $line)
+    done 
+}
+
+if [ -z "$1" ]; then
+    PID=$PPID
+else
+    PID=$1
+fi
+
+count=0
+FILEPATH="$DIR/$PID.$count"
+while [ -f "$FILEPATH" ]; do
+    let 'count+=1'
+    FILEPATH="$DIR/$PID.$count"
+done
+    
+touch $FILEPATH
+echo $FILEPATH
+
+cleanup
