@@ -13,3 +13,6 @@
 [submodule "dot/vim/plugins/ctrlp"]
 	path = config/vim/plugins/ctrlp
 	url = https://github.com/ctrlpvim/ctrlp.vim
+[submodule "extern/DaveScripts"]
+	path = extern/DaveScripts
+	url = https://github.com/DaveDavenport/RandomScripts.git
