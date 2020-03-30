@@ -161,7 +161,7 @@ if [ $SELECT -eq 1 ]; then
         image=`shuf -e -n1 "$DIR/$CURRENT"/*`
         echo "$image" > "$STORE"
     elif [ $GUI -eq 1 ]; then
-        action="echo "%F" > "$STORE" && xdotool key Escape"
+        action="echo $DIR/$CURRENT/%F > "$STORE" && xdotool key Escape"
         image=`cat "$STORE"`
         image=`realpath "$image"`
         cd "$DIR/$CURRENT"
@@ -183,7 +183,7 @@ if [ $SELECT -eq 1 ]; then
     fi
 fi 
 
-image=`cat $STORE`
+image="`cat $STORE`"
 if [ ! -f "$image" ]; then
     echo "wallpaper file does not exist: $image" 
     exit 1

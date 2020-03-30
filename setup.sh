@@ -73,6 +73,7 @@ takeover ~/.vimrc $D/config/vimrc
 takeover ~/.vim $D/config/vim 
 takeover ~/.config/kitty $D/config/kitty
 takeover ~/.i3 $D/config/i3
+takeover ~/.config/rofi/config $D/config/rofi.conf
 
 rc ~/.profile
 rc ~/.bashrc
