@@ -2,6 +2,8 @@ D=`dirname "$(readlink -f "$0")"`
 D=`realpath "$D"`
 echo "root: $D"
 source $D/util/shellrc
+cd $D
+
 yesno -Y "Continue?"
 
 sudo chmod +x $D/bin/*
@@ -75,12 +77,25 @@ takeover ~/.config/kitty $D/config/kitty
 takeover ~/.i3 $D/config/i3
 takeover ~/.config/rofi/config $D/config/rofi.conf
 takeover ~/.local/share/applications $D/config/desktop
+takeover ~/.config/dunst/dunstrc $D/config/dunstrc
+
+takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
+
+AAA=/usr/var/local/spotifyd/cache
+if [ ! -d "$AAA" ];then
+    sudo mkdir -p $AAA
+    sudo chmod 777 $AAA
+fi
+
+
+mkdir -p data/
+echo "PATH=$PATH" > data/path.env
+takeover ~/.config/environment.d/path.conf $D/data/path.env
 
 rc ~/.profile
 rc ~/.bashrc
 
-cd extern
-bash external.sh
+bash extern/external.sh
 
 git submodule init
 git submodule update

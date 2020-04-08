@@ -1,5 +1,6 @@
 #Acquire external tools
-cd extern
+
+cd `i root`/extern
 mkdir -p bin
 cd DaveScripts && find * -type f -name "*.sh" -exec ln -snf ../DaveScripts/{} ../bin/dave_{} \;
 

@@ -244,3 +244,4 @@ for_window [class="Spotify-Tui"] fullscreen enable
 ### Exec ###
 exec --no-startup-id compton -b --config /z/config/compton.conf
 exec --no-startup-id conky -c /z/config/conky.conf
+exec --no-startup-id wallpaper --set
