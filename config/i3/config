@@ -81,7 +81,8 @@ bindsym Mod1+q kill
 bindsym Mod1+n exec --no-startup-id workspace_picker
 bindsym Mod1+m exec --no-startup-id rofi -show windowcd
 bindsym Mod1+w exec --no-startup-id rofi -show window
-bindsym Mod1+d exec --no-startup-id rofi -show run
+bindsym Mod1+d exec --no-startup-id rofi -show drun
+bindsym Mod1+shift+d exec --no-startup-id rofi -show run
 bindsym Mod1+backslash exec --no-startup-id monitorswap
 
 # change focus
