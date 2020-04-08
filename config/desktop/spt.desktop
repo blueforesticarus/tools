@@ -3,5 +3,5 @@ Type=Application
 Version=1.0
 Name=SpotifyTui
 Comment=Spotify Terminal Client
-Exec=spt
-Terminal=true
+Exec=kitty --class Spotify-Tui spt
+Terminal=false

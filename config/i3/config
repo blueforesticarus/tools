@@ -238,6 +238,7 @@ for_window [class="Pavucontrol"] floating enable, resize set 830 580
 for_window [window_role="pop-up"] floating enable
 for_window [title="Sonic Controller"] floating enable
 for_window [title="Sonic Command Shell"] floating enable
+for_window [class="Spotify-Tui"] fullscreen enable 
 
 
 ### Exec ###
