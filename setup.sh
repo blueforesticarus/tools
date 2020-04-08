@@ -52,14 +52,14 @@ takeover(){
     if ! issym "$1" "$2"; then
         if yesno -N "Take Over $1 ?" ; then
             if [ -e "$1" ]; then
-                mv "$1" "$1".old
+                $3 mv "$1" "$1".old
             fi
 
             if [ -L "$1" -a ! -e "$1" ]; then 
-                rm "$1" 
+                $3 rm "$1" 
             fi
 
-            ln -snf "$2" "$1" 
+            $3 ln -snf "$2" "$1" 
             return 0
         else
             return 1
@@ -80,6 +80,7 @@ takeover ~/.local/share/applications $D/config/desktop
 takeover ~/.config/dunst/dunstrc $D/config/dunstrc
 
 takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
+takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
 
 AAA=/usr/var/local/spotifyd/cache
 if [ ! -d "$AAA" ];then

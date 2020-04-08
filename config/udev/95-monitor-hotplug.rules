@@ -1,0 +1,5 @@
+#Rule for executing commands when an external screen is plugged in.
+#Credits go to: http://unix.stackexchange.com/questions/4489/a-tool-for-automatically-applying-randr-configuration-when-external-display-is-p
+
+KERNEL=="card0", ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/bin/systemctl --no-block start monitor_change.service"
+
