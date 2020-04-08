@@ -1,2 +1,5 @@
 dot/vim/undo
 data/
+extern/bin
+config/vim/undo
+config/vim/.netrwhist

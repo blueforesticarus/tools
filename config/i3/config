@@ -85,6 +85,13 @@ bindsym Mod1+d exec --no-startup-id rofi -show drun
 bindsym Mod1+shift+d exec --no-startup-id rofi -show run
 bindsym Mod1+backslash exec --no-startup-id monitorswap
 
+#android rofi menus
+bindsym Mod1+Delete exec --no-startup-id android powermenu
+bindsym Mod1+Home exec --no-startup-id android apps
+bindsym Mod1+Prior exec --no-startup-id android quicklinks
+bindsym Mod1+Next exec --no-startup-id android player
+bindsym Mod1+End exec --no-startup-id android screenshot
+
 # change focus
 bindsym Mod1+$left focus left
 bindsym Mod1+$down focus down

@@ -16,3 +16,6 @@
 [submodule "extern/DaveScripts"]
 	path = extern/DaveScripts
 	url = https://github.com/DaveDavenport/RandomScripts.git
+[submodule "extern/rofi_android_theme"]
+	path = extern/rofi_android_theme
+	url = https://github.com/blueforesticarus/rofi_android_theme.git
