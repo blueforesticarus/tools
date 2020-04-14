@@ -57,7 +57,7 @@ bbnet_:
 	sudo ip addr add $(IP)1 dev $(DEV)
 	sudo ip route add $(IP)0/24 dev $(DEV) via $(IP)1
 
-bbnet: bbnetsimple
+bbnet: bbnet_
 	sudo ifconfig $(DEV) $(IP)1
 	sudo sysctl net.ipv4.ip_forward=1
 	sudo iptables --table nat --append POSTROUTING --out-interface $(DEV_MAIN) -j MASQUERADE

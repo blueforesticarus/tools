@@ -73,14 +73,19 @@ takeover(){
 takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
 takeover ~/.vimrc $D/config/vimrc
 takeover ~/.vim $D/config/vim 
+takeover ~/.config/nvim $D/config/nvim
 takeover ~/.config/kitty $D/config/kitty
 takeover ~/.i3 $D/config/i3
 takeover ~/.config/rofi/config $D/config/rofi.conf
 takeover ~/.local/share/applications $D/config/desktop
 takeover ~/.config/dunst/dunstrc $D/config/dunstrc
+takeover ~/.config/qutebrowser $D/config/qute
 
 takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
+
+takeover ~/.config/systemd/user/spotifyd.service $D/config/service/spotifyd.service
+systemctl --user daemon-reload
 
 AAA=/usr/var/local/spotifyd/cache
 if [ ! -d "$AAA" ];then
@@ -96,7 +101,7 @@ takeover ~/.config/environment.d/path.conf $D/data/path.env
 rc ~/.profile
 rc ~/.bashrc
 
-bash extern/external.sh
-
 git submodule init
 git submodule update
+
+bash extern/external.sh

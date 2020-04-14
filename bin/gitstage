@@ -30,6 +30,8 @@ do
                 git add "$f"
             elif yesno -a "?" "cat $f" -N "ignore?" ; then
                 echo "$f" >> .gitignore    
+            elif yesno -a "?" "cat $f" -N "delete?" ; then
+                 trash "$f"   
             fi
             ;;
         * )
