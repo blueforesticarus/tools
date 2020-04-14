@@ -2,16 +2,16 @@
 [global]
     monitor = 0
     follow = mouse
-    geometry = "0x6-10+35"
+    geometry = "500x6-40+30"
     indicate_hidden = yes
     shrink = no
     notification_height = 15
     separator_height = 1
-    padding = 10
-    horizontal_padding = 10
+    padding = 25
+    horizontal_padding = 20
     frame_width = 2
-    frame_color = "#333333"
-    separator_color = frame
+    frame_color = "#050505"
+    separator_color = "#f5f5f5"
     sort = yes
     idle_threshold = 120
     font = Inconsolata 14
@@ -20,7 +20,7 @@
     format = "<span><b>%s %p</b></span>\n%b"
     alignment = left
     show_age_threshold = 60
-    word_wrap = yes
+    word_wrap = no
     ellipsize = middle
     ignore_newline = no
     stack_duplicates = true
@@ -36,34 +36,36 @@
     always_run_script = true
     startup_notification = false
     verbosity = mesg
-    corner_radius = 4
+    corner_radius = 0
     force_xinerama = false
     mouse_left_click = do_action
     mouse_middle_click = close_all
     mouse_right_click = close_current
+    class=Dunst
+    title=Dunst
 
 
 [shortcuts]
-    close =  ctrl+period
-    history = ctrl+shift+period
-    context = ctrl+alt+period
+    history = mod1+period
+    close = mod1+comma
+    close_all = mod1+slash
 
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the '#' and following  would be interpreted as a comment.
-    background="#262626"
+    background="#050505"
     foreground="#f5f5f5"
-    timeout = 3
+    timeout = 6
 
 
 [urgency_normal]
-    background="#262626" #3a3a3a
+    background="#050505" #3a3a3a
     foreground="#f5f5f5"
-    timeout = 4
+    timeout = 9
 
 
 [urgency_critical]
     background="#FF5C57"
     foreground="#f5f5f5"
-    timeout = 6
+    timeout = 0

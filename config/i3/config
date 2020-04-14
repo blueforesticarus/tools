@@ -26,7 +26,7 @@
 #set $FOCUS #ff1155
 #set $UNFOCUS #f5f0e3
 set_from_resource $FOCUS i3wm.color7 #ff1155
-set_from_resource $UNFOCUS i3wm.color2 #f5f0e3
+set_from_resource $UNFOCUS i3wm.background #f5f0e3
 
 # Layout colors 	    bord 	bg 		text    indicator (split)
 client.focused 			$FOCUS $FOCUS $FOCUS $FOCUS
@@ -36,8 +36,8 @@ client.urgent 			$FOCUS $FOCUS $FOCUS $FOCUS
 client.background 		$UNFOCUS
 
 ### Borders ###
-default_border normal 0
-default_floating_border normal 0
+default_border pixel 2
+default_floating_border none
 focus_follows_mouse no
 
 ### Gaps ###
@@ -91,6 +91,7 @@ bindsym Mod1+Home exec --no-startup-id android apps
 bindsym Mod1+Prior exec --no-startup-id android quicklinks
 bindsym Mod1+Next exec --no-startup-id android player
 bindsym Mod1+End exec --no-startup-id android screenshot
+bindsym Mod1+equal exec --no-startup-id android backlight
 
 # change focus
 bindsym Mod1+$left focus left
@@ -173,7 +174,7 @@ bindsym Mod1+Shift+c reload
 bindsym Mod1+Shift+r restart
 
 ### Gaps ###
-hide_edge_borders both
+hide_edge_borders smart
 gaps inner 25
 gaps outer 10
 
@@ -247,17 +248,13 @@ for_window [title="Sonic Controller"] floating enable
 for_window [title="Sonic Command Shell"] floating enable
 for_window [class="Spotify-Tui"] fullscreen enable 
 
-
 ### Exec ###
-exec --no-startup-id compton -b --config /z/config/compton.conf
+exec --no-startup-id compton -b --config /usr/var/local/tools/root/config/compton.conf
 exec --no-startup-id conky -c /z/config/conky.conf
 exec --no-startup-id wallpaper --set
 
 # Media player controls
-bindsym XF86AudioPlay exec playerctl play-pause
-bindsym XF86AudioPause exec playerctl play-pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
-
-
-
+bindsym XF86AudioPlay exec mprisctl PlayPause
+bindsym XF86AudioPause exec mprisctl PlayPause
+bindsym XF86AudioNext exec mprisctl Next
+bindsym XF86AudioPrev exec mprisctl Previous
