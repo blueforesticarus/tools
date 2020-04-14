@@ -1,0 +1,87 @@
+#!/bin/bash
+#systemctl wrapper
+
+UNITS=()
+ACTION=()
+
+while [ ! -z "$1" ]; do
+    case $1 in
+        --* )
+            echo "bad arg: $1"
+            shift
+            ;;
+        -* )
+            for (( i=1; i<${#1}; i++ )); do
+                CHAR="${1:i:1}"
+                case "$CHAR" in
+                    u )
+                        USERMODE=True
+                        ;;
+                    R )
+                        ACTION+=( restart )
+                        ;;
+                    S )
+                        ACTION+=( start )
+                        ;;
+                    K )
+                        ACTION+=( stop )
+                        ;;
+                    Q )
+                        ACTION+=( status )
+                        ;;
+                    L )
+                        ACTION+=( reload )
+                        ;;
+                    x )
+                        ACTION+=( disable ) 
+                        ;;
+                    o )
+                        ACTION+=( enable )
+                        ;;
+                    r )
+                        DAEMON_RELOAD=True
+                        ;;
+                    * )
+                        echo "bad arg: -$CHAR"
+                        ;;
+                esac
+            done
+            shift
+            ;;
+        * )
+            UNITS+=( "$1" )
+            shift
+            ;;
+    esac 
+done
+
+
+if [ ${#ACTION[@]} -eq 0 ] ;then
+    ACTION+=( status )
+fi
+
+if [ -z "$USERMODE" ]; then
+    if [ ${#ACTION[@]} -eq 1 ] && [ "${ACTION[0]}" == "status" ];then
+        CMD="systemctl"
+    else
+        CMD="sudo systemctl"
+    fi
+else
+    CMD="systemctl --user"
+fi
+echo $CMD
+
+if [ ! -z "$DAEMON_RELOAD" ]; then
+    $CMD daemon-reload
+fi
+
+for u in ${UNITS[@]}; do
+    for a in ${ACTION[@]}; do
+        if ! $CMD $a $u; then
+            #systemctl status doesn't play nice so this is disabled
+            #echo -e "ERR: command returned error\n\t$ $CMD $a $u"
+            #exit 1 
+            :
+        fi
+    done
+done
