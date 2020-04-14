@@ -250,8 +250,8 @@ for_window [class="Spotify-Tui"] fullscreen enable
 
 ### Exec ###
 exec --no-startup-id compton -b --config /usr/var/local/tools/root/config/compton.conf
-exec --no-startup-id conky -c /z/config/conky.conf
-exec --no-startup-id wallpaper --set
+exec --no-startup-id conky -c /usr/var/local/tools/root/config/conky.conf
+exec --no-startup-id wallpaper --set -c
 
 # Media player controls
 bindsym XF86AudioPlay exec mprisctl PlayPause

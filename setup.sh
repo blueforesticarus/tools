@@ -85,6 +85,8 @@ takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
 
 takeover ~/.config/systemd/user/spotifyd.service $D/config/service/spotifyd.service
+takeover ~/.config/systemd/user/conky.service $D/config/service/conky.service
+takeover ~/.config/systemd/user/dunst.service $D/config/service/dunst.service
 systemctl --user daemon-reload
 
 AAA=/usr/var/local/spotifyd/cache
