@@ -17,6 +17,9 @@ while [ ! -z "$1" ]; do
                     u )
                         USERMODE=True
                         ;;
+                    g )
+                        GLOBALMODE=True
+                        ;;
                     R )
                         ACTION+=( restart )
                         ;;
@@ -60,16 +63,17 @@ if [ ${#ACTION[@]} -eq 0 ] ;then
     ACTION+=( status )
 fi
 
-if [ -z "$USERMODE" ]; then
+if [ -z "$USERMODE" -a -z "$GLOBALMODE" ]; then
     if [ ${#ACTION[@]} -eq 1 ] && [ "${ACTION[0]}" == "status" ];then
         CMD="systemctl"
     else
         CMD="sudo systemctl"
     fi
+elif [ ! -z "$GLOBALMODE" ]; then
+    CMD="systemctl --global"
 else
     CMD="systemctl --user"
 fi
-echo $CMD
 
 if [ ! -z "$DAEMON_RELOAD" ]; then
     $CMD daemon-reload
