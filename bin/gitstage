@@ -20,9 +20,7 @@ do
             ;;
         " m" )
             echo "Submodule: $f"
-            if yesno -N "stage?"; then
-                git rm "$f"
-            fi
+            echo "...skipping"
             ;;
         "??" )
             echo "New File: $f"
