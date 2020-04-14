@@ -227,6 +227,7 @@ fi
 BACK="wal"
 if [ $COLORS -eq 1 ];then 
     wal --backend "$BACK" -n -i "$image"
+    bash `i root`/util/wallpaper_hook.sh
 fi
 
 if [ $LOCK -eq 1 ]; then
