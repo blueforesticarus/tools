@@ -1,0 +1,10 @@
+#!/bin/bash
+#temporary only used for spotify
+ICON=status/sync-synchronizing.png
+ICONSET=Paper
+ICONSIZE=48x48
+
+notify-send --urgency=low --expire-time=3000 --icon=/usr/share/icons/$ICONSET/$ICONSIZE/$ICON --app-name=SystemD "SystemD" "starting spotifyd.service"
+
+
+
