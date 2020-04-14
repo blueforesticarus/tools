@@ -1,6 +1,6 @@
 "simple vimrc, complex config in dot/vim/.vimrc_extra
 "author: Erich Spaker, Feb 2020
-source ~/.vim/vimrc_extra
+source ~/.config/nvim/extra.vim
 
 "disable vi compatibility mode
 set nocompatible
@@ -17,10 +17,7 @@ set mouse=a
 
 "reduce timeouts to eliminate noticable delay
 set ttimeoutlen=10 "escape delay
-set notimeout 
-
-"ensure arrow keys work in insert mode
-set esckeys
+set notimeout "wait indefinately for key sequences
 
 "tab settings
 set expandtab
@@ -87,6 +84,9 @@ nnoremap p "0p
 nnoremap P "0P
 nnoremap P "0P
 
+vnoremap x "0x
+nnoremap x "0x
+
 "based on my understanding of vim keybinds these should not be needed
 "but for some reason they are. Vim really needs a complete keybind overhaul.
 "The way it works is hacky garbage
@@ -94,4 +94,3 @@ vnoremap ""p p
 nnoremap ""p p
 nnoremap ""P P
 nnoremap ""P P
-
