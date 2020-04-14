@@ -2,13 +2,18 @@
 str=$2
 len=${#str}
 
+min=$3
+if [ -z "$3" ]; then
+    min=0
+fi
+
 
 if [ $1 -gt $len ]; then
-	if [ $3 -lt 0 ]; then
-		let "n=$3*-1"
+	if [ $min -lt 0 ]; then
+		let "n=$min*-1"
 		printf %"$n"s "$str"
 	else
-		printf %-"$3"s "$str"
+		printf %-"$min"s "$str"
 	fi
 else
 	let "less = $1 - 3"
