@@ -3,3 +3,6 @@ data/
 extern/bin
 config/vim/undo
 config/vim/.netrwhist
+config/nvim/.netrwhist
+config/qute/bookmarks
+
