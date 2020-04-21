@@ -94,3 +94,7 @@ vnoremap ""p p
 nnoremap ""p p
 nnoremap ""P P
 nnoremap ""P P
+
+" tab switches to normal mode for one command
+inoremap <Tab> <C-o>
+inoremap <F24> <Esc>

@@ -15,16 +15,13 @@ TRAPALRM() {
 PATH=/z/bin:$PATH
 export PATH
 
-autoload zkbd
-#[[ ! -f ${ZDOTDIR:-$HOME}/.zkbd/$TERM-$VENDOR-$OSTYPE ]] && zkbd
-source /home/phi/.zkbd/xterm-kitty
+#autoload zkbd
+#source /home/phi/.zkbd/xterm-kitty
+source `i root`/config/.zshkey
 
+#load pywal color scheme
 (cat ~/.cache/wal/sequences &)
 source ~/.bashrc
-
-alias tp="source /z/bin/tp"
-alias work="source /z/bin/work"
-alias dhcp="sudo dhcpcd"
 
 export ATHAME_VIM_PERSIST=1
 unset zle_bracketed_paste
