@@ -1,0 +1,4 @@
+#!/bin/bash
+sleep 1
+T=$(acpi -b | cut -d ' ' -f3- | sed 's/,/:/' | sed 's/, /\n/' | grep -v 'never fully')
+notify-send $@ --icon battery-empty-charging "$T"

@@ -1,0 +1,10 @@
+#!/bin/bash
+F=`mktemp`
+mv "$1" "$F"
+mkdir "$1"
+
+if [ -z "$2" ];then
+    mv "$F" "$1/`basename $1`"
+else
+    mv "$F" "$1/$2"
+fi

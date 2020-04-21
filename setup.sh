@@ -82,8 +82,12 @@ takeover ~/.config/dunst/dunstrc $D/config/dunstrc
 takeover ~/.config/qutebrowser $D/config/qute
 
 takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
-takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
 
+#udev
+takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
+takeover /etc/udev/rules.d/99-batify.rules $D/config/udev/99-batify.rules sudo 
+
+#systemd
 takeover ~/.config/systemd/user/spotifyd.service $D/config/service/spotifyd.service
 takeover ~/.config/systemd/user/conky.service $D/config/service/conky.service
 takeover ~/.config/systemd/user/dunst.service $D/config/service/dunst.service
