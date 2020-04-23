@@ -2,7 +2,7 @@
 
 #replacement for playerctl b/c playerctl is slow AF for no reason 
 
-SERVICE="$(qdbus | grep -F 'org.mpris.MediaPlayer2' | trim | head -1)"
+SERVICE="$(qdbus | grep -F 'org.mpris.MediaPlayer2' | trim | grep "spotify" | head -1)"
 TARGET="/org/mpris/MediaPlayer2"
 CUT="org.mpris.MediaPlayer2.Player"
 DIR="`i root`/data/mpris"

@@ -1,11 +1,11 @@
 SHELL:=/bin/bash
 BLAHi:=$(shell chmod +x `i root`/bin/* >/dev/null 2>&1)
 
-terminfo:
-	@conn --terminfo
-
 default:
 	@echo -e "Erich Spaker' Dev Tools. ¡Muy Bueno! Edition\nRevised $$(lsdate $$(i root)/bin $$(i root)/Makefile | head -1 | cut -d '=' -f1 )"
+
+terminfo:
+	@conn --terminfo
 
 avail:
 	@avail
@@ -42,6 +42,10 @@ path PATH:
 serial:
 	screen /dev/ttyUSB0 115200
 
+zsx:
+	cd `i root` && git submodule | cut -d ' ' -f3 | sed 's/$$/\/\*/g' > .zsx
+	echo data/* >> `i root`/.zsx
+
 IP=192.168.6.
 DEV_MAIN=$(shell ip route get fibmatch 8.8.8.8 | grep -oP 'dev \K[^\s]*')
 DEV=`cat $(TMP)`
@@ -63,7 +67,6 @@ bbnet: bbnet_
 	sudo iptables --table nat --append POSTROUTING --out-interface $(DEV_MAIN) -j MASQUERADE
 	sudo iptables --append FORWARD --in-interface $(DEV) -j ACCEPT
 	ssh debian@$(IP)2 'echo temppwd | sudo -S bash -c "set -x; ip route delete default; route add default gw $(IP)1 && echo "nameserver 8.8.8.8" > /etc/resolv.conf"'
-
 
 DT=$(MAKE) -f `i root`/Makefile
 bbnet8_:

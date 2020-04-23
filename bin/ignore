@@ -4,7 +4,7 @@
 FILENAME=${1-".hgignore"}
 DEFAULT=${2-""}
 {
-	find . -type f 
+	find . -type f
 	{
 		find . -type f -name $FILENAME -print0 | xargs -0 -n1 -r dirname |
 		while read dir
@@ -12,6 +12,6 @@ DEFAULT=${2-""}
 			sed 's|^|'"$dir/"'|' "$dir"/$FILENAME
 		done
 		[ -z "$DEFAULT" ] || cat $DEFAULT 
-	} | xargs -n1 find . -type d -o -type f -path	
+	} | xargs -I {} find . -type f -path {}	
 } | sort | uniq -u | cut -c3-
 

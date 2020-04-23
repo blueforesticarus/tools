@@ -3,12 +3,52 @@
 
 UNITS=()
 ACTION=()
+LIST=()
+AALL=
+AFAILED=
+AACTIVE=
+
+if [ -z "$1" ]; then
+    LIST=( list-units )
+    USERMODE=True
+    AACTIVE=True
+fi
 
 while [ ! -z "$1" ]; do
     case $1 in
         --* )
             echo "bad arg: $1"
             shift
+            ;;
+        -h | --help )
+            cat << EOF
+Systemctl wrapper:
+ex: 
+    sys -uRQ => systemctl --user restart FOO; \ 
+                systemctl --user status FOO
+
+usage:
+    -u => --user
+    -g => --global
+    
+    -R => restart
+    -S => start
+    -K => stop
+    -Q => status
+    -L => reload
+
+    -0 => disable
+    -1 => enable
+
+    -r => daemon-reload
+
+    -l => list-units
+    -f => list-unit-files
+    -x : show failed services
+    -a : show all services (includes inactive)
+    -! : show all units (not just services)
+EOF
+            exit
             ;;
         -* )
             for (( i=1; i<${#1}; i++ )); do
@@ -35,14 +75,29 @@ while [ ! -z "$1" ]; do
                     L )
                         ACTION+=( reload )
                         ;;
-                    x )
+                    0)
                         ACTION+=( disable ) 
                         ;;
-                    o )
+                    1)
                         ACTION+=( enable )
                         ;;
                     r )
                         DAEMON_RELOAD=True
+                        ;;
+                    l ) 
+                        LIST=( list-units )
+                        ;;
+                    f ) 
+                        LIST=( list-unit-files )
+                        ;;
+                    ! )
+                        AALL=True
+                        ;;
+                    x ) 
+                        AFAILED=TRUE
+                        ;;
+                    a ) 
+                        AACTIVE=TRUE
                         ;;
                     * )
                         echo "bad arg: -$CHAR"
@@ -57,11 +112,6 @@ while [ ! -z "$1" ]; do
             ;;
     esac 
 done
-
-
-if [ ${#ACTION[@]} -eq 0 ] ;then
-    ACTION+=( status )
-fi
 
 if [ -z "$USERMODE" -a -z "$GLOBALMODE" ]; then
     if [ ${#ACTION[@]} -eq 1 ] && [ "${ACTION[0]}" == "status" ];then
@@ -78,6 +128,31 @@ fi
 if [ ! -z "$DAEMON_RELOAD" ]; then
     $CMD daemon-reload
 fi
+
+for cmd in ${LIST[@]}; do
+    ARG=
+    if [ -z "$AALL" ]; then
+        ARG="--type service"
+    fi
+
+    if [ ! -z "$AFAILED" ]; then
+        ARG="$ARG --failed"
+    elif [ ! -z "$AACTIVE" ]; then
+        ARG="$ARG --all"
+    fi
+
+    if [ -z "$UNITS" ]; then
+        SYSTEMD_COLORS=1 $CMD $cmd $ARG | sed '/^$/q'  
+        
+        Q="$($CMD $cmd $ARG --no-legend | cut -d' ' -f1)"
+        UNITS+=( $Q )
+    else
+        $CMD $cmd $ARG --no-legend | grep $UNITS
+        
+        Q="$($CMD $cmd $ARG --no-legend | grep $UNITS | cut -d' ' -f1)"
+        UNITS=( $Q )
+    fi
+done
 
 for u in ${UNITS[@]}; do
     for a in ${ACTION[@]}; do

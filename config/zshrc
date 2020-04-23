@@ -32,4 +32,7 @@ alias vim=nvim
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+export FZF_DEFAULT_COMMAND='fd --color=never'
+export FZF_DEFAULT_OPTS='--multi'
+
 eval $(thefuck --alias)

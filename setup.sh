@@ -86,6 +86,7 @@ takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 #udev
 takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/config/udev/95-monitor-hotplug.rules sudo 
 takeover /etc/udev/rules.d/99-batify.rules $D/config/udev/99-batify.rules sudo 
+takeover /etc/acpi/handler.sh $D/config/acpi.sh sudo 
 
 #systemd
 takeover ~/.config/systemd/user/spotifyd.service $D/config/service/spotifyd.service

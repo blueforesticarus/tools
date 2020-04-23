@@ -23,7 +23,7 @@ c.scrolling.smooth = True
 #   - startpage: Load the start page.
 #   - default-page: Load the default page.
 #   - close: Close the window.
-c.tabs.last_close = "close"
+c.tabs.last_close = "default-page"
 
 # Padding around text for tabs
 c.tabs.padding = {
