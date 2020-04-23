@@ -1,0 +1,29 @@
+#!/bin/bash
+USER=blueforesticarus
+AUTH="-u $USER:`password github.token`"
+
+DIR="`i root`/data/git/"
+mkdir -p "$DIR"
+
+if find "$DIR" -mmin -60 -type f -name "rate_limit" >/dev/null 2>/dev/null ; then
+    REM=$(cat "$DIR"/rate_limit)
+else
+    REM=
+fi
+
+go () {
+    if ( [ -z "$REM" ] || [ $REM -gt 2500 ]) && [ "$2" != "--simple" ]; then 
+        TMP="`mktemp`"
+        URL="https://api.github.com/repos/$1/readme"
+        curl $AUTH -s -D "$TMP" "$URL" | jq -r '.content' | base64 -d
+        rg 'X-RateLimit-Remaining: ([0-9]+)' "$TMP" -r '$1' -o > $DIR/rate_limit
+        rm $TMP
+    else
+        README=https://raw.githubusercontent.com/$1/master/README
+        curl -s -f "$README" || \
+        curl -s -f "$README.md" || \
+        curl -s -f "$README.txt"
+    fi
+}
+
+go $@ | bat -l markdown --color always --style plain
