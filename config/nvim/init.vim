@@ -97,4 +97,6 @@ nnoremap ""P P
 
 " tab switches to normal mode for one command
 inoremap <Tab> <C-o>
-inoremap <F24> <Esc>
+inoremap <F24> <Enter>
+inoremap <Ctrl-Space> <Esc>
+inoremap <Ctrl-'> <Backspace>

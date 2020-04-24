@@ -28,8 +28,8 @@ unset zle_bracketed_paste
 export PATH=/z/bin:/z/bin:/z/bin:/z/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/phi/.local/bin:~/bin
 source /home/phi/save/dev/tools/util/shellrc
 
-alias vim=nvim
-export VISUAL=nvim
+alias vim=kitty_mod.sh
+export VISUAL=kitty_mod.sh
 export EDITOR="$VISUAL"
 
 export FZF_DEFAULT_COMMAND='fd --color=never'

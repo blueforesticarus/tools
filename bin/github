@@ -1,1 +1,0 @@
-git-starred -us -q | fzf --preview 'git-readme {}'

@@ -1,8 +1,0 @@
-config/vim/pathogen/*
-config/vim/plugins/ctrlp/*
-config/vim/plugins/jellybeans.vim/*
-config/vim/plugins/vim-airline/*
-config/vim/plugins/vim-signify/*
-extern/DaveScripts/*
-extern/rofi_android_theme/*
-data/*
