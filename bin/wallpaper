@@ -184,9 +184,12 @@ if [ $SELECT -eq 1 ]; then
 fi 
 
 image="`cat $STORE`"
+
 if [ ! -f "$image" ]; then
     echo "wallpaper file does not exist: $image" 
     exit 1
+else
+    echo "$image"
 fi
 if [ $NSFW -eq 0 ]; then
     if getfattr -n user.nsfw "$image" 2> /dev/null; then
@@ -233,3 +236,4 @@ fi
 if [ $LOCK -eq 1 ]; then
     betterlockscreen -u "$image" &
 fi
+

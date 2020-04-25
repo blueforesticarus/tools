@@ -1,6 +1,5 @@
 D=`dirname "$(readlink -f "$0")"`
 D=`realpath "$D"`
-echo "root: $D"
 source $D/util/shellrc
 cd $D
 
@@ -16,6 +15,7 @@ if [ -f $D/data/setup ] && [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then
     git log $LREV..
 fi
 
+echo "root: $D"
 yesno -Y "Continue?"
 
 mkdir -p $D/data/

@@ -1,4 +1,4 @@
-# i3 config file (v4)
+#i3 config file (v4)
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 #
@@ -67,8 +67,10 @@ bindsym Mod1+shift+Return exec --no-startup-id kitty --class FXTerm
 for_window [class="FXTerm"] floating enable
 bindsym Mod1+Return exec --no-startup-id kitty
 bindsym Mod1+shift+p exec --no-startup-id pavucontrol
-bindsym Mod1+shift+m exec --no-startup-id rambox
+bindsym Mod1+shift+m exec --no-startup-id ambox
 bindsym Mod1+shift+b exec --no-startup-id net
+
+bindsym Mod1+F7 exec --no-startup-id xset dpms force standby && betterlockscreen -l blur
 
 # kill focused window
 bindsym Mod1+q kill
@@ -78,12 +80,15 @@ bindsym Mod1+q kill
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
-bindsym Mod1+n exec --no-startup-id workspace_picker
-bindsym Mod1+m exec --no-startup-id rofi -show windowcd
-bindsym Mod1+w exec --no-startup-id rofi -show window
+bindsym Mod1+u exec --no-startup-id workspace_picker
+bindsym Mod1+i exec --no-startup-id rofi -show windowcd
+bindsym Mod1+shift+i exec --no-startup-id rofi -show window
 bindsym Mod1+d exec --no-startup-id rofi -show drun
 bindsym Mod1+shift+d exec --no-startup-id rofi -show run
 bindsym Mod1+backslash exec --no-startup-id monitorswap
+bindsym Mod1+shift+Tab workspace back_and_forth
+bindsym Mod1+Tab exec --no-startup-id i3-focus-last switch
+exec --no-startup-id i3-focus-last"
 
 #android rofi menus
 bindsym Mod1+Delete exec --no-startup-id android powermenu
@@ -129,7 +134,7 @@ bindsym Mod1+shift+f fullscreen toggle global
 
 # change container layout (stacked, tabbed, toggle split)
 #bindsym Mod1+s layout stacking
-bindsym Mod1+Shift+e layout tabbed
+bindsym Mod1+Shift+e layout toggle tabbed stacked
 bindsym Mod1+e layout toggle split
 
 # toggle tiling / floating
@@ -175,11 +180,12 @@ bindsym Mod1+Shift+r restart
 
 ### Gaps ###
 hide_edge_borders smart
-gaps inner 25
-gaps outer 10
-
-bindsym Mod1+g gaps inner all set 0 ; gaps outer all set 0
-bindsym Mod1+Shift+g gaps inner all set 25  ; gaps outer all set 10
+set $GAPS_INNER 25
+set $GAPS_OUTER -10
+gaps inner $GAPS_INNER
+gaps outer $GAPS_OUTER
+bindsym Mod1+shift+g gaps inner all toggle $GAPS_INNER ; gaps outer all toggle $GAPS_OUTER
+bindsym Mod1+g gaps inner current toggle $GAPS_INNER ; gaps outer current toggle $GAPS_OUTER
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -260,3 +266,7 @@ bindsym XF86AudioPlay exec mprisctl PlayPause
 bindsym XF86AudioPause exec mprisctl PlayPause
 bindsym XF86AudioNext exec mprisctl Next
 bindsym XF86AudioPrev exec mprisctl Previous
+
+# i3 maintainer is a pedant: https://github.com/i3/i3/issues/2664
+font pango:monospace 0
+

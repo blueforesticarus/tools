@@ -79,24 +79,27 @@ nnoremap ; :
 cnoreabbrev wsudo w !sudo tee % >/dev/null
 
 "default paste from yank buffer
-vnoremap p "0p
-nnoremap p "0p
-nnoremap P "0P
-nnoremap P "0P
+"vnoremap p "0p
+"nnoremap p "0p
+"nnoremap P "0P
+"nnoremap P "0P
 
-vnoremap x "0x
-nnoremap x "0x
+"vnoremap x "0x
+"nnoremap x "0x
 
 "based on my understanding of vim keybinds these should not be needed
 "but for some reason they are. Vim really needs a complete keybind overhaul.
 "The way it works is hacky garbage
-vnoremap ""p p
-nnoremap ""p p
-nnoremap ""P P
-nnoremap ""P P
+"vnoremap ""p p
+"nnoremap ""p p
+"nnoremap ""P P
+"nnoremap ""P P
 
 " tab switches to normal mode for one command
 inoremap <Tab> <C-o>
 inoremap <F24> <Enter>
 inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
+
+" auto save on focus lost
+:au FocusLost * silent! w 
