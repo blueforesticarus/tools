@@ -4,9 +4,15 @@ echo "root: $D"
 source $D/util/shellrc
 cd $D
 
-LREV="`trim $(config "commit")`"
+chmod +w $D/data/setup
+config () {
+    grep "`printf '^%s ' "$1"`" $D/data/setup | cut -d ' ' -f2-
+    return ${PIPESTATUS[0]}
+}
+
+LREV="$(config "commit")"
 CREV="`git rev-parse --verify HEAD`"
-if [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then 
+if [ -f $D/data/setup ] && [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then 
     git log $LREV..
 fi
 
@@ -17,10 +23,6 @@ if [ "$1" = "-C" ]; then
     rm -f $D/data/setup
 fi
 touch $D/data/setup
-config () {
-    grep "`printf '^%s ' "$1"`" $D/data/setup | cut -d ' ' -f2-
-    return ${PIPESTATUS[0]}
-}
 setconf () {
     grep -v "`printf '^%s ' "$1"`" $D/data/setup > $D/data/setup.1
     printf "%s %s\n" "$1" "$2" >> $D/data/setup >> $D/data/setup.1
@@ -166,6 +168,7 @@ git submodule update
 bash extern/external.sh
 
 setconf "commit" "`git rev-parse --verify HEAD`"
+chmod -w $D/data/setup
 
 echo 
 make
