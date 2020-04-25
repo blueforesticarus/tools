@@ -1,8 +1,10 @@
 SHELL:=/bin/bash
 BLAHi:=$(shell chmod +x `i root`/bin/* >/dev/null 2>&1)
+MRE=$(shell lsdate $$(i root)/bin $$(i root)/Makefile | head -1 | cut -d '=' -f2)#
 
 default:
-	@echo -e "Erich Spaker' Dev Tools. ¡Muy Bueno! Edition\nRevised $$(lsdate $$(i root)/bin $$(i root)/Makefile | head -1 | cut -d '=' -f1 )"
+	@echo -e "Erich Spaker's Dev Tools. ¡Muy Bueno! Edition\nRevised $$(ago -f "$(MRE)") :: \e[2m$$(realpath -s -m --relative-to="`i root`" "`trim $(MRE)`")\e[22m"
+
 
 terminfo:
 	@conn --terminfo
@@ -14,7 +16,7 @@ select:
 	@iplist --pretty --select
 	@avail --status	
 
-list:
+list: 
 	@echo "LIST:"
 	@iplist --user | column
 	@echo	

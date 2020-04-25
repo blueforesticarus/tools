@@ -4,7 +4,32 @@ echo "root: $D"
 source $D/util/shellrc
 cd $D
 
+LREV="`trim $(config "commit")`"
+CREV="`git rev-parse --verify HEAD`"
+if [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then 
+    git log $LREV..
+fi
+
 yesno -Y "Continue?"
+
+mkdir -p $D/data/
+if [ "$1" = "-C" ]; then
+    rm -f $D/data/setup
+fi
+touch $D/data/setup
+config () {
+    grep "`printf '^%s ' "$1"`" $D/data/setup | cut -d ' ' -f2-
+    return ${PIPESTATUS[0]}
+}
+setconf () {
+    grep -v "`printf '^%s ' "$1"`" $D/data/setup > $D/data/setup.1
+    printf "%s %s\n" "$1" "$2" >> $D/data/setup >> $D/data/setup.1
+    mv $D/data/setup.1 $D/data/setup
+}
+setnoconf (){
+    grep -v "`printf '^%s ' "$1"`" $D/data/setup > $D/data/setup.1
+    mv $D/data/setup.1 $D/data/setup
+}
 
 sudo chmod +x $D/bin/*
 sudo i root "`realpath $D`"
@@ -20,12 +45,18 @@ issym () {
     fi
 }
 
-if yesno -N "Symlink to tools/bin"; then
-    
-    read -e -p "Symlink location: " -i "~/.tools" SYM 
-    SYM=${SYM/#\~/$HOME}
-    ln -s -Tf "$D/bin" $SYM
-fi
+symlinktobin () {
+    if yesno -N "Symlink to tools/bin"; then
+        read -e -p "Symlink location: " -i "~/.tools" SYM 
+        SYM=${SYM/#\~/$HOME}
+        ln -s -Tf "$D/bin" $SYM
+        setconf symbinloc "$SYM"
+        setconf symbin 1
+    else
+        setnoconf symbinloc
+        setconf symbin 0
+    fi
+}
 
 rc () {
     if ! [ -f $1 ]; then
@@ -50,6 +81,10 @@ rc () {
     
 takeover(){
     if ! issym "$1" "$2"; then
+        if [ "`config "$2"`" == "0" ]; then
+            echo "Skipping disabled: $1 => $2" >&2
+            return 0
+        fi
         if yesno -N "Take Over $1 ?" ; then
             if [ -e "$1" ]; then
                 $3 mv "$1" "$1".old
@@ -60,15 +95,32 @@ takeover(){
             fi
 
             $3 ln -snf "$2" "$1" 
+            setconf "$2" 1
             return 0
         else
+            setconf "$2" 0
             return 1
         fi
     else 
+        setconf "$2" 1
         return 0
     fi
 }
 
+
+if ! config symbin > /dev/null; then
+    symlinktobin
+elif [ `config symbin` -ne 0 ]; then
+    SYM="`config symbinloc`"
+    if ! takeover "$SYM" $D/bin; then 
+        setnoconf symbin
+        setnoconf symbinloc
+        symlinktobin
+    fi
+    setnoconf $D/bin
+else
+    echo "Skipping disabled: symlink to bin"
+fi
 
 takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
 takeover ~/.vimrc $D/config/vimrc
@@ -112,3 +164,8 @@ git submodule init
 git submodule update
 
 bash extern/external.sh
+
+setconf "commit" "`git rev-parse --verify HEAD`"
+
+echo 
+make

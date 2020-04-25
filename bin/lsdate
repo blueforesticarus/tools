@@ -1,2 +1,2 @@
 #!/bin/bash
-find "$@" -type f -printf "%T@ %Tc = %p\n" | sort -rn | cut -d' ' -f1 --complement
+find "$@" -type f -printf "%T@ %Tc = %p\n" | sort -rn | cut -d' ' -f1 --complement 
