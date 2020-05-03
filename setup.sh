@@ -3,41 +3,48 @@ D=`realpath "$D"`
 source $D/util/shellrc
 cd $D
 
-chmod +w $D/data/setup
+if [ -z "`$D/bin/i var`" ]; then 
+    read -p "Path for var dir: " -i "./data" -e LINE
+    mkdir -p "$LINE" || exit 1
+    sudo $D/bin/i var $LINE
+fi
+VAR="`$D/bin/i var`"
+
+chmod +w $VAR/setup
 config () {
-    grep "`printf '^%s ' "$1"`" $D/data/setup | cut -d ' ' -f2-
+    grep "`printf '^%s ' "$1"`" $VAR/setup | cut -d ' ' -f2-
     return ${PIPESTATUS[0]}
 }
 
 LREV="$(config "commit")"
 CREV="`git rev-parse --verify HEAD`"
-if [ -f $D/data/setup ] && [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then 
+if [ -f $VAR/setup ] && [ ! -z "$LREV" ] && [ "$LREV" != "$CREV" ]; then 
     git log $LREV..
 fi
 
 echo "root: $D"
 yesno -Y "Continue?"
 
-mkdir -p $D/data/
+mkdir -p $VAR/
 if [ "$1" = "-C" ]; then
-    rm -f $D/data/setup
+    rm -f $VAR/setup
 fi
-touch $D/data/setup
+touch $VAR/setup
 setconf () {
-    grep -v "`printf '^%s ' "$1"`" $D/data/setup > $D/data/setup.1
-    printf "%s %s\n" "$1" "$2" >> $D/data/setup >> $D/data/setup.1
-    mv $D/data/setup.1 $D/data/setup
+    grep -v "`printf '^%s ' "$1"`" $VAR/setup > $VAR/setup.1
+    printf "%s %s\n" "$1" "$2" >> $VAR/setup >> $VAR/setup.1
+    mv $VAR/setup.1 $VAR/setup
 }
 setnoconf (){
-    grep -v "`printf '^%s ' "$1"`" $D/data/setup > $D/data/setup.1
-    mv $D/data/setup.1 $D/data/setup
+    grep -v "`printf '^%s ' "$1"`" $VAR/setup > $VAR/setup.1
+    mv $VAR/setup.1 $VAR/setup
 }
 
 sudo chmod +x $D/bin/*
 sudo i root "`realpath $D`"
 
-mkdir -p "$D"/data/ip
-touch "$D"/data/ip/list #TODO iplist or conn or avail should do this, not setup
+mkdir -p $VAR/ip
+touch $VAR/ip/list #TODO iplist or conn or avail should do this, not setup
 
 issym () {
     if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
@@ -126,7 +133,10 @@ fi
 
 takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
 takeover ~/.vimrc $D/config/vimrc
-takeover ~/.vim $D/config/vim 
+
+rm -rf $D/config/vim/undo 
+takeover ~/.vim $D/config/vim && ln -snf "`i var`"/vim/undo $D/config/vim
+
 takeover ~/.config/nvim $D/config/nvim
 takeover ~/.config/kitty $D/config/kitty
 takeover ~/.i3 $D/config/i3
@@ -143,9 +153,19 @@ takeover /etc/udev/rules.d/99-batify.rules $D/config/udev/99-batify.rules sudo
 takeover /etc/acpi/handler.sh $D/config/acpi.sh sudo 
 
 #systemd
-takeover ~/.config/systemd/user/spotifyd.service $D/config/service/spotifyd.service
-takeover ~/.config/systemd/user/conky.service $D/config/service/conky.service
-takeover ~/.config/systemd/user/dunst.service $D/config/service/dunst.service
+takeover ~/.config/systemd/user/spotifyd.service    $D/config/service/spotifyd.service
+takeover ~/.config/systemd/user/conky.service       $D/config/service/conky.service
+takeover ~/.config/systemd/user/compton.service     $D/config/service/compton.service
+takeover ~/.config/systemd/user/dunst.service       $D/config/service/dunst.service
+takeover ~/.config/systemd/user/i3focuslast.service $D/config/service/i3focuslast.service
+takeover ~/.config/systemd/user/i3.service          $D/config/service/i3.service
+takeover ~/.config/systemd/user/xsession.target     $D/config/service/xsession.target
+
+takeover /etc/systemd/system/checkupdates.service $D/config/service/checkupdates.service  sudo
+takeover /etc/systemd/system/checkupdates.timer   $D/config/service/checkupdates.timer    sudo
+takeover /etc/systemd/system/mirrorlist.service   $D/config/service/mirrorlist.service    sudo 
+takeover /etc/systemd/system/mirrorlist.timer     $D/config/service/mirrorlist.timer      sudo
+
 systemctl --user daemon-reload
 
 AAA=/usr/var/local/spotifyd/cache
@@ -155,9 +175,9 @@ if [ ! -d "$AAA" ];then
 fi
 
 
-mkdir -p data/
-echo "PATH=$PATH" > data/path.env
-takeover ~/.config/environment.d/path.conf $D/data/path.env
+mkdir -p $VAR/
+echo "PATH=$PATH" > $VAR/path.env
+takeover ~/.config/environment.d/path.conf $VAR/path.env
 
 rc ~/.profile
 rc ~/.bashrc
@@ -168,7 +188,7 @@ git submodule update
 bash extern/external.sh
 
 setconf "commit" "`git rev-parse --verify HEAD`"
-chmod -w $D/data/setup
+chmod -w $VAR/setup
 
 echo 
 make

@@ -2,7 +2,7 @@
 #create tmp files which are tied to parent process
 #when parent process doesnt exist anymore, tmp files are deleted on next call to pidtmp (see cleanup function)
 
-DIR="`i root`/data/tmp"
+DIR="`i var`/tmp"
 mkdir -p $DIR
 
 cleanup (){

@@ -5,7 +5,7 @@
 SERVICE="$(qdbus | grep -F 'org.mpris.MediaPlayer2' | trim | grep "spotify" | head -1)"
 TARGET="/org/mpris/MediaPlayer2"
 CUT="org.mpris.MediaPlayer2.Player"
-DIR="`i root`/data/mpris"
+DIR="`i var`/mpris"
 
 if [ -z "$SERVICE" ]; then
     echo "Cannot connect to mpris player";

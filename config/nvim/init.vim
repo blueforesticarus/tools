@@ -76,7 +76,7 @@ vnoremap ; :
 nnoremap ; :
 
 "command to save with sudo
-cnoreabbrev wsudo w !sudo tee % >/dev/null
+command W :w !sudo tee %:t >/dev/null
 
 "default paste from yank buffer
 "vnoremap p "0p
@@ -103,3 +103,11 @@ inoremap <Ctrl-'> <Backspace>
 
 " auto save on focus lost
 :au FocusLost * silent! w 
+
+" insert date
+command DATE :put =strftime('%c')
+command ENDFILEDATE normal Go<esc>:DATE<CR>o
+
+"select pasted
+nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+

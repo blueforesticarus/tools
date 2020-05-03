@@ -186,7 +186,7 @@ rfs () {
 ffs () {
 	HOSTNAME="`gethost | xargs`"
 	test -z "$HOSTNAME" && exit 1
-	MNT=~/mnt/$HOSTNAME$ROOT
+	MNT="`i mnt`"/$HOSTNAME$ROOT
 	if mountpoint "$MNT"; then
 		echo "already mounted: aborting"
 		return 1
@@ -209,7 +209,7 @@ ffs () {
 
 unmount () {
 	SHOST=`getlazyhost`
-	MNT=~/mnt/$SHOST$ROOT
+	MNT="`i mnt`"/$SHOST$ROOT
 	if [ -d "$MNT" ]; then
 		echo "disconnecting $MNT"
 		fusermount -u "$MNT"
@@ -284,13 +284,13 @@ case "$act" in
 		runmount 
 		;;
 	-U )
-		for i in ~/mnt/*; do 
+		for i in "`i mnt`"/*; do 
 			if mountpoint $i; then
 				echo "unmounting $i"
 				fusermount -u "$i"
 			fi
 		done
-		rmdir ~/mnt/*
+		rmdir "`i mnt`"/*
 		;;
 	-X )
 		cmd='set -x; for i in ~/mnt/*; do mountpoint $i && echo "disconnecting $i" && fusermount -u $i; done; rmdir ~/mnt/*; test ! -e ~/dev && rm -f ~/dev'

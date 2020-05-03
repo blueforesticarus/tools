@@ -8,7 +8,7 @@ After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/spotifyd --no-daemon
-ExecStartPost=/usr/var/local/tools/root/bin/notify systemd spotify start
+ExecStartPost=/usr/var/local/tools/root/bin/notify systemd start spotify
 Restart=always
 RestartSec=12
 

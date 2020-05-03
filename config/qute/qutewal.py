@@ -330,7 +330,7 @@ if os.path.isfile(colors_absolute):
     # Background color for webpages if unset (or empty to use the theme's
     # color)
     # Type: QtColor
-    c.colors.webpage.bg = colors['special']['background']
+    #c.colors.webpage.bg = colors['special']['background']
 
     if qutewal_dynamic_loading or bool(os.getenv('QUTEWAL_DYNAMIC_LOADING')):
         import signal

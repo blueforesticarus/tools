@@ -2,7 +2,7 @@
 USER=blueforesticarus
 AUTH="-u $USER:`password github.token`"
 
-DIR="`i root`/data/git/"
+DIR="`i var`/git/"
 mkdir -p "$DIR"
 
 if find "$DIR" -mmin -60 -type f -name "rate_limit" >/dev/null 2>/dev/null ; then

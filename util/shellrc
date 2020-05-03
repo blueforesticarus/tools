@@ -7,3 +7,6 @@ export PATH=$PATH:$D/bin
 export PATH=$PATH:$D/extern/bin
 
 for f in "$D"/bin/source/*; do source $f; done
+
+#ENV
+export GOPATH=~/.go

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=`i root`/data/ip/
+DIR=`i var`/ip/
 online=$DIR/online
 avail=$DIR/avail
 scan=$DIR/scan

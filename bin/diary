@@ -1,7 +1,7 @@
 #!/bin/bash
 #protects thoughts with rsa keypair
 #TODO overhaul with ellypticurve encryption
-FILE="`i root`/data/diary/id_rsa"
+FILE="`i var`/diary/id_rsa"
 
 oneday () {
     CMD="openssl smime -decrypt -binary -aes-256-cbc -inform DER -passin pass:$PASS"
@@ -32,7 +32,7 @@ initkeys () {
         continue 
     done
     echo "private key hint: " > $FILE.hint
-    vim $FILE.hint
+    editor $FILE.hint
     
     backup="`i vault`/privatekeys/`date +'%F_%T'`/"
     sudo mkdir -p "$backup"
@@ -99,7 +99,7 @@ tmp="`mktemp`"
 HEAD="-- `date +'%T'` $USER@$HOSTNAME"
 echo "$HEAD" > $tmp
 if [ -z "$1" ];then
-    vim $tmp
+    editor $tmp
     if ! [ `cat $tmp | wc -l` -gt 1 ];then
         echo "Message empty. Aborting"
         rm $tmp

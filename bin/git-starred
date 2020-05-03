@@ -80,8 +80,8 @@ arg_parse () {
             FRESH=2
             ;;
         -C | --clear | --clear-cache )
-            rm -rf `i root`/data/git/
-            mkdir `i root`/data/git
+            rm -rf `i var`/git/
+            mkdir `i var`/git
             exit 
             ;;
         --user )
@@ -207,7 +207,7 @@ ECH () {
 }
 
 both (){
-    DIR="`i root`/data/git/$1"
+    DIR="`i var`/git/$1"
     mkdir -p "$DIR"
     
     FILE="$DIR/$3"

@@ -42,11 +42,12 @@ path PATH:
 	@sudo bash -c 'echo $$PATH' | grep --color -F -e "`i root`/bin" -e ''
 
 serial:
-	screen /dev/ttyUSB0 115200
+	test ! -e /dev/ttyUSB0 || screen /dev/ttyUSB0 115200
+	test ! -e /dev/ttyUSB1 || screen /dev/ttyUSB1 115200
 
-zsx:
-	cd `i root` && git submodule | cut -d ' ' -f3 | sed 's/$$/\/\*/g' > .zsx
-	echo data/* >> `i root`/.zsx
+ignore:
+	cd `i root` && git submodule | cut -d ' ' -f3 | sed 's/$$/\/\*/g' > .ignore
+	cd `i root` && test ! -d data || echo data/* >> .ignore
 
 IP=192.168.6.
 DEV_MAIN=$(shell ip route get fibmatch 8.8.8.8 | grep -oP 'dev \K[^\s]*')

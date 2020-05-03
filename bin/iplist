@@ -1,5 +1,5 @@
 #!/bin/bash
-DIR=`i root`/data/ip
+DIR=`i var`/ip
 mkdir -p $DIR
 
 list=$DIR/list
