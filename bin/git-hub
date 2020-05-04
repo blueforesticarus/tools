@@ -1,0 +1,42 @@
+REPO=$( git-starred -us -q | fzf --preview 'git-readme {}' )
+if [ ! -z "$REPO" ]; then
+    if [ -z "$1" ]; then
+        DIR="`i git`"
+        mkdir -p "$DIR"
+        cd $DIR
+
+        HDIR="./0_hosts/github.com/`dirname $REPO`"
+        UDIR="./0_users/`dirname $REPO`"
+        mkdir -p "$HDIR"
+        mkdir -p "$UDIR"
+
+        DEST="$HDIR/`basename $REPO`"
+        LINK1="$UDIR/`basename $REPO`"
+        LINK2="./`basename $REPO`"
+
+        if [ ! -e $DEST ]; then 
+            git clone "git@github.com:$REPO.git" "$DEST" 
+        else
+            echo -e "\nAlready Cloned: $REPO"
+        fi 
+        export C_NUMLOGS=1
+        git-yelp "$DEST"
+        echo -e "\nPATHS:\n`readlink -m "$DEST"`"
+
+        if [ ! -e $LINK1 ]; then 
+            ln -snf "../$DEST" "$LINK1"
+            readlink -m "$LINK1"
+        else
+            echo "TODO: link conflict $LINK1"
+        fi 
+        
+        if [ ! -e $LINK2 ]; then 
+            ln -snf "$DEST" "$LINK2"
+            readlink -m "$LINK2"
+        else
+            echo "TODO: link conflict $LINK2"
+        fi
+    else
+        git clone git@github.com:$REPO.git $1
+    fi
+fi

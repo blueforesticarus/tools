@@ -1,0 +1,6 @@
+[Unit]
+Description=Use checkupdates to fetch packages and then send notification.
+
+[Service]
+Type=oneshot
+ExecStart=/usr/var/local/tools/root/util/pacman_predownload.sh

@@ -1,0 +1,84 @@
+#!/bin/bash
+# Get the coordinates of the active window's
+#    top-left corner, and the window's size.
+#    This excludes the window decoration.
+  unset x y w h
+  eval $(xwininfo -id $(xdotool getactivewindow) |
+    sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
+           -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
+           -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
+           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" \
+           )
+
+eval $(
+    xprop -id $(xdotool getactivewindow) | rg '^WM_CLASS\(STRING\) =' |
+        sed -n -e 's/.*= "\(\w*\)", "\(\w*\)"/TITLE="\1";CLASS="\2"/p'
+)
+
+BASE1="for_window [class=\"$TITLE\"] "
+BASE2="for_window [class=\"$CLASS\"] "
+
+LINE1="floating enable, resize set $w $h, move position center"
+LINE2="floating enable,move $x $y, resize set $w $h"
+LINE3="floating enable, resize $w $h"
+LINE4="floating enable"
+LINE5="floating disable"
+
+OPTS="$(
+echo "$BASE1 $LINE1"
+echo "$BASE2 $LINE1"
+echo "$BASE1 $LINE2"
+echo "$BASE2 $LINE2"
+echo "$BASE1 $LINE3"
+echo "$BASE2 $LINE3"
+echo "$BASE1 $LINE4" 
+echo "$BASE2 $LINE4"
+echo "$BASE1 $LINE5"
+echo "$BASE2 $LINE5"
+echo "delete: $BASE1"
+echo "delete: $BASE2"
+)"
+
+MSG="$(echo 'CURRENT CONFIG:' ; rg -F "$BASE1" "`i root`/config/i3/config" ; rg -F "$BASE2" "`i root`/config/i3/config" ; echo "--")"
+
+N="$(echo "$OPTS" | rofi -dmenu -format i -mesg "$MSG")"
+
+case $N in 
+    0 )
+        transact "`i root`/config/i3/config" "$BASE1" "$BASE1 $LINE1"
+        ;;
+    1 )
+        transact "`i root`/config/i3/config" "$BASE2" "$BASE2 $LINE1"
+        ;;
+    2 )
+        transact "`i root`/config/i3/config" "$BASE1" "$BASE1 $LINE2"
+        ;;
+    3 )
+        transact "`i root`/config/i3/config" "$BASE2" "$BASE2 $LINE2"
+        ;;
+    4 )
+        transact "`i root`/config/i3/config" "$BASE1" "$BASE1 $LINE3"
+        ;;
+    5 )
+        transact "`i root`/config/i3/config" "$BASE2" "$BASE2 $LINE3"
+        ;;
+    6 )
+        transact "`i root`/config/i3/config" "$BASE1" "$BASE1 $LINE4"
+        ;;
+    7 )
+        transact "`i root`/config/i3/config" "$BASE2" "$BASE2 $LINE4"
+        ;;
+    8 )
+        transact "`i root`/config/i3/config" "$BASE1" "$BASE1 $LINE5"
+        ;;
+    9 )
+        transact "`i root`/config/i3/config" "$BASE2" "$BASE2 $LINE5"
+        ;;
+    10 )
+        transact "`i root`/config/i3/config" "$BASE1" "--"
+        ;;
+    11 )
+        transact "`i root`/config/i3/config" "$BASE2" "--"
+        ;;
+esac
+

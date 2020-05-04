@@ -1,0 +1,11 @@
+[Unit]
+Description=Compton window compositor
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/compton --config /usr/var/local/tools/root/config/compton.conf
+Restart=always
+RestartSec=6
+
+[Install]
+WantedBy=graphical-session.target

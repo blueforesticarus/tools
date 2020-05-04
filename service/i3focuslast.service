@@ -1,0 +1,13 @@
+[Unit]
+Description=Alt-tab
+PartOf=graphical-session.target
+#BindsTo=i3.service
+#After=i3.service
+
+[Service]
+ExecStart=/usr/var/local/tools/root/extern/bin/i3-focus-last
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=graphical-session.target

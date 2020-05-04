@@ -1,0 +1,83 @@
+RIGHT_INVERT=0
+LEFT_INVERT=0
+
+LEFT="▐"
+RIGHT="▌"
+
+argparse () {
+    ARG="$1"
+    case "$ARG" in
+        -N | --none )
+            LEFT=""
+            RIGHT=""
+            ;;
+        -H | --half )
+            LEFT="▐"
+            RIGHT="▌"
+            ;;
+        -W | --whole )
+            LEFT="█"
+            RIGHT="█"
+            ;;
+        -R | --round )
+            LEFT=""
+            RIGHT=""
+            ;;
+        -T | --triangle )
+            LEFT=""
+            RIGHT=""
+            ;;
+        -F | --forwardslash )
+            LEFT=""
+            RIGHT=""
+            ;;
+        -B | --baskslash )
+            LEFT=""
+            RIGHT=""
+            ;;
+        -i* )
+            LEFT_INVERT=1
+            RIGHT_INVERT=1
+            argparse -${ARG:2}
+            T="$RIGHT"
+            RIGHT="$LEFT"
+            LEFT="$T"
+            ;;
+
+        -w* )
+            LEFT_INVERT=1
+            RIGHT_INVERT=1
+            argparse -${ARG:2}
+            ;;
+        -sp )
+            shift
+            argparse $@
+            LL="$LEFT"
+            LI=$LEFT_INVERT
+
+            shift
+            argparse $@
+            LEFT="$LL"
+            LEFT_INVERT=$LI
+            ;;
+    esac
+    shift
+    }
+
+TXT="$1"
+shift
+argparse $@ 
+
+if [ $LEFT_INVERT -eq 0 ]; then 
+    printf '%s' "$LEFT"
+else
+    printf '\e[7m%s\e[27m' "$LEFT"
+fi
+
+printf '\e[7m%s\e[27m' "$TXT"
+
+if [ $RIGHT_INVERT -eq 0 ]; then 
+    printf '%s' "$RIGHT"
+else
+    printf '\e[7m%s\e[27m' "$RIGHT"
+fi

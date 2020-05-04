@@ -1,10 +1,9 @@
 SHELL:=/bin/bash
 BLAHi:=$(shell chmod +x `i root`/bin/* >/dev/null 2>&1)
-MRE=$(shell lsdate $$(i root)/bin $$(i root)/Makefile | head -1 | cut -d '=' -f2)#
+MRE=$(shell lsdate $$(i root)/bin $$(i root)/util/Makefile | head -1 | cut -d '=' -f2)#
 
 default:
 	@echo -e "Erich Spaker's Dev Tools. ¡Muy Bueno! Edition\nRevised $$(ago -f "$(MRE)") :: \e[2m$$(realpath -s -m --relative-to="`i root`" "`trim $(MRE)`")\e[22m"
-
 
 terminfo:
 	@conn --terminfo
@@ -71,7 +70,7 @@ bbnet: bbnet_
 	sudo iptables --append FORWARD --in-interface $(DEV) -j ACCEPT
 	ssh debian@$(IP)2 'echo temppwd | sudo -S bash -c "set -x; ip route delete default; route add default gw $(IP)1 && echo "nameserver 8.8.8.8" > /etc/resolv.conf"'
 
-DT=$(MAKE) -f `i root`/Makefile
+DT=$(MAKE) -f `i root`/util/Makefile
 bbnet8_:
 	$(DT) bbnet_ IP=192.168.8.
 

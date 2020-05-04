@@ -1,0 +1,42 @@
+#!/bin/bash
+cd `git rev-parse --show-toplevel`
+git reset >/dev/null
+
+while IFS= read -u10 -r line
+do
+    f="${line:3}"
+    case "${line:0:2}" in
+        " M" )
+            echo "Modified: $f"
+            if yesno -a "?" "git diff $f" -N "stage?"; then
+                git add "$f"
+            fi
+            ;;
+        " D" )
+            echo "Deleted: $f"
+            if yesno -N "stage?"; then
+                git rm "$f"
+            fi
+            ;;
+        " m" )
+            echo "Submodule: $f"
+            echo "...skipping"
+            ;;
+        "??" )
+            echo "New File: $f"
+            if yesno -a "?" "cat $f" -N "add?"; then
+                git add "$f"
+            elif yesno -a "?" "cat $f" -N "ignore?" ; then
+                echo "$f" >> .gitignore    
+            elif yesno -a "?" "cat $f" -N "delete?" ; then
+                 trash "$f"   
+            fi
+            ;;
+        * )
+            echo "$line"
+            echo parse failed
+            exit 1
+    esac
+
+    echo ""
+done 10< <(git status -s)

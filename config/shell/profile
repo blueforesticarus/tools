@@ -1,0 +1,48 @@
+#installed to ~/.profile
+#this just starts stuff, env and path live in env.sh and util/shellrc respectively
+#startx on tty 1, start $USER_SHELL on everything else, except tty 6 which is a failsafe incase something breaks.
+USER_SHELL=fish
+#==================================================================================================
+#                           determine session type
+##d================================================================================================
+case $(ps -o comm= -p $PPID) in
+    sshd|*/sshd) 
+        SESSION_TYPE=remote/ssh ;;
+    login)
+        if [ -z "$XDG_VTNR" ]; then
+            SESSION_TYPE=login/unknown
+        else
+            SESSION_TYPE=login/tty$XDG_VTNR
+        fi ;;
+    * ) SESSION_TYPE=unknown/unknown ;;
+esac
+
+#==================================================================================================
+#                            decide what to run
+##d================================================================================================
+EXEC=
+case $SESSION_TYPE in 
+    login/tty6 )
+        echo "[.profile] TTY6 is failsafe."
+        echo "[.profile] FALLBACK: $SHELL"
+        return 0 ;;
+    login/tty1 ) 
+        if systemctl -q is-active graphical.target && [[ ! $DISPLAY ]]; 
+        then EXEC=startx
+        else EXEC=
+            echo "NOTE: graphical.target is not active (or DISPLAY is set)"
+        fi ;;
+    login/tty* ) EXEC=$USER_SHELL ;;
+    remote/* )   EXEC=$USER_SHELL ;;
+esac
+
+#==================================================================================================
+#                           exec into new process
+##e================================================================================================
+if [ -z "$EXEC" ] && which $EXEC >/dev/null; then 
+    echo "[.profile] $SESSION_TYPE: $EXEC"
+    echo "[.profile] FALLBACK: $SHELL"
+else
+    echo "[.profile] $SESSION_TYPE: `which $EXEC`"
+    exec $EXEC
+fi

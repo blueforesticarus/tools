@@ -1,0 +1,18 @@
+#!/bin/bash
+
+IFS= read -r last
+let n=1
+while IFS= read -r line; do    
+    if [ $n -eq $1 ]; then 
+        echo '...'
+        exit
+    else
+        echo "$last"
+        let n+=1
+        last="$line"
+    fi
+done
+
+if [ ! -z "$last" ]; then
+    echo "$last"
+fi
