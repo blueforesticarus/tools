@@ -1,4 +1,5 @@
 #!/bin/bash
+irequire var || exit 1
 
 DIR=`i var`/ip/
 online=$DIR/online

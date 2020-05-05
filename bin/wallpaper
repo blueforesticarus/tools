@@ -48,7 +48,7 @@ while test $# -gt 0; do
             ;;
         --set_nsfw )
             F="$2"
-            setfattr -n user.nsfw -v "This wallpaper might not be NSFW" "$F"
+            setfattr -n user.nsfw -v "This wallpaper might not be SFW" "$F"
             #getfattr -n user.tiled "$F"
             exit
             ;;
@@ -119,6 +119,39 @@ while test $# -gt 0; do
             NSFW=1
             shift
             ;;
+        -h | --help )
+            cat << EOF
+wallpaper: manage collections of wallpapers
+    loads wallpaper collections from `i wallpaper`/0_collections
+    set wallpaper dir with 'sudo i wallpaper <dir>'
+
+USAGE:
+    -C | --choose     : interactively pick collection
+    -S | --select     : interactively pick image
+    -r | --random     : pick randomly instead of interactivly
+    -0 <name> | --collection <name> : set active collection to <name>
+    
+    --sfw             : disable wallpapers and collections tagged nsfw
+    --nsfw            : permit wallpapers and collections tagged nsfw
+    -t | --tile       : tile the wallpaper instead of fill
+    -T | --notile     : do not tile wallpapers event if tagged with 'tiled'
+
+    -G | --gui        : use rofi and feh 
+    -w | --set        : actually set the wallpaper
+    -c | --colors     : generate pywal colors
+    -l | --lockscreen : update betterlockscreen image
+    
+    [setting attributes]
+    --set_tile <path>   : tag image or collection at path as 'tiled'
+    --set_notile <path> : remove 'tiled' tag
+    --set_nsfw <path>   : tag as 'nsfw'
+    --set_sfw <path>    : remove 'nsfw' tag
+    
+    -h | --help       : print this help text
+
+EOF
+            exit 0
+            ;;
         * )
             echo "unsupported arg: $1"
             exit 1
@@ -156,7 +189,7 @@ if [ $COLLECTION -eq 1 ];then
     CURRENT="`cat $OUT`"
 fi
 
-if [ $SELECT -eq 1 ]; then
+if [ $SELECT -eq 1 ] || [ $RAND -eq 1 ]; then
     if [[ $RAND -eq 1 ]]; then
         image=`shuf -e -n1 "$DIR/$CURRENT"/*`
         echo "$image" > "$STORE"

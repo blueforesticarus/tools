@@ -1,13 +1,14 @@
 #!/bin/bash
+VVIM_NAME=Notebook 
+
 cd `i notebook`
 DATE="`date +'%F'`"
 F="$( ( echo "$DATE" && fd -E diary ) | rofi -dmenu -select "$DATE" )"
 if [ "$F" == "$DATE" ]; then 
-    CMD=diary 
+    diary 
 elif [ ! -z "$F" ]; then   
-    CMD="vim -c 'ENDFILEDATE' $F"
+    vvim -c 'ENDFILEDATE' $F
 else
     exit 1
 fi
 
-kitty --class=Notebook bash -c "$CMD || sleep 1"

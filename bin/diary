@@ -32,7 +32,7 @@ initkeys () {
         continue 
     done
     echo "private key hint: " > $FILE.hint
-    editor $FILE.hint
+    vvim $FILE.hint
     
     backup="`i vault`/privatekeys/`date +'%F_%T'`/"
     sudo mkdir -p "$backup"
@@ -99,7 +99,7 @@ tmp="`mktemp`"
 HEAD="-- `date +'%T'` $USER@$HOSTNAME"
 echo "$HEAD" > $tmp
 if [ -z "$1" ];then
-    editor $tmp
+    vvim $tmp
     if ! [ `cat $tmp | wc -l` -gt 1 ];then
         echo "Message empty. Aborting"
         rm $tmp

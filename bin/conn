@@ -1,4 +1,6 @@
 #!/bin/bash
+irequire root || (echo "Please run setup.sh" && exit 1)
+irequire mnt || exit 1
 
 USER=
 IP=

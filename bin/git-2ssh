@@ -1,0 +1,15 @@
+CONF="$(git root)/.git/config"
+URL="$(git remote get-url origin)"
+if ! ( echo "$URL" | rg '^https?://' ); then
+    echo "$URL is already ssh address"
+    exit 1
+fi
+
+SSHURL=$(echo "$URL" | rg 'https?://((?:\w+\.)+\w+)/' -r 'git@${1}:')
+if [ ! -z "$SSHURL" ]; then 
+    transact "$CONF" "url = $URL" "url = $SSHURL"
+else
+    echo "could not determine correct ssh url"
+    exit 1
+fi
+
