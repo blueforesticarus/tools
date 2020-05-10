@@ -1,0 +1,15 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+alias ls='ls --color=auto'
+alias sudo='sudo ' #So you can call aliases with sudo: (from the docs) A trailing space in the value causes the next word to be checked for alias subsitutions.
+xset b off
+alias g=grep
+alias x='grep -v'
+alias e=echo
+alias aur=yay
+source /home/phi/save/dev/tools/util/shellrc #ADDED BY TOOLS SETUP.SH

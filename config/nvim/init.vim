@@ -42,6 +42,13 @@ set splitbelow
 set incsearch
 set hlsearch
 
+"show whitespace
+set list
+set listchars=tab:>\ ,trail:.,extends:>,precedes:<,nbsp:+
+
+"always show one line above and below cursor
+set scrolloff=1
+
 "clear search highlight on esc
 nnoremap <esc><esc> :nohls <esc>
 

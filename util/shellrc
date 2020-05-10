@@ -1,1 +1,13 @@
+#!/bin/bash #this here just for syntax highlighting
+# works for zsh and bash, for fish see util/setup.fish
+
+D=/usr/var/local/tools/root
 source /usr/var/local/tools/root/util/path.env
+
+#NOTE: if this is a login shell, don't source THIS
+#login shells are for setting up global env, having a bunch of bash functions like ihop in our user (or even root) would be bad
+#INSTEAD: source util/path.env
+
+for f in $(find "$D"/bin/source/ -type f -name '*.sh');  do 
+    source $f; 
+done

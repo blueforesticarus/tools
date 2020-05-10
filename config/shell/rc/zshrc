@@ -1,0 +1,38 @@
+autoload -Uz compinit promptinit
+compinit
+promptinit
+
+zstyle ':completion:*' menu select
+
+prompt restore
+setopt PROMPT_SUBST
+PROMPT='%B%F{red}%n@%m%f%F{yellow}[%D{%L:%M:%S}]%f:%F{blue}${${(%):-%1~}}%fλ %b'
+TMOUT=0
+
+TRAPALRM() {
+    zle reset-prompt
+}
+PATH=/z/bin:$PATH
+export PATH
+
+#autoload zkbd
+#source /home/phi/.zkbd/xterm-kitty
+source `i root`/config/.zshkey
+
+#load pywal color scheme
+(cat ~/.cache/wal/sequences &)
+source ~/.bashrc
+
+export ATHAME_VIM_PERSIST=1
+unset zle_bracketed_paste
+export PATH=GOBBLE:/z/bin:/z/bin:/z/bin:/z/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/phi/.local/bin:~/bin
+source /home/phi/save/dev/tools/util/shellrc
+
+alias vim=kitty_mod.sh
+export VISUAL=kitty_mod.sh
+export EDITOR="$VISUAL"
+
+export FZF_DEFAULT_COMMAND='fd --color=never'
+export FZF_DEFAULT_OPTS='--multi'
+
+eval $(thefuck --alias)

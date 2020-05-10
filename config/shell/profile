@@ -46,5 +46,5 @@ if [ -z "$EXEC" ] && which $EXEC >/dev/null; then
     echo "[.profile] FALLBACK: $SHELL"
 else
     echo "[.profile] $SESSION_TYPE: `which $EXEC`"
-    #exec $EXEC
+    exec $EXEC
 fi

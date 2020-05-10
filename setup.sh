@@ -68,12 +68,13 @@ symlinktobin () {
 }
 
 rc () {
+    NAME=$2
     if ! [ -f $1 ]; then
         return 
     fi
 
     TAG="#ADDED BY TOOLS SETUP.SH"
-    S="source $D/util/shellrc #ADDED BY TOOLS SETUP.SH"
+    S="source $D/util/$NAME #ADDED BY TOOLS SETUP.SH"
         
     if ! grep -F "$S" $1; then
         echo "You need to add this line to your $1:"
@@ -131,8 +132,10 @@ else
     echo "Skipping disabled: symlink to bin"
 fi
 
+#==================================================================================================
+#                                      TAKEOVER
+##T================================================================================================
 
-#takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
 takeover ~/.vimrc $D/config/vimrc
 
 rm -rf $D/config/vim/undo 
@@ -148,17 +151,20 @@ takeover ~/.config/qutebrowser        $D/config/qute
 takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 takeover ~/.local/share/applications  $D/desktop
 
-#autologin
-takeover ~/.xinitrc  $D/config/xinitrc
-takeover ~/.profile  $D/config/shell/profile
-takeover /etc/profile.d/env.sh  $D/config/shell/env.sh sudo
+#autostartx autologin enviroment and shellrc
+takeover /etc/profile.d/env.sh      $D/config/shell/env.sh sudo
+takeover ~/.xinitrc                 $D/config/xinitrc
+takeover ~/.profile                 $D/config/shell/profile
+takeover ~/.config/fish/config.fish $D/config/shell/rc/config.fish || rc ~/.config/fish/fish.config setup.fish
+takeover ~/.zshrc                   $D/config/shell/rc/zshrc       || rc ~/.zshrc                   shellrc
+takeover ~/.bashrc                  $D/config/shell/rc/bashrc      || rc ~/.bashrc                  shellrc
 
 #udev
 takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/udev/95-monitor-hotplug.rules sudo 
 takeover /etc/udev/rules.d/99-batify.rules          $D/udev/99-batify.rules          sudo 
 takeover /etc/acpi/handler.sh                       $D/config/acpi.sh                sudo 
 
-#systemd
+#systemd (user)
 takeover ~/.config/systemd/user/spotifyd.service    $D/service/spotifyd.service
 takeover ~/.config/systemd/user/conky.service       $D/service/conky.service
 takeover ~/.config/systemd/user/compton.service     $D/service/compton.service
@@ -167,6 +173,7 @@ takeover ~/.config/systemd/user/i3focuslast.service $D/service/i3focuslast.servi
 takeover ~/.config/systemd/user/i3.service          $D/service/i3.service
 takeover ~/.config/systemd/user/xsession.target     $D/service/xsession.target
 
+#systemd (system)
 takeover /etc/systemd/system/checkupdates.service $D/service/checkupdates.service  sudo
 takeover /etc/systemd/system/checkupdates.timer   $D/service/checkupdates.timer    sudo
 takeover /etc/systemd/system/mirrorlist.service   $D/service/mirrorlist.service    sudo 
@@ -180,13 +187,9 @@ if [ ! -d "$AAA" ];then
     sudo chmod 777 $AAA
 fi
 
-
 mkdir -p $VAR/
-echo "PATH=$PATH" > $VAR/path.env
-takeover ~/.config/environment.d/path.conf $VAR/path.env
-
-rc ~/.profile
-rc ~/.bashrc
+#echo "PATH=$PATH" > $VAR/path.env
+#takeover ~/.config/environment.d/path.conf $VAR/path.env
 
 git submodule init
 git submodule update
@@ -196,5 +199,7 @@ bash extern/external.sh
 setconf "commit" "`git rev-parse --verify HEAD`"
 chmod -w $VAR/setup
 
+mkdir -p $VAR/path.d
+
 echo 
-make
+dt

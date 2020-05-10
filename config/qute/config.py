@@ -61,6 +61,9 @@ c.url.searchengines = {"DEFAULT": "https://www.google.fi/search?q={}"}
 c.tabs.background = True
 c.qt.highdpi
 
+#
+c.auto_save.session = True
+
 # A list of user stylesheet filenames to use.
 c.content.user_stylesheets = "user.css"
 
