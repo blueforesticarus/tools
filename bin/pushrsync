@@ -1,0 +1,34 @@
+#!/bin/bash
+D="`i var`"
+if [ -z "$D" ]; then 
+    echo "ERR: define var in index"
+    exit 1
+fi
+
+F="$D/rsync"
+
+if [ ! -f "$F" ] ; then
+    echo "ERR: no $F"
+    exit 1
+fi
+
+cat "$F" | while read line; do
+    ldir="$(eval realpath $(echo "$line" | cut -d " " -f1))"
+    rdir="$(echo "$line" | cut -d " " -f2)"
+    if [ -z "$1" ]; then 
+        rsync -ur "$ldir/" "$rdir"
+        rsync -ur "$rdir/" "$ldir"
+    else
+        A="$(realpath --relative-to="$ldir" "$1")"
+        if [[ "$A" == ../* ]]; then 
+            echo "skipping $line"
+        else
+            if [ -d "$1" ]; then 
+                rsync -r "$1" "$rdir/$A"
+            else
+                rsync "$1" "$rdir/$A"
+            fi
+        fi
+    fi
+done
+

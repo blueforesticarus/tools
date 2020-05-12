@@ -172,6 +172,8 @@ takeover ~/.config/systemd/user/dunst.service       $D/service/dunst.service
 takeover ~/.config/systemd/user/i3focuslast.service $D/service/i3focuslast.service
 takeover ~/.config/systemd/user/i3.service          $D/service/i3.service
 takeover ~/.config/systemd/user/xsession.target     $D/service/xsession.target
+takeover ~/.config/systemd/user/pushrsync.service   $D/service/pushrsync.service
+takeover ~/.config/systemd/user/pushrsync.timer     $D/service/pushrsync.timer
 
 #systemd (system)
 takeover /etc/systemd/system/checkupdates.service $D/service/checkupdates.service  sudo

@@ -234,3 +234,4 @@ for_window [title="Sonic Command Shell"] floating enable
 for_window [class="Spotify-Tui"] fullscreen enable 
 for_window [instance="nvim" class="vvim"] floating enable, resize set 1627 816, move position center
 for_window [instance="spt" class="vvim"] floating enable, resize set 1534 965, move position center
+for_window [instance="FloatTerm" class="FloatTerm"] floating enable, resize set 1513 1095, move position center

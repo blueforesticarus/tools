@@ -3,11 +3,18 @@ if [ -z "$(i screenshot)" ]; then
     echo -e "create screenshot dir first: sudo i screenshot <dir>" 1>&2
     exit 1
 fi 
+case "$1" in 
+    --save | -S )
+        filename=`date +"%FT%T.png"`
+        F="`i screenshot`/$filename"
+        mv "$2" "$F"
+        pushrsync "$F"
+        ;;
+esac
 
 f=`mktemp --suffix=".png"`
 rm $f
 scrot $@ $f
-filename=`date +"%FT%T.png"`
-action="mv %F `i screenshot`/$filename"
+action="screenshot --save %F"
 feh --no-menus --scale-down --auto-zoom -w -g 1440x810 --action "$action" $f
 rm -f $f
