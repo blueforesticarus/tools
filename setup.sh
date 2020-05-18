@@ -1,5 +1,16 @@
 D=`dirname "$(readlink -f "$0")"`
 D=`realpath "$D"`
+issym () {
+    if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+if ! issym /usr/var/local/tools/root "$D"; then 
+    sudo ln -snfT "$D" /usr/var/local/tools/root
+fi
+
 source $D/util/shellrc
 cd $D
 
@@ -9,7 +20,11 @@ if [ -z "`$D/bin/i var`" ]; then
     sudo $D/bin/i var $LINE
 fi
 VAR="`$D/bin/i var`"
+echo "var: $VAR"
 
+if [ ! -f $VAR/setup ]; then
+    touch $VAR/setup
+fi
 chmod +w $VAR/setup
 config () {
     grep "`printf '^%s ' "$1"`" $VAR/setup | cut -d ' ' -f2-
@@ -45,14 +60,6 @@ sudo i root "`realpath $D`"
 
 mkdir -p $VAR/ip
 touch $VAR/ip/list #TODO iplist or conn or avail should do this, not setup
-
-issym () {
-    if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
 
 symlinktobin () {
     if yesno -N "Symlink to tools/bin"; then
@@ -197,4 +204,4 @@ setconf "commit" "`git rev-parse --verify HEAD`"
 chmod -w $VAR/setup
 
 echo 
-make
+dt

@@ -27,6 +27,9 @@ add:
 
 ssh:
 	@conn --ssh
+
+fix:
+	@conn --fix
 	
 fs rfs ffs xfs xffs xrfs keys rkey fkey:
 	@conn --$@
