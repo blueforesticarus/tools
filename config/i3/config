@@ -13,7 +13,7 @@
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-#font pango:DejaVu Sans Mono 8
+font pango:DejaVu Sans Mono 4
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -163,11 +163,11 @@ bindsym Mod1+Shift+r restart
 
 ### Gaps ###
 hide_edge_borders both
-gaps inner 25
-gaps outer 10
+gaps inner 20
+gaps outer 0
 
 bindsym Mod1+g gaps inner all set 0 ; gaps outer all set 0
-bindsym Mod1+Shift+g gaps inner all set 25  ; gaps outer all set 10
+bindsym Mod1+Shift+g gaps inner all set 20  ; gaps outer all set 0
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -215,7 +215,8 @@ bindsym --release Print exec --no-startup-id screenshot
 bindsym --release Shift+Print exec --no-startup-id screenshot -s
 bindsym Mod1+Shift+w exec wallpaper -G -S -w -c -l
 bindsym Mod1+Ctrl+w exec wallpaper -G -C 
-bindsym Mod1+b exec wallpaper -G -S -r -w
+bindsym Mod1+b exec wallpaper -G -S -r -w 
+
 
 bindsym Mod1+Shift+s exec systemctl suspend
 bindsym Mod1+s exec betterlockscreen -l blur --off 15
@@ -237,5 +238,4 @@ for_window [title="Sonic Command Shell"] floating enable
 
 
 ### Exec ###
-exec --no-startup-id compton -b --config /z/config/compton.conf
-exec --no-startup-id conky -c /z/config/conky.conf
+#exec --no-startup-id compton -b --config /z/config/compton.conf
