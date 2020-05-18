@@ -5,8 +5,10 @@ export PATH=$PATH:/usr/var/local/tools/root/bin/
 #TODO, fix the fact that I need to have ^^^these^^^ three lines
 # possibly by scrapping the whole shell init system and redoing it from scratch 
 
+#echo "asdf $1" >> /testlog
+
 open () {
-    bash `i root`/util/hotplug_monitor.sh
+    bash /usr/var/local/tools/root/util/hotplug_monitor.sh
 }
 
 OPEN () {

@@ -45,7 +45,6 @@ else
                 kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@ < $pipe"
                 rm "$pipe"
             } 
-            $DISOWN
         else
             run () {
                 kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@" 

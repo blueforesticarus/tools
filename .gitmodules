@@ -22,3 +22,6 @@
 [submodule "extern/i3-focus-last"]
 	path = extern/i3-focus-last
 	url = git@github.com:s-urbaniak/i3-focus-last.git
+[submodule "config/vim/extra_colors"]
+	path = config/vim/extra_colors
+	url = https://github.com/blueforesticarus/more_vim_colorschemes
