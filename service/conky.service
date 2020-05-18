@@ -1,0 +1,11 @@
+[Unit]
+Description=Conky desktop widgets
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/conky -c /usr/var/local/tools/root/config/conky/conky.conf
+Restart=always
+RestartSec=6
+
+[Install]
+WantedBy=graphical-session.target

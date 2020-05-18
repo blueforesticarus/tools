@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function gen_workspaces()
+{
+    i3-msg -t get_workspaces | jq '.[]|.name' | xargs -I {} echo {}
+}
+
+
+FOCUSED=`i3-msg -t get_workspaces | jq -r '.[] | select(.focused) | .name' `
+echo "$FOCUSED"
+
+WORKSPACE=$( ( gen_workspaces)  | rofi -dmenu -p "Select workspace" -select $FOCUSED)
+
+if [ x"empty" = x"${WORKSPACE}" ]
+then
+    dave_i3_empty_workspace.sh
+elif [ -n "${WORKSPACE}" ]
+then
+    i3-msg workspace "${WORKSPACE}"
+fi
+
+

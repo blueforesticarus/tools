@@ -2,7 +2,10 @@
 max=`cat /sys/class/backlight/intel_backlight/max_brightness`
 save=`cat /sys/class/backlight/intel_backlight/brightness`
 
-STEPS=5
+if [ -z "$STEPS" ];then
+    STEPS=5
+fi
+
 if [ "$1" == "toggle" -o "$1" == "shift" ]; then 
     let "p = ( $save + 1 ) * $STEPS / $max"
     if [ "$2" == "down" ]; then 
@@ -25,7 +28,7 @@ if [ "$1" == "toggle" -o "$1" == "shift" ]; then
         fi
     fi
 else
-    val=`echo "$1" "*" "$max / 1" | bc`
+    val=`echo "$1" "*" "$max / $STEPS" | bc`
 fi
 
 

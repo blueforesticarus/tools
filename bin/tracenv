@@ -1,0 +1,20 @@
+#!/bin/bash
+#get env variable from pid and all it's parents
+ppid () { 
+    ps -p "$1" -o ppid=; 
+}
+
+print (){
+    VAL=$(tr '\0' '\n' < "/proc/$PID/environ" | grep "^$VAR")
+    EXE=$(readlink /proc/$PID/exe)
+    NAME=$(ps -p $PID -o comm=)
+    printf '%-10.10s %-20.20s %s\n' "$NAME" "$EXE" "$VAL"
+}
+
+PID=${2:-$$}
+VAR="$1"
+
+while [ $PID -ne 0 ]; do
+    print
+    PID=$(ppid $PID | xargs)
+done

@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ "-c" == "$1" ]; then 
+    shift
+    F=
+    if [ -e "$1"/"$1" ]; then 
+        F="$(safemv "$1"/"$1" "$1" 2>/dev/null)"
+    fi
+    D="`pwd`"
+    cd "$1" && fd . --exact-depth 1 | xargs -I {} safemv "$1/{}" "{}" "$1"
+    cd "$D"
+    rmdir "$1" && mv "$F" "$1" || ! echo "ERR: files remain... not deleting $1" 1>&2
+    exit $?
+fi
+
+F=`mktemp -d`/"$1"
+mv "$1" "$F"
+mkdir "$1"
+
+if [ -z "$2" ];then
+    mv "$F" "$1/`basename $1`"
+else
+    mv "$F" "$1/$2"
+fi
+rmdir "`dirname "$F"`"

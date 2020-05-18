@@ -1,0 +1,13 @@
+#!/bin/bash
+#blessed tree
+LIMIT=$1
+n=1
+CUTTOFF=10
+while true; do
+    fd -t d -d $n --ignore-file $2
+    fd -t f -d $((n-1)) --ignore-file $2
+    let n+=1
+    if [ $n -gt $CUTTOFF ]; then
+        break;
+    fi
+done | huniq 2>/dev/null | ifhead $LIMIT | sort | shiftf +1;

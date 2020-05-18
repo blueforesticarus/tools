@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ -z "$2" ]; then 
+    echo "usage: safemv src dest" 1>&2
+    exit 1
+fi
+
+if [ ! -z "$3" ]; then
+    cd "$3"
+fi
+
+DEST="$2"
+DEST_O="$DEST"
+
+NUM=-1
+while true; do
+    if [ -e "$DEST" ]; then 
+        echo "SAFEMV: $DEST already exists" 1>&2
+        let NUM+=1
+        DEST="$DEST_O.~$NUM"
+    else
+        mv "$1" "$DEST"
+        break;
+    fi
+done
+
+echo "$DEST"
+

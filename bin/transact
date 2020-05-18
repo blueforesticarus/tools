@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ "$1" = "-" ]; then 
+    DRYRUN=1
+    shift
+fi
+
+F="$1"
+KEY="$2"
+VALUE="$3"
+
+if [ -z "$2" ]; then
+    exit
+fi
+
+TMP="`mktemp`"
+if [ "$VALUE" = "--" ];then
+    rg -v -e "^(\\s*)$(esc $KEY) .*$" "$F" > "$TMP"
+else
+    rg --passthru -e "^(\\s*)$(esc $KEY) .*$" "$F" -r "\${1}$VALUE" > "$TMP" || \
+        echo "$KEY $VALUE" >> $TMP
+fi
+#TODO handle multi-line comments/strings
+
+diff "$F" "$TMP"
+
+if [ -z "$DRYRUN" ]; then 
+    mv -f "$F" "$F.orig"
+    mv "$TMP" "$F"
+else
+    rm "$TMP"
+fi
+

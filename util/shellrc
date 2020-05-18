@@ -1,8 +1,1 @@
-if [ -z "$BASH_SOURCE" ];then
-    BASH_SOURCE="${(%):-%x}"
-fi
-D=`dirname "$(readlink -f "$BASH_SOURCE")"`/../
-D="`realpath $D`"
-export PATH=$PATH:$D/bin
-
-for f in "$D"/bin/source/*; do source $f; done
+source /usr/var/local/tools/root/util/path.env

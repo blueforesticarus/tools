@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then 
+    echo "irequire: bad arg." >&2
+    exit 1
+fi 
+
+DIR="`i $1`"
+if [ -z "$DIR" ]; then
+    echo "Please define \"$1\" in the index:" >&2
+    echo "    sudo i \"$1\" <dir>" >&2
+    exit 1
+fi
+
+if [ ! -e "$DIR" ]; then 
+    echo "Index: $1 => $DIR does not exist"
+elif [ ! -d "$DIR" ]; then 
+    echo "Index: $1 => $DIR does is not directory"
+fi
+
+

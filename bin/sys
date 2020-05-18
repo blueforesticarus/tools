@@ -1,0 +1,258 @@
+#!/bin/bash
+#systemctl wrapper
+
+UNITS=()
+ACTION=()
+LIST=()
+AALL=
+AFAILED=
+AACTIVE=
+LOGSINCE=
+LOGLEVEL=
+LOGBOOTS=" -b "
+LOGTAIL=
+LOG=
+
+if [ -z "$1" ]; then
+    LIST=( list-units )
+    USERMODE=True
+    AACTIVE=True
+fi
+
+while [ ! -z "$1" ]; do
+    case $1 in
+        --* )
+            echo "bad arg: $1"
+            shift
+            ;;
+        -h | --help )
+            cat << EOF
+Systemctl wrapper:
+ex: 
+    sys -uRQ => systemctl --user restart FOO; \ 
+                systemctl --user status FOO
+
+usage:
+    -u => --user
+    -g => --global
+    
+    -R => restart
+    -S => start
+    -K => stop
+    -Q => status
+    -C => reload
+
+    -0 => disable
+    -1 => enable
+
+    -r => daemon-reload
+
+    -l => list-units
+    -f => list-unit-files
+    -x : show failed services
+    -a : show all services (includes inactive)
+    -! : show all units (not just services)
+    -t => list timers, works with 1, 0
+    
+    -L => logs (journalctl)
+    -. => tail aka follow (keep watching)
+    -e => loglevel error
+    -w => loglevel warning
+    -d => loglevel debug 
+    -b => all boots (defaults to just this boot)
+    -5 => only last 5 minutes
+EOF
+            exit
+            ;;
+        -* )
+            for (( i=1; i<${#1}; i++ )); do
+                CHAR="${1:i:1}"
+                case "$CHAR" in
+                    u )
+                        USERMODE=True
+                        ;;
+                    g )
+                        GLOBALMODE=True
+                        ;;
+                    R )
+                        ACTION+=( restart )
+                        ;;
+                    S )
+                        ACTION+=( start )
+                        ;;
+                    K )
+                        ACTION+=( stop )
+                        ;;
+                    Q )
+                        ACTION+=( status )
+                        ;;
+                    C )
+                        ACTION+=( reload )
+                        ;;
+                    0)
+                        ACTION+=( disable ) 
+                        ;;
+                    1)
+                        ACTION+=( enable )
+                        ;;
+                    r )
+                        DAEMON_RELOAD=True
+                        ;;
+                    l ) 
+                        LIST=( list-units )
+                        ;;
+                    f ) 
+                        LIST=( list-unit-files )
+                        ;;
+                    ! )
+                        AALL=True
+                        ;;
+                    x ) 
+                        AFAILED=TRUE
+                        ;;
+                    a ) 
+                        AACTIVE=TRUE
+                        ;;
+                    e ) 
+                        LOGLEVEL=3
+                        ;;
+                    w ) 
+                        LOGLEVEL=4
+                        ;;
+                    d ) 
+                        LOGLEVEL=7
+                        ;;
+                    5 )
+                        LOGSINCE='"5 minutes ago"'
+                        ;;
+                    b )
+                        LOGBOOTS=
+                        ;;
+                    L )
+                        LOG=TRUE
+                        ;;
+                    . )
+                        LOGTAIL=" -f "
+                        ;;
+                    t )
+                        TIMERS=TRUE
+                        ;;
+                    * )
+                        echo "bad arg: -$CHAR"
+                        ;;
+                esac
+            done
+            shift
+            ;;
+        * )
+            UNITS+=( "$1" )
+            shift
+            ;;
+    esac 
+done
+
+if [ -z "$USERMODE" -a -z "$GLOBALMODE" ]; then
+    if [ ${#ACTION[@]} -eq 1 ] && 
+       [ "${ACTION[0]}" == "status" ] && 
+       [ -z "DAEMON_RELOAD" ]; 
+    then
+        CMD="systemctl"
+    else
+        CMD="sudo systemctl"
+    fi
+elif [ ! -z "$GLOBALMODE" ]; then
+    CMD="systemctl --global"
+else
+    CMD="systemctl --user"
+fi
+
+if [ ! -z "$DAEMON_RELOAD" ]; then
+    $CMD daemon-reload
+fi
+
+for cmd in ${LIST[@]}; do
+    ARG=
+    if [ -z "$AALL" ]; then
+        ARG="--type service"
+    fi
+
+    if [ ! -z "$AFAILED" ]; then
+        ARG="$ARG --failed"
+    elif [ ! -z "$AACTIVE" ]; then
+        ARG="$ARG --all"
+    fi
+
+    if [ -z "$UNITS" ]; then
+        SYSTEMD_COLORS=1 $CMD $cmd $ARG | sed '/^$/q'  
+        Q="$($CMD $cmd $ARG --no-legend | cut -d' ' -f1)"
+        UNITS+=( $Q )
+    else
+        U=()
+        for u in ${UNITS[@]}; do
+            $CMD $cmd $ARG --no-legend | grep $UNITS
+            Q="$($CMD $cmd $ARG --no-legend | grep $UNITS | cut -d' ' -f1)"
+            U+=( $Q )
+        done
+        UNITS=$U
+    fi
+done
+
+if [ ! -z "$TIMERS" ]; then
+    cmd=list-timers
+    if [ -z "$UNITS" ]; then
+        $CMD $cmd --all --no-pager
+        Q=$($CMD $cmd --all --no-legend | grep -o "\w*\.timer")
+        UNITS+=( $Q )
+    else
+        U=()
+        for u in ${UNITS[@]}; do
+            $CMD $cmd --all --no-pager --no-legend | grep "$u" 
+            Q=$($CMD $cmd --all --no-legend | grep -o "\w*\.timer" | grep "$u")
+            U+=( $Q )
+        done
+        UNITS=( "${U[@]}" )
+    fi
+fi
+
+if [ ! -z "${ACTION[*]}" ]; then 
+if [ ! ${#UNITS[@]} -gt 1 ] || \
+   [ "${ACTION[*]}" == "status" ] || \
+   yesno -N "${ACTION[*]} ${#UNITS[@]} units?"
+then 
+    for u in ${UNITS[@]}; do
+        for a in ${ACTION[@]}; do
+            echo ">>> $CMD $a $u"
+            if ! $CMD $a $u; then
+                #systemctl status doesn't play nice so this is disabled
+                #echo -e "ERR: command returned error\n\t$ $CMD $a $u"
+                #exit 1 
+                :
+            fi
+        done
+    done
+fi
+fi
+
+if [ ! -z "$LOG" ]; then 
+    ARGS=" $LOGTAIL $LOGBOOTS "
+    if [ ! -z "$USERMODE" ]; then
+        ARGS="--user $ARGS"
+    fi
+    if [ ! -z "$LOGSINCE" ]; then
+        ARGS="$ARGS -S $LOGSINCE"
+    else
+        ARGS="$ARGS -e"
+    fi
+    if [ -z "$UNITS" ]; then 
+        ARGS="-p 5 $ARGS"
+    else
+        ARGS="-p 6 $ARGS"
+        for u in ${UNITS[@]}; do
+            ARGS="$ARGS -u $u"
+        done
+    fi
+    if [ ! -z "$LOGLEVEL" ]; then
+        ARGS="$ARGS -p $LOGLEVEL"
+    fi
+    eval journalctl $ARGS
+fi

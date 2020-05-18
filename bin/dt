@@ -1,3 +1,4 @@
+#!/bin/bash
 cd ~
-make -f `i root`/Makefile $@
+make -f `i root`/util/Makefile $@
 

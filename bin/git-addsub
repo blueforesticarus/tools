@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "$1" ] || ! [ -d "$1" ]; then 
+    echo "ERR: bad arg" >&2 && exit 1
+fi
+
+WD="`pwd`"
+cd "$1" 
+root="$(git rev-parse --show-toplevel)"
+if ! [ "$root" -ef "." ]; then 
+    echo "ERR: $1 is not the root of a git repo" >&1 && exit 1
+fi
+
+URL="$(git remote get-url --all origin | head)"
+if [ -z "$URL" ]; then
+    echo "couldn't get remote origin url, is $1 a git repo?" >&2 && exit 1
+fi
+
+cd "$WD"
+echo "$URL" 
+git submodule add "$URL" "$1"

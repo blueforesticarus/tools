@@ -1,0 +1,3 @@
+if [ "$1" == "--noconfirm" ] || yesno -N "Close graphical session?"; then
+    systemctl --user stop graphical-session.target
+fi

@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    sed 's/^[\t ]*//g'
+else
+    echo "$1" | sed 's/^[\t ]*//g'
+fi

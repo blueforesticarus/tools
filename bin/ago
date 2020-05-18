@@ -1,0 +1,17 @@
+hdate () {
+  awk -v date="$(date +%s -d "$1")" -v now="$(date +%s)" '
+    BEGIN {  diff = now - date;
+       if (diff > (24*60*60)) printf "%.0f days %.0f hours ago", diff/(24*60*60), diff/(60*60);
+       else if (diff > (60*60)) printf "%.0f hours %.0f minutes ago", diff/(60*60), diff/60;
+       else if (diff > 60) printf "%.0f minutes %.0f seconds ago", diff/60, diff;
+       else printf "%s seconds ago", diff;
+    }'
+}
+A="`trim "$1"`"
+if [ "$A" == "-f" ]; then 
+    shift
+    A="`trim "$1"`"
+    hdate "$(stat -c '%y' "$A")"
+else
+    hdate "$A"
+fi

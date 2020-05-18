@@ -13,3 +13,12 @@
 [submodule "dot/vim/plugins/ctrlp"]
 	path = config/vim/plugins/ctrlp
 	url = https://github.com/ctrlpvim/ctrlp.vim
+[submodule "extern/DaveScripts"]
+	path = extern/DaveScripts
+	url = https://github.com/DaveDavenport/RandomScripts.git
+[submodule "extern/rofi_android_theme"]
+	path = extern/rofi_android_theme
+	url = https://github.com/blueforesticarus/rofi_android_theme.git
+[submodule "extern/i3-focus-last"]
+	path = extern/i3-focus-last
+	url = git@github.com:s-urbaniak/i3-focus-last.git

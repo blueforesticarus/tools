@@ -1,2 +1,9 @@
 dot/vim/undo
 data/
+extern/bin
+config/vim/undo
+config/vim/plugins/
+config/vim/.netrwhist
+config/nvim/.netrwhist
+config/qute/bookmarks
+

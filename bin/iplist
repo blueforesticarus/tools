@@ -1,5 +1,9 @@
 #!/bin/bash
-DIR=`i root`/data/ip
+irequire root || (echo "Please run setup.sh" && exit 1)
+irequire var || exit 1
+
+DIR=`i var`/ip
+
 mkdir -p $DIR
 
 list=$DIR/list

@@ -1,0 +1,10 @@
+#update mirrorlist once a month
+[Unit]
+Description=Update mirrorlist every month
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

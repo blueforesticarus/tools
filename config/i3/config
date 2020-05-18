@@ -1,74 +1,75 @@
-# i3 config file (v4)
-#
-# Please see http://i3wm.org/docs/userguide.html for a complete reference!
-#
-# This config file uses keycodes (bindsym) and was written for the QWERTY
-# layout.
-#
-# To get a config file with the same key positions, but for your current
-# layout, use the i3-config-wizard
-#
-
-# Font for window titles. Will also be used by the bar unless a different font
-# is used in the bar {} block below.
-# This font is widely installed, provides lots of unicode glyphs, right-to-left
-# text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 4
-# Before i3 v4.8, we used to recommend this one as the default:
-# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
-# The font above is very space-efficient, that is, it looks good, sharp and
-# clear in small sizes. However, its unicode glyph coverage is limited, the old
-# X core fonts rendering does not support right-to-left and this being a bitmap
-# font, it doesn’t scale on retina/hidpi displays.
-
-### THEME ###
-
-#set $FOCUS #ff1155
-#set $UNFOCUS #f5f0e3
-set_from_resource $FOCUS i3wm.color7 #ff1155
-set_from_resource $UNFOCUS i3wm.color2 #f5f0e3
-
-# Layout colors 	    bord 	bg 		text    indicator (split)
-client.focused 			$FOCUS $FOCUS $FOCUS $FOCUS
-client.focused_inactive $UNFOCUS $UNFOCUS $UNFOCUS $UNFOCUS
-client.unfocused 		$UNFOCUS $UNFOCUS $UNFOCUS $UNFOCUS
-client.urgent 			$FOCUS $FOCUS $FOCUS $FOCUS
-client.background 		$UNFOCUS
-
-### Borders ###
-default_border normal 0
-default_floating_border normal 0
 focus_follows_mouse no
 
-### Gaps ###
-set $ws1 I
-set $ws2 II
-set $ws3 III
-set $ws4 IV
-set $ws5 V
-set $ws6 VI
-set $ws7 VII
-set $ws8 VIII
-set $ws9 IX
-set $ws10 X
+#==================================================================================================
+#                                       THEME
+###T===============================================================================================
+set_from_resource $FOCUS i3wm.color7 #ff1155
+set_from_resource $UNFOCUS i3wm.background #f5f0e3
 
-# use these keys for focus, movement, and resize directions when reaching for
-# the arrows is not convenient
-set $up k
-set $down j
-set $left h
-set $right l
+# Layout colors 	    bord 	 bg       text     indicator (split)
+client.focused 			$FOCUS   $FOCUS   $FOCUS   $FOCUS
+client.focused_inactive $UNFOCUS $UNFOCUS $UNFOCUS $UNFOCUS
+client.unfocused 		$UNFOCUS $UNFOCUS $UNFOCUS $UNFOCUS
+client.urgent 			$FOCUS   $FOCUS   $FOCUS   $FOCUS
+client.background 		$UNFOCUS
+
+default_border pixel 2
+default_floating_border none
+
+#i3 maintainer is a pedant: https://github.com/i3/i3/issues/2664
+font pango:monospace 0
+
+# Gaps 
+hide_edge_borders smart
+set $GAPS_INNER 25
+set $GAPS_OUTER -10
+gaps inner $GAPS_INNER
+gaps outer $GAPS_OUTER
+bindsym Mod1+shift+g  gaps inner all toggle $GAPS_INNER     ; gaps outer all toggle $GAPS_OUTER
+bindsym Mod1+g        gaps inner current toggle $GAPS_INNER ; gaps outer current toggle $GAPS_OUTER
+
+#==================================================================================================
+#                                       KEYBINDS
+###K===============================================================================================
+# Media player controls
+bindsym XF86AudioPlay  exec mprisctl PlayPause
+bindsym XF86AudioPause exec mprisctl PlayPause
+bindsym XF86AudioNext  exec mprisctl Next
+bindsym XF86AudioPrev  exec mprisctl Previous
 
 # use Mouse+Mod1 to drag floating windows to their wanted position
 floating_modifier Mod1
 
+### Scratchpad ###
+bindsym Mod1+Shift+0 move scratchpad
+bindsym Mod1+0 scratchpad show
+
+### Shortcuts ###
+bindsym --release Print exec --no-startup-id screenshot
+bindsym --release Shift+Print exec --no-startup-id screenshot -s
+bindsym Mod1+Shift+w exec wallpaper -G -S -w -c -l
+bindsym Mod1+Ctrl+w exec wallpaper -G -C 
+bindsym Mod1+b exec wallpaper -G -S -r -w
+
+bindsym Mod1+Shift+s exec systemctl suspend
+bindsym Mod1+s exec betterlockscreen -l blur --off 15
+bindsym Mod1+plus exec keylight toggle
+bindsym Mod1+Shift+plus exec dim shift up
+bindsym Mod1+Shift+minus exec dim shift down
+bindsym Mod1+minus exec dim toggle up
+bindsym Mod1+Ctrl+plus exec keylight max
+bindsym Mod1+Ctrl+period move position center
+bindsym Mod1+Ctrl+s exec --no-startup-id i3-save-window-size
+
 # start a terminal
-bindsym Mod1+shift+Return exec --no-startup-id kitty --class FXTerm
-for_window [class="FXTerm"] floating enable
-bindsym Mod1+Return exec --no-startup-id kitty
+bindsym Mod1+shift+Return exec kitty --class FloatTerm #see bottom section
+bindsym Mod1+Return       exec kitty 
 bindsym Mod1+shift+p exec --no-startup-id pavucontrol
-bindsym Mod1+shift+m exec --no-startup-id rambox
+bindsym Mod1+shift+n exec --no-startup-id notebook
+bindsym Mod1+shift+m exec --no-startup-id ambox
 bindsym Mod1+shift+b exec --no-startup-id net
+
+bindsym Mod1+F7 exec --no-startup-id xset dpms force standby && betterlockscreen -l blur
 
 # kill focused window
 bindsym Mod1+q kill
@@ -78,8 +79,22 @@ bindsym Mod1+q kill
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
-bindsym Mod1+d exec --no-startup-id rofi -show run
-bindsym Mod1+w exec --no-startup-id rofi -show window
+bindsym Mod1+u exec --no-startup-id workspace_picker
+bindsym Mod1+i exec --no-startup-id rofi -show windowcd
+bindsym Mod1+shift+i exec --no-startup-id rofi -show window
+bindsym Mod1+d exec --no-startup-id rofi -show drun
+bindsym Mod1+shift+d exec --no-startup-id rofi -show run
+bindsym Mod1+backslash exec --no-startup-id monitorswap
+bindsym Mod1+shift+Tab workspace back_and_forth
+bindsym Mod1+Tab exec --no-startup-id i3-focus-last switch
+
+#android rofi menus
+bindsym Mod1+Delete exec --no-startup-id android powermenu
+bindsym Mod1+Home exec --no-startup-id android apps
+bindsym Mod1+Prior exec --no-startup-id android quicklinks
+bindsym Mod1+Next exec --no-startup-id android player
+bindsym Mod1+End exec --no-startup-id android screenshot
+bindsym Mod1+equal exec --no-startup-id android backlight
 
 # change focus
 bindsym Mod1+$left focus left
@@ -117,7 +132,7 @@ bindsym Mod1+shift+f fullscreen toggle global
 
 # change container layout (stacked, tabbed, toggle split)
 #bindsym Mod1+s layout stacking
-bindsym Mod1+Shift+e layout tabbed
+bindsym Mod1+Shift+e layout toggle tabbed stacked
 bindsym Mod1+e layout toggle split
 
 # toggle tiling / floating
@@ -127,10 +142,26 @@ bindsym Mod1+Shift+space floating toggle
 bindsym Mod1+space focus mode_toggle
 
 # focus the parent container
-bindsym Mod1+a focus parent
+bindsym Mod1+shift+k focus parent
 
 # focus the child container
-#bindsym Mod1+d focus child
+bindsym Mod1+shift+j focus child
+
+# reload the configuration file
+bindsym Mod1+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym Mod1+Shift+r restart
+bindsym Mod1+Ctrl+r exec --no-startup-id userexit --noconfirm
+
+set $ws1 I
+set $ws2 II
+set $ws3 III
+set $ws4 IV
+set $ws5 V
+set $ws6 VI
+set $ws7 VII
+set $ws8 VIII
+set $ws9 IX
 
 # switch to workspace
 bindsym Mod1+1 workspace $ws1
@@ -142,7 +173,6 @@ bindsym Mod1+6 workspace $ws6
 bindsym Mod1+7 workspace $ws7
 bindsym Mod1+8 workspace $ws8
 bindsym Mod1+9 workspace $ws9
-#bindsym Mod1+0 workspace $ws10
 
 # move focused container to workspace
 bindsym Mod1+Shift+1 move container to workspace $ws1
@@ -154,88 +184,52 @@ bindsym Mod1+Shift+6 move container to workspace $ws6
 bindsym Mod1+Shift+7 move container to workspace $ws7
 bindsym Mod1+Shift+8 move container to workspace $ws8
 bindsym Mod1+Shift+9 move container to workspace $ws9
-#bindsym Mod1+Shift+0 move container to workspace $ws10
 
-# reload the configuration file
-bindsym Mod1+Shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym Mod1+Shift+r restart
-
-### Gaps ###
-hide_edge_borders both
-gaps inner 20
-gaps outer 0
-
-bindsym Mod1+g gaps inner all set 0 ; gaps outer all set 0
-bindsym Mod1+Shift+g gaps inner all set 20  ; gaps outer all set 0
-
-# resize window (you can also use the mouse for that)
+#==================================================================================================
+#                                      MODES
+###M===============================================================================================
+# resize window
+bindsym Mod1+r mode "resize"
 mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
+    bindsym h resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym j resize shrink height 10 px or 10 ppt
+    bindsym l resize grow width 10 px or 10 ppt
 
-        # Pressing left will shrink the window’s width.
-        # Pressing down will grow the window’s height.
-        bindsym $left       resize shrink width 10 px or 10 ppt
-        bindsym $down       resize grow height 10 px or 10 ppt
-        bindsym $up         resize shrink height 10 px or 10 ppt
-        bindsym $right      resize grow width 10 px or 10 ppt
-
-        # same bindings, but for the arrow keys
-        bindsym Left        resize shrink width 10 px or 10 ppt
-        bindsym Down        resize grow height 10 px or 10 ppt
-        bindsym Up          resize shrink height 10 px or 10 ppt
-        bindsym Right       resize grow width 10 px or 10 ppt
-
-        # back to normal: Enter or Escape
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
 }
 
-bindsym Mod1+r mode "resize"
-
+#orient screen.
+bindsym Mod1+o mode "orient"
 mode "orient" {
-	bindsym Left  exec tprot 90
-	bindsym Right exec tprot 270
-	bindsym Up    exec tprot 180
-	bindsym Down  exec tprot 0
-	bindsym a exec --no-startup-id arandr
+    bindsym h exec tprot 90
+    bindsym l exec tprot 270
+    bindsym k exec tprot 180
+    bindsym j exec tprot 0
+    bindsym a exec --no-startup-id arandr
 
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
 
-bindsym Mod1+o mode "orient"
+#==================================================================================================
+##                                 floating window settings
+###f===============================================================================================
+# hack to fix teams ###
+for_window [title="Microsoft Teams Notification"] floating enable
+no_focus [title="Microsoft Teams Notification"]
 
-### Scratchpad ###
-bindsym Mod1+Shift+0 move scratchpad
-bindsym Mod1+0 scratchpad show
-
-### Shortcuts ###
-bindsym --release Print exec --no-startup-id screenshot
-bindsym --release Shift+Print exec --no-startup-id screenshot -s
-bindsym Mod1+Shift+w exec wallpaper -G -S -w -c -l
-bindsym Mod1+Ctrl+w exec wallpaper -G -C 
-bindsym Mod1+b exec wallpaper -G -S -r -w 
-
-
-bindsym Mod1+Shift+s exec systemctl suspend
-bindsym Mod1+s exec betterlockscreen -l blur --off 15
-bindsym Mod1+plus exec keylight toggle
-bindsym Mod1+Shift+plus exec dim shift up
-bindsym Mod1+Shift+minus exec dim shift down
-bindsym Mod1+minus exec dim toggle up
-bindsym Mod1+Ctrl+plus exec keylight max
-
-### floating windows ###
+# GENERATED BY i3-save-window-size
+for_window [class="Pavucontrol"]  floating enable, move position center, resize 1078 770
+for_window [class="Notebook"]  floating enable, resize set 1554 835, move position center
+for_window [class="FloatTerm"] floating enable
 for_window [class="Steam"] floating enable
 for_window [class="Gimp"] floating enable
 for_window [class="feh"] floating enable
 for_window [class="arandr"] floating enable
-for_window [class="Pavucontrol"] floating enable, resize set 830 580
 for_window [window_role="pop-up"] floating enable
 for_window [title="Sonic Controller"] floating enable
 for_window [title="Sonic Command Shell"] floating enable
-
-
-### Exec ###
-#exec --no-startup-id compton -b --config /z/config/compton.conf
+for_window [class="Spotify-Tui"] fullscreen enable 

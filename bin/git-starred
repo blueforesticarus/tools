@@ -1,0 +1,262 @@
+#!/bin/bash
+USER=blueforesticarus
+AUTH="-u $USER:`password github.token`"
+
+arg_parse () {
+    case "$1" in
+        -u | --update )
+            UPDATE_REPOS=1
+            UPDATE_STARRED=1
+            UPDATE_FOLLOWS=1
+            UPDATE_FOLLOWS_REPOS=1
+            UPDATE_FOLLOWS_STARRED=1
+            ;;
+        -nu | --no_update )
+            UPDATE_REPOS=0
+            UPDATE_STARRED=0
+            UPDATE_FOLLOWS=0
+            UPDATE_FOLLOWS_REPOS=0
+            UPDATE_FOLLOWS_STARRED=0
+            ;;
+        -u_ | --update_minimal )
+            UPDATE_REPOS=1
+            UPDATE_STARRED=1
+            UPDATE_FOLLOWS=0
+            UPDATE_FOLLOWS_REPOS=0
+            UPDATE_FOLLOWS_STARRED=0
+            ;;
+        -us | --update_smart )
+            UPDATE_REPOS=1
+            UPDATE_STARRED=1
+            URL="https://api.github.com/rate_limit"
+            REM="$( curl $AUTH -s "$URL" | jq '.rate|.remaining' )"
+            if [ $REM -gt 4980 ]; then 
+                UPDATE_FOLLOWS=1
+                UPDATE_FOLLOWS_REPOS=1
+                UPDATE_FOLLOWS_STARRED=1
+            else
+                UPDATE_FOLLOWS=2
+                UPDATE_FOLLOWS_REPOS=2
+                UPDATE_FOLLOWS_STARRED=2
+            fi
+            ;;
+        -uR | --update-repos )
+            UPDATE_REPOS=1
+            ;;
+        -nuR | --no-update-repos )
+            UPDATE_REPOS=0
+            ;;
+        -uS | --update-starred )
+            UPDATE_REPOS=1
+            ;;
+        -nuS | --no-update-starred )
+            UPDATE_REPOS=0
+            ;;
+        -uF | --update-follows )
+            UPDATE_REPOS=1
+            ;;
+        -nuF | --no-update-follows )
+            UPDATE_REPOS=0
+            ;;
+        -uFS | --update-follows-starred )
+            UPDATE_REPOS=1
+            ;;
+        -nuFS | --no-update-follows-starred )
+            UPDATE_REPOS=0
+            ;;
+        -uFR | --update-follows-repos )
+            UPDATE_REPOS=1
+            ;;
+        -nuFR | --no-update-follows-repos )
+            UPDATE_REPOS=0
+            ;;
+        -c_ | --cache-dynamic )
+            FRESH=1
+            ;;
+        -nc | --no-cache ) 
+            FRESH=0
+            ;;
+        -c | --cache )
+            FRESH=2
+            ;;
+        -C | --clear | --clear-cache )
+            rm -rf `i var`/git/
+            mkdir `i var`/git
+            exit 
+            ;;
+        --user )
+            shift
+            USER="$1"
+            ;;
+        -q | --quiet )
+            QUIET=1
+            ;;
+        -v | --verbose )
+            QUIET=0
+            ;;
+        * )
+            echo "Bad arg: $1" >&2
+            exit
+            ;;
+    esac
+    return $#
+}
+
+arg_parse -c_ 
+arg_parse -u_
+arg_parse -v
+while [ ! -z "$1" ]; do
+    arg_parse $@
+    shift $(($#-$?+1))
+done
+
+get_starred () {
+    local USER="$1"
+    AUTH="-u $USER:`password github.token`"
+
+    URL="https://api.github.com/users/$USER/starred?per_page=100"
+    TMP="`mktemp`"
+    ACC=0
+
+    let ACC+=1
+    curl $AUTH -s -D "$TMP" "$URL" \
+    | jq -r '.[]|.full_name'
+
+    NUM_PAGES="$( \
+        rg 'Link: ' "$TMP" \
+        | rg '<[^<>]*page=([0-9]+)>; rel="last"' -r '$1' -o 
+    )"
+
+    rm "$TMP"
+    if [ ! -z "$NUM_PAGES" ]; then 
+        if [ $NUM_PAGES -gt 6 ]; then
+            NUM_PAGES=6
+        fi
+        for PAGE in `seq 2 $NUM_PAGES`; do
+            let ACC+=1
+            curl $AUTH -s "$URL&page=$PAGE" \
+            | jq -r '.[]|.full_name' &
+        done
+    fi
+    echo $ACC >> $TMP2
+}
+get_repos () {
+    local USER="$1"
+    AUTH="-u $USER:`password github.token`"
+
+    URL="https://api.github.com/users/$USER/repos?type=all&per_page=100"
+    TMP="`mktemp`"
+    ACC=0
+
+    let ACC+=1
+    curl $AUTH -s -D "$TMP" "$URL" \
+    | jq -r '.[]|.full_name'
+
+    NUM_PAGES="$( \
+        rg 'Link: ' "$TMP" \
+        | rg '<[^<>]*page=([0-9]+)>; rel="last"' -r '$1' -o 
+    )"
+    rm "$TMP"
+
+    if [ ! -z "$NUM_PAGES" ]; then 
+        if [ $NUM_PAGES -gt 6 ]; then
+            NUM_PAGES=6
+        fi
+        for PAGE in `seq 2 $NUM_PAGES`; do
+            let ACC+=1
+            curl $AUTH -s "$URL&page=$PAGE" \
+            | jq -r '.[]|.full_name' &
+        done
+    fi
+    echo $ACC >> $TMP2
+}
+
+get_following () {
+    local USER="$1"
+    URL="https://api.github.com/user/following?per_page=99"
+    TMP="`mktemp`"
+    ACC=0
+
+    let ACC+=1
+    curl $AUTH -s -D "$TMP" "$URL" \
+    | jq -r '.[]|.login'
+
+    NUM_PAGES="$( \
+        rg 'Link: ' "$TMP" \
+        | rg '<[^<>]*page=([0-9]+)>; rel="last"' -r '$1' -o 
+    )"
+    rm "$TMP"
+
+    if [ ! -z "$NUM_PAGES" ]; then 
+        if [ $NUM_PAGES -gt 6 ]; then
+            NUM_PAGES=6
+        fi
+        for PAGE in `seq 2 $NUM_PAGES`; do
+            let ACC+=1
+            curl $AUTH -s "$URL&page=$PAGE" \
+            | jq -r '.[]|.login' &
+        done
+    fi 
+    echo $ACC >> $TMP2
+}
+
+ECH () {
+    if [ $QUIET -eq 0 ]; then 
+        echo "$1" >&2
+    fi
+}
+
+both (){
+    DIR="`i var`/git/$1"
+    mkdir -p "$DIR"
+    
+    FILE="$DIR/$3"
+    if [ -f "$FILE" ] && [ $FRESH -ne 0 ]; then
+        cat "$FILE"
+    fi
+    if [ ! -f "$FILE" ] || [ $FRESH -ne 2 ]; then 
+        if [ ! -z "$4" ] && ( [ $4 -eq 1 ] || ( [ $4 -eq 2 ] && [ ! -f "$FILE" ] )); then 
+            if ! rg "^$3( $1)?$" `i root`/config/git-starred.blacklist ; then
+                ECH "USER: $3 - $1"
+                $2 $3 | tee "$FILE.new"
+                mv "$FILE.new" "$FILE"
+            else
+                ECH "USER: $3 - $1 [blacklisted]"
+            fi
+        fi
+    fi
+}
+
+ACC=0
+all (){
+    both repos get_repos $USER $UPDATE_REPOS &
+    both starred get_starred $USER $UPDATE_STARRED &
+    both following get_following $USER $UPDATE_FOLLOWS \
+    | huniq | while read -r f_user; do
+        ECH "FOLLOWING: $f_user"
+        both repos get_repos "$f_user" $UPDATE_FOLLOWS_REPOS &
+        both starred get_starred "$f_user" $UPDATE_FOLLOWS_STARRED &
+    done
+    wait
+}
+
+TMP2="`mktemp`"
+if [ ! -z "$A_USER" ]; then
+    if [ $UPDATE_STARRED -eq 1 ]; then 
+        both starred get_starred $A_USER $UPDATE_STARRED | huniq
+    elif [ $UPDATE_REPOS -eq 1 ]; then 
+        both repos get_repos $A_USER $UPDATE_REPOS | huniq
+    fi
+else
+    all | huniq
+fi
+
+ACC="$( cat "$TMP2" | jq -s add || echo 0)"
+rm $TMP2
+if [ "$ACC" != "null" ]; then 
+    URL="https://api.github.com/rate_limit"
+    REM="$( curl $AUTH -s "$URL" | jq '.rate|.remaining' )"
+    ECH "Used $ACC api requests. $REM remaining this hour. $((REM/ACC)) uses" >&2
+fi
+
+

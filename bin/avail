@@ -1,6 +1,7 @@
 #!/bin/bash
+irequire var || exit 1
 
-DIR=`i root`/data/ip/
+DIR=`i var`/ip/
 online=$DIR/online
 avail=$DIR/avail
 scan=$DIR/scan

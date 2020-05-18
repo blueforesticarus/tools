@@ -12,4 +12,3 @@ ihop () {
         ihop "$target"
     fi
 }
-export ihop

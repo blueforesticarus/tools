@@ -1,0 +1,13 @@
+#!/bin/bash
+if [ -z "$(i screenshot)" ]; then
+    echo -e "create screenshot dir first: sudo i screenshot <dir>" 1>&2
+    exit 1
+fi 
+
+f=`mktemp --suffix=".png"`
+rm $f
+scrot $@ $f
+filename=`date +"%FT%T.png"`
+action="mv %F `i screenshot`/$filename"
+feh --no-menus --scale-down --auto-zoom -w -g 1440x810 --action "$action" $f
+rm -f $f

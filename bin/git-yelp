@@ -1,0 +1,237 @@
+#!/bin/bash
+#fetch helpful project info
+#CONFIG
+C_NUMLOGS=${C_NUMLOGS:-1}
+C_README=4
+C_SUBMOD=8
+C_FILES=10
+
+#PROGRAM
+if [ ! -z "$1" ];then 
+    cd "$1"
+    echo "ENTER: `pwd`"
+fi
+NUM=$(($(git rev-list --count HEAD)-1)) #todo, fix bug where it cannot print info for the first commit
+if [ $NUM -lt $C_NUMLOGS ]; then 
+    C_NUMLOGS=$NUM
+fi
+git fetch || exit
+if ! which hr printcolor bubble >/dev/null 2>&1; then 
+    git log -1
+    git status
+fi
+
+COLS=$(($(tput cols) - 0))
+
+printlogn () {
+    skip=$(($1-1))
+    hr -t "$(git log -1 --skip=$skip --color=always --pretty=$'%C(ul)%ar\033[24m %d')" -s ' ' -b reverse -c $(($COLS + 9)) -C on
+    bubble "`git log -1 --skip=$skip --pretty='%an'`" -sp -N -F
+    log_bubbles "$1"
+    printf '\n'
+    #printf "%s\n" "$(git log -1 --color=always --pretty=' %ar %C(dim magenta)%d%Creset')"
+    #printf "%s\n" "$(git log -1 --skip=$skip --color=always --pretty='%C(ul)%ar%Creset')"
+    git log -1 --skip=$skip --pretty='%C(bold)%s%Creset%b' --color=always | fmt
+}
+
+parse (){
+    COL="$(git diff --ignore-submodules --numstat $@ )"
+    C1="$(echo "$COL" | cut -f1 | jq -s 'add')"
+    C2="$(echo "$COL" | cut -f2 | jq -s 'add')"
+    if [ -z "$COL" ]; then
+        LN=0
+    else
+        LN="$(echo "$COL" | wc -l )"
+    fi
+}
+
+pc () {
+    printcolor -fg "$1" "$2"
+}
+
+cb () {
+    TXT="$( bubble "${@:2}" -R )"
+    pc "$1" "$TXT"
+}
+ca () {
+    TXT="$( bubble "${@:2}" -sp -N -T)"
+    pc "$1" "$TXT"
+    printf '\n'
+}
+
+cbargs="-R"
+line_edit() {
+    parse HEAD
+    cb "foreground" " ¶:$LN " -sp -N -B
+    printf " [`pc "#00FF00" "++$C1"`/`pc "#FF0000" "--$C2"`] %b" "$1"
+}
+
+files_added() {
+    parse HEAD --diff-filter=AC
+    if [ "$LN" -gt 0 ]; then
+        cb "#60ff60" "✚:$LN" $cbargs
+        printf ":`pc "#00FF00" "++$C1"` %b" "$1"
+    fi
+}
+files_deleted() {
+    parse HEAD --diff-filter=D
+    if [ "$LN" -gt 0 ]; then
+        cb "#ff6060" "✖:$LN" $cbargs
+        printf ":`pc "#FF0000" "--$C2"` %b" "$1"
+    fi
+}
+files_modified() {
+    parse HEAD --diff-filter=MT
+    if [ "$LN" -gt 0 ]; then
+        cb "#ffff60" "✱:$LN" $cbargs
+        printf ":`pc "#00FF00" "++$C1"`/`pc "#FF0000" "--$C2"` %b" "$1"
+    fi
+}
+files_renamed() {
+    parse HEAD --diff-filter=R
+    if [ "$LN" -gt 0 ]; then
+        cb "#60ffff" "↔:$LN" $cbargs
+        printf "%b" "$1"
+    fi
+}
+files_unknown() {
+    C1=`git ls-files . --exclude-standard --others | xargs cat | wc -l`
+    if [ "$LN" -gt 0 ]; then
+        cb "#ff60ff" "?:$LN" $cbargs
+        printf ":`pc "#00FF00" "++$C1"` %b" "$1"
+    fi
+}
+#log version of bubble funcs
+lline_edit() {
+    parse "$A" "$B"
+    if [ $LN -gt 0 ]; then
+        printf " ¶:%-3s" "$LN" 
+        printf ' %s  --  ' "[`pc "#00FF00" "++$C1"`/`pc "#FF0000" "--$C2"`]"
+        LLN=$LN
+    else
+        LLN=-1
+    fi
+}
+
+
+lfiles_added() {
+    parse "$A" "$B" --diff-filter=AC
+    if [ $LN -gt 0 ]; then
+        cb "#60ff60" "✚:$LN" $cbargs
+        if [ $LLN -ne $LN ]; then
+            printf ":`pc "#00FF00" "++$C1"` "
+        fi
+    fi
+}
+lfiles_deleted() {
+    parse "$A" "$B" --diff-filter=D
+    if [ $LN -gt 0 ]; then
+        cb "#ff6060" "✖:$LN" $cbargs
+        if [ $LLN -ne $LN ]; then
+            printf ":`pc "#FF0000" "--$C2"` "
+        fi
+    fi
+}
+lfiles_modified() {
+    parse "$A" "$B" --diff-filter=MT
+    if [ "$LN" -gt 0 ]; then
+        cb "#ffff60" "✱:$LN" $cbargs
+        if [ $LLN -ne $LN ]; then
+            printf ":`pc "#00FF00" "++$C1"`/`pc "#FF0000" "--$C2"` "
+        fi
+    fi
+}
+lfiles_renamed() {
+    parse "$A" "$B" --diff-filter=R
+    if [ "$LN" -gt 0 ]; then
+        cb "#60ffff" "↔:$LN" $cbargs
+    fi
+}
+
+log_bubbles() {
+    A="HEAD~$1"
+    B="HEAD~$(($1-1))"
+    lline_edit "$A" "$B"
+    lfiles_modified "$A" "$B"
+    lfiles_added "$A" "$B"
+    lfiles_deleted "$A" "$B"
+    lfiles_renamed "$A" "$B"
+}
+
+TMPSUB=`mktemp`
+trees (){
+    bt $C_FILES $TMPSUB #| #column #| xargs tree --noreport --filelimit 6 | rg '\[([0-9]+ entries)[^\]]*\]' -r '[$1]' --passthru | rg '^([0-9a-zA-Z])' --passthru -r '=$1'
+    rm "$TMPSUB"
+}
+readme () {
+README=$(fd -d 1 -1 'README(\..+)?' 2>/dev/null)
+MAX=$C_README
+if [ ! -z "$README" ]; then
+    LEN=`cat "$README" | wc -l`
+    ca "#FF8800" "$README [0-$MAX/$LEN]"
+    bat $README -l markdown | head -$MAX
+    if [ $LEN -gt $MAX ]; then 
+        echo "..."
+    fi
+fi
+}
+
+submodule () {
+    SUB="$(fd -uu -d 1 '\.gitmodules' -X cat | rg 'path = (.*)$' -o -r '$1' )"
+if [ ! -z "$SUB" ]; then
+    LEN=`echo "$SUB" | wc -l`
+    ca "#8800FF" "SUBMODULES [$LEN]" 
+    echo "$SUB" | tee "$TMPSUB" | column | ifhead $C_SUBMOD
+fi
+}
+
+files (){
+ca "#00FF88" "FILES [$FT @$DT]" #TODO number is for tracked files, but tree shows all no ignored
+trees | column
+}
+
+NUMF="`fd -t f -uu -E .git/ | wc -l`"
+NUMD="`fd -t d -uu -E .git/ | wc -l`"
+FT="`git ls-tree -r master --name-only | wc -l`"
+DT="`git ls-tree -r master --name-only -d | wc -l`"￼
+
+final () {
+line_edit " "
+files_modified " "
+files_added " "
+files_deleted " "
+files_renamed " "
+files_unknown 
+printf $'\n'
+
+DI=`git ls-files . --ignored --exclude-standard --others | wc -l`
+DU=`git ls-files . --exclude-standard --others | wc -l`
+DI=`git ls-files . --ignored --exclude-standard --others --directory | wc -l`
+DU=`git ls-files . --exclude-standard --others --directory | wc -l`
+
+GIG=`du -s -h | cut -f1`
+GGIG=`du -s -h .git | cut -f1`
+
+hr -t "WORKING DIR ($NUMF:$FU!$FI) @$NUMD:$DT!$DI ^$GGIG ^^$GIG" -s ' ' -b reverse -C on -c $(($COLS + 2))
+}
+
+TMP="`mktemp -d`"
+mkdir -p "$TMP"
+for n in `seq $C_NUMLOGS`; do
+    printlogn $n > $TMP/a$n &
+done
+readme      > $TMP/d &
+submodule   > $TMP/e &
+files       > $TMP/f &
+final       > $TMP/g &
+cd "$TMP"
+
+wait
+tput smcup
+clear
+
+fd -t f . | sort --version-sort | xargs cat
+rm -rf $TMP
+
+read 
+tput rmcup

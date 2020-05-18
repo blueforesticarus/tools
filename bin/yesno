@@ -1,19 +1,31 @@
+#!/bin/bash
 
 prompt="y/n"
-case $1 in
-	-Y ) 
-		default=y
-		prompt="Y/n"
-		shift
-		;;
-	-N ) 
-		default=n
-		prompt="y/N"
-		shift
-		;;
-esac
-
-pre=$1
+while [ ! -z "$1" ]; do
+    case $1 in
+        -Y ) 
+            default=y
+            prompt="Y/n"
+            shift
+            ;;
+        -N ) 
+            default=n
+            prompt="y/N"
+            shift
+            ;;
+        -a ) 
+            shift
+            binding="$1"
+            shift
+            action="$1"
+            shift
+            ;;
+        * )
+            pre=$1
+            shift
+            ;;
+    esac
+done
 
 while true; do
 	read -p "$pre ($prompt): " line
@@ -28,7 +40,11 @@ while true; do
 		N | n | no  | No  | NO )
 			exit 1
 			;;
+        * )
+            if [ "$line" == "$binding" -a ! -z "$binding" ]; then
+                eval $action
+            else
+	            echo "<<< invalid answer (`maxstrlen 7 "$line"`) >>> "
+            fi
 	esac
-	
-	echo "<<< invalid answer (`maxstrlen 7 $line`) >>> "
 done 

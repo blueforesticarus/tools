@@ -1,0 +1,49 @@
+#!/bin/bash
+#config for notifications
+ICONSET=Paper
+ICONSIZE=48x48
+ICONDIR=/usr/share/icons/$ICONSET/$ICONSIZE
+
+URGENCY=low
+
+HEAD=
+case $1 in
+    systemd )
+        NAME=SystemD
+        ICON=status/sync-synchronizing.png
+        case $2 in 
+            start )
+                TXT="starting $3"
+                ;;
+        esac
+        ;;
+    pacman )
+        NAME=pacman
+        ICON=apps/gnome-documents.png
+        case $2 in 
+            update )
+                TXT="[$3] ready to update\n$4"
+                ;;
+        esac
+        ;;
+esac
+
+notify_user(){
+    #stolen from https://unix.stackexchange.com/questions/492622/how-to-use-notify-send-to-notify-users-as-root
+    typeset title="$1"
+    typeset message="$2"
+    typeset urgency="$3"
+    typeset icon="${4:-}"
+
+    typeset ls user bus_addr
+
+    typeset IFS=$'\n'
+
+    user=phi    
+    bus_addr=unix:path=/run/user/1000/bus #hardcode my uid
+    # run notify-send with the correct user
+    DBUS_SESSION_BUS_ADDRESS="$bus_addr" sudo -u $user -E /usr/bin/notify-send -u "$urgency" -i "$icon" "$title" "$message"
+}
+
+#notify-send --urgency=$URGENCY --app-name=$NAME --icon="$ICONDIR/$ICON" --expire-time=3000 "$NAME $HEAD" "$TXT"
+notify_user $NAME "$TXT" $URGENCY "$ICONDIR/$ICON" 

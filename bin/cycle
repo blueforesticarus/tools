@@ -1,0 +1,5 @@
+#!/bin/bash
+#internet fix
+sudo sys -K iwd
+sudo rfkill unblock wlan
+sudo sys -S iwd

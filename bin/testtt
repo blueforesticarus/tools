@@ -1,0 +1,7 @@
+#!/bin/bash
+while true; do
+    sleep .2
+    a=$RANDOM
+    let a%=100
+    echo $a
+done

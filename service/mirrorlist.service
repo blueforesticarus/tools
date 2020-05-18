@@ -1,0 +1,6 @@
+[Unit]
+Description=Update pacman mirrorlist
+
+[Service]
+Type=oneshot
+ExecStart=/usr/var/local/tools/root/util/update_pacman_mirrorlist.sh

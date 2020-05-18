@@ -1,0 +1,97 @@
+#!/bin/bash
+
+#replacement for playerctl b/c playerctl is slow AF for no reason 
+
+SERVICE="$(qdbus | grep -F 'org.mpris.MediaPlayer2' | trim | grep "spotify" | head -1)"
+TARGET="/org/mpris/MediaPlayer2"
+CUT="org.mpris.MediaPlayer2.Player"
+DIR="`i var`/mpris"
+
+if [ -z "$SERVICE" ]; then
+    echo "Cannot connect to mpris player";
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    paste <(echo -e "METHOD\n========" &&  qdbus $SERVICE "$TARGET" | grep "^method" | grep -Po "$CUT\\.\K[^()]*") \
+           <(echo -e "PROPERTY\n========" && qdbus $SERVICE "$TARGET" | grep "^property" | grep -Po "$CUT\\.\K[^()]*") | column -t -s $'\t'
+    exit 0
+fi
+
+META="XXX"
+meta (){
+    if [ "$META" == "XXX" ]; then
+        META=$(qdbus "$SERVICE" "$TARGET" "$CUT".Metadata)
+    fi
+
+    test ! -z "$META"
+    return $?
+}
+get () {
+    echo "$META" | grep -Po "^$1: \K.*" 
+}
+
+ART="XXX"
+art () {
+    if [ "$ART" == "XXX" ]; then  
+        ART=""
+        if  meta; then
+            mkdir -p $DIR
+            URL=$(get mpris:artUrl)
+            FILE=$(basename $URL)
+            if wget $(get mpris:artUrl) -q -O $DIR/$FILE; then
+                ln -snf $FILE $DIR/current
+                ART="$DIR/$FILE"
+            fi
+        fi
+    fi    
+    if [ -z "$ART" ]; then 
+        rm -f $DIR/current
+        return 1
+    fi
+}
+
+conky () {
+    :
+}
+
+
+notify () {
+    ICONPATH=apps/spotify.png
+    ICONSET=Paper
+    ICONSIZE=48x48
+
+    if [ "$ART" == "XXX" ]; then 
+        ICON="/usr/share/icons/$ICONSET/$ICONSIZE/$ICONPATH"
+    else
+        ICON="$ART"
+    fi
+
+    if [ "$PLAYER_EVENT" = "change" ] || [ -z "$PLAYER_EVENT" ]; then
+        if meta; then
+            TITLE="$(get "xesam:title")"
+            BODY="$(get "xesam:album")\n$(get "xesam:albumArtist")"
+            notify-send --urgency=low --expire-time=3000 --icon="$ICON" --app-name=spotifyd "$TITLE" "$BODY"  
+        fi
+    fi
+}
+
+case $1 in
+    --art)
+        art && echo "$ART"
+        exit $?
+        ;;
+    --notify)
+        notify
+        ;;
+    --conky)
+        art
+        conky
+        ;;
+    *)
+        SUBCOMMAND="$1"
+        COMMAND="org.mpris.MediaPlayer2.Player.$SUBCOMMAND"
+        qdbus "$SERVICE" "$TARGET" "$COMMAND" 
+        ;;
+esac
+

@@ -1,0 +1,5 @@
+#!/bin/bash
+#wrap betterlockscreen to get automatic wallpaper changes
+( sleep 1 && wallpaper --set -c -r ) &
+betterlockscreen -l blur $@
+wallpaper -l -r 
