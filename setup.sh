@@ -103,6 +103,16 @@ takeover(){
             return 0
         fi
         if yesno -N "Take Over $1 ?" ; then
+            DIR="`dirname $1`"
+            
+            if [ ! -d "$DIR" ] && [ -e "$DIR" -o -h "$DIR" ]; then 
+                $3 mv "$DIR" "$DIR".old
+            fi
+
+            if [ ! -e "$DIR" ]; then 
+                $3 mkdir -p "$DIR"
+            fi
+
             if [ -e "$1" ]; then
                 $3 mv "$1" "$1".old
             fi
@@ -216,7 +226,7 @@ git submodule update
 bash extern/external.sh
 
 mkdir -p $VAR/empty
-takeover /usr/share/nvim/colors $D/util/empty sudo
+takeover /usr/share/nvim/colors $VAR/empty sudo
 test "$(ls -A $VAR/empty)" && sudo rm -r $D/util/*
 
 setconf "commit" "`git rev-parse --verify HEAD`"
