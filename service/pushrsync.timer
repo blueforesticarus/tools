@@ -1,0 +1,10 @@
+#update mirrorlist once a month
+[Unit]
+Description=Push stuff to fileserver hourly.
+
+[Timer]
+OnCalendar=hourly
+Persistent=false
+
+[Install]
+WantedBy=timers.target

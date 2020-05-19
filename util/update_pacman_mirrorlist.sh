@@ -1,2 +1,2 @@
 #!/bin/bash
-reflector --f 13 --score 35 -c US --save /etc/pacman.d/mirrorlist
+reflector --protocol https --f 13 --score 35 --age 12 -c US --save /etc/pacman.d/mirrorlist

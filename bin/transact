@@ -12,13 +12,15 @@ VALUE="$3"
 if [ -z "$2" ]; then
     exit
 fi
+KEYESC="$(esc -r "$KEY")"
+
 
 TMP="`mktemp`"
 if [ "$VALUE" = "--" ];then
-    rg -v -e "^(\\s*)$(esc $KEY) .*$" "$F" > "$TMP"
+    rg -v -e "^(\\s*)$KEYESC .*$" "$F" > "$TMP"
 else
-    rg --passthru -e "^(\\s*)$(esc $KEY) .*$" "$F" -r "\${1}$VALUE" > "$TMP" || \
-        echo "$KEY $VALUE" >> $TMP
+    rg --passthru "^(\\s*)$KEYESC .*$" "$F" -r "\${1}$VALUE" > "$TMP" || \
+        echo "$VALUE" >> $TMP
 fi
 #TODO handle multi-line comments/strings
 

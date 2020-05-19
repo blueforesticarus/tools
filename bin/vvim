@@ -2,6 +2,7 @@
 #inteligently start vim
 APP=nvim
 PIPE=
+DISOWN=
 while [ ! -z "$1" ]; do
     case "$1" in
         \\* )
@@ -14,6 +15,8 @@ while [ ! -z "$1" ]; do
             break;;
         -- )
             PIPE=TRUE;;
+        \& ) 
+            DISOWN=TRUE;;
         * )
             break;;
     esac
@@ -24,7 +27,7 @@ APP=${VVIM_APP-$APP}
 CLASS=${VVIM_CLASS-vvim}
 NAME=${VVIM_NAME-$APP}
 
-if [ -t 0 ]; then
+if [ -t 0 ] && [ -z "$DISOWN" ]; then
     #in a terminal
     if [ "$TERM" = "xterm-kitty" ] ; then 
         source /usr/var/local/tools/root/bin/source/vim.sh
@@ -38,13 +41,23 @@ else
         if [ ! -z "$PIPE" ]; then 
             pipe=`mktemp`
             cat > $pipe
-            kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@ < $pipe"
-            rm "$pipe"
+            run () {
+                kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@ < $pipe"
+                rm "$pipe"
+            } 
         else
-            kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@"
+            run () {
+                kitty --class $CLASS --name $NAME -o window_padding_width=0 -o background_opacity=1 bash -c "$APP $@" 
+            }
         fi
     else 
         exit 1
+    fi
+
+    if [ -z "$DISOWN" ]; then 
+        run $@
+    else
+        run $@ >/dev/null 2>&1 & disown
     fi
 fi
 

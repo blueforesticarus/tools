@@ -1,4 +1,5 @@
 execute pathogen#infect('plugins/{}')
+execute pathogen#infect('extra_colors/{}')
 
 "XXX not used
 "colorscheme jellybeans "default
@@ -9,6 +10,22 @@ function! s:color_override()
 	endif
 endfunction
 "XXX call s:color_override() "if there is a colorscheme in .vim/colors it is used
+
+function! RandomNumber(limit) 
+  let components = split(reltimestr(reltime()), '\.')
+  let microseconds = components[-1] + 0
+  return microseconds % a:limit
+endfunction
+
+function! RandomScheme() 
+  let choices = []
+  for fname in split(globpath(&runtimepath, 'colors/*.vim'), '\n')
+    let name = fnamemodify(fname, ':t:r')
+    let choices = choices + [name]
+  endfor
+  let index = RandomNumber(len(choices))
+  execute 'colorscheme' fnameescape(choices[index])
+endfunction
 
 "airline extensions
 let g:airline#extensions#tabline#enabled = 1

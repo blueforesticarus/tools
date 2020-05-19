@@ -3,5 +3,5 @@ Type=Application
 Version=1.0
 Name=SpotifyTui
 Comment=Spotify Terminal Client
-Exec=kitty --class Spotify-Tui spt
+Exec=vvim \\\\spt 
 Terminal=false

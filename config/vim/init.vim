@@ -25,6 +25,9 @@ set tabstop=4
 set shiftwidth=4
 set autoindent
 
+"no wrap
+set nowrap
+
 "makefiles need tabs not spaces
 autocmd FileType make setlocal noexpandtab
 
@@ -42,13 +45,24 @@ set splitbelow
 set incsearch
 set hlsearch
 
+"show whitespace
+set list
+set listchars=tab:>\ ,trail:.,extends:>,precedes:<,nbsp:+
+
+"always show one line above and below cursor
+set scrolloff=1
+
 "clear search highlight on esc
 nnoremap <esc><esc> :nohls <esc>
 
 "syntax highlighting
+colorscheme jellybeans "fallback
+call RandomScheme()
+nnoremap <F8> :call RandomScheme()<CR>:colorscheme<CR>
+
 syntax on
-colorscheme jellybeans
 set t_Co=256
+set termguicolors
 highlight Normal ctermbg=Black
 highlight NonText ctermbg=Black
 let &t_ut=''
@@ -110,4 +124,4 @@ command ENDFILEDATE normal Go<esc>:DATE<CR>o
 
 "select pasted
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
-
+colorscheme "print what colorscheme we are using

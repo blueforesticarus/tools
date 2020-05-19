@@ -75,12 +75,13 @@ symlinktobin () {
 }
 
 rc () {
+    NAME=$2
     if ! [ -f $1 ]; then
         return 
     fi
 
     TAG="#ADDED BY TOOLS SETUP.SH"
-    S="source $D/util/shellrc #ADDED BY TOOLS SETUP.SH"
+    S="source $D/util/$NAME #ADDED BY TOOLS SETUP.SH"
         
     if ! grep -F "$S" $1; then
         echo "You need to add this line to your $1:"
@@ -138,34 +139,49 @@ else
     echo "Skipping disabled: symlink to bin"
 fi
 
+#==================================================================================================
+#                                      TAKEOVER
+##T================================================================================================
 
-#takeover ~/.zshrc $D/config/zshrc || rc ~/.zshrc
-takeover ~/.vimrc $D/config/vimrc
+takeover_vim () {
+    takeover $1/autoload      $2/autoload
+    takeover $1/extra_colors  $2/extra_colors
+    takeover $1/plugins       $2/plugins
+    takeover $1/pathogen      $2/pathogen
+    takeover $1/syntax        $2/syntax
+}
 
-rm -rf $D/config/vim/undo 
-takeover ~/.vim $D/config/vim && ln -snf "`i var`"/vim/undo $D/config/vim
+takeover_vim ~/.vim          $D/config/vim
+takeover ~/.vimrc            $D/config/vim/vimrc
+takeover ~/.vim/vimrc_extra  $D/config/vim/vimrc_extra
+
+takeover_vim ~/.config/nvim  $D/config/vim
+takeover ~/.config/nvim/init.vim $D/config/vim/init.vim
+takeover ~/.config/nvim/extra.vim $D/config/vim/extra.vim
 
 #config
-takeover ~/.config/nvim               $D/config/nvim
-takeover ~/.config/kitty              $D/config/kitty
-takeover ~/.i3                        $D/config/i3
-takeover ~/.config/rofi/config        $D/config/rofi.conf
-takeover ~/.config/dunst/dunstrc      $D/config/dunstrc
+takeover ~/.config/kitty/kitty.conf   $D/config/kitty.conf
 takeover ~/.config/qutebrowser        $D/config/qute
 takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 takeover ~/.local/share/applications  $D/desktop
 
-#autologin
-takeover ~/.xinitrc  $D/config/xinitrc
-takeover ~/.profile  $D/config/shell/profile
-takeover /etc/profile.d/env.sh  $D/config/shell/env.sh sudo
+#autostartx autologin enviroment and shellrc
+takeover /etc/profile.d/env.sh      $D/config/shell/env.sh sudo
+takeover ~/.xinitrc                 $D/config/display/xinitrc
+takeover ~/.i3/config               $D/config/display/i3.conf
+takeover ~/.config/rofi/config      $D/config/display/rofi.conf
+takeover ~/.config/dunst/dunstrc    $D/config/display/dunstrc
+takeover ~/.profile                 $D/config/shell/profile
+takeover ~/.config/fish/config.fish $D/config/shell/rc/config.fish || rc ~/.config/fish/fish.config setup.fish
+takeover ~/.zshrc                   $D/config/shell/rc/zshrc       || rc ~/.zshrc                   shellrc
+takeover ~/.bashrc                  $D/config/shell/rc/bashrc      || rc ~/.bashrc                  shellrc
 
 #udev
 takeover /etc/udev/rules.d/95-monitor-hotplug.rules $D/udev/95-monitor-hotplug.rules sudo 
 takeover /etc/udev/rules.d/99-batify.rules          $D/udev/99-batify.rules          sudo 
 takeover /etc/acpi/handler.sh                       $D/config/acpi.sh                sudo 
 
-#systemd
+#systemd (user)
 takeover ~/.config/systemd/user/spotifyd.service    $D/service/spotifyd.service
 takeover ~/.config/systemd/user/conky.service       $D/service/conky.service
 takeover ~/.config/systemd/user/compton.service     $D/service/compton.service
@@ -173,7 +189,10 @@ takeover ~/.config/systemd/user/dunst.service       $D/service/dunst.service
 takeover ~/.config/systemd/user/i3focuslast.service $D/service/i3focuslast.service
 takeover ~/.config/systemd/user/i3.service          $D/service/i3.service
 takeover ~/.config/systemd/user/xsession.target     $D/service/xsession.target
+takeover ~/.config/systemd/user/pushrsync.service   $D/service/pushrsync.service
+takeover ~/.config/systemd/user/pushrsync.timer     $D/service/pushrsync.timer
 
+#systemd (system)
 takeover /etc/systemd/system/checkupdates.service $D/service/checkupdates.service  sudo
 takeover /etc/systemd/system/checkupdates.timer   $D/service/checkupdates.timer    sudo
 takeover /etc/systemd/system/mirrorlist.service   $D/service/mirrorlist.service    sudo 
@@ -187,21 +206,23 @@ if [ ! -d "$AAA" ];then
     sudo chmod 777 $AAA
 fi
 
-
 mkdir -p $VAR/
-echo "PATH=$PATH" > $VAR/path.env
-takeover ~/.config/environment.d/path.conf $VAR/path.env
-
-rc ~/.profile
-rc ~/.bashrc
+#echo "PATH=$PATH" > $VAR/path.env
+#takeover ~/.config/environment.d/path.conf $VAR/path.env
 
 git submodule init
 git submodule update
 
 bash extern/external.sh
 
+mkdir -p $VAR/empty
+takeover /usr/share/nvim/colors $D/util/empty sudo
+test "$(ls -A $VAR/empty)" && sudo rm -r $D/util/*
+
 setconf "commit" "`git rev-parse --verify HEAD`"
 chmod -w $VAR/setup
+
+mkdir -p $VAR/path.d
 
 echo 
 dt

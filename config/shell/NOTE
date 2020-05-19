@@ -1,0 +1,25 @@
+I track my .profile here, as well as an enviroment config at /etc/profile.d/env.sh
+The .profile starts either xorg or fish depending on tty.
+
+bash will load .profile if .bash_profile does not exist. If .bash_profile exists it should source .profile, or else .profile is useless for tty login.
+I have no idea how graphical (aka no-tty) login works, and I have no idea what profile is sourced. I dont need graphical login, especially since I use autologin.
+
+I deliberately don't track any of the shell specific profiles, since I do not think the users default shell should be related to default interactive shell.
+default shell should always be bash, and it should only set up enviroment. It can then exec the desired shell. For terminals, the desired shell should be configured in the terminal config. the shell in /etc/passwd is only for ttys, ssh, etc.
+
+I do track several bashrc style files. These will load util/shellrc (which in turn loads util/path.env) to set path and functions.
+If you do not want tools to takeover your shells rc file, then you should add a line to source the shell rc.
+
+Both the util/shellrc and profile source util/path.env. This is so that the path is properly set both when logging in and when an interactive shell is created. That way, on systems where I do not takeover .profile, I still have access to devtools bin in my terminal (note that in this case things that run without a interactive shell as a parent process, such as i3, will not have acces to devtools bin. This can be fixed by adding a line to your .profile.)
+
+SYSTEMD PROBLEM:
+systemd does not use .profile for enviroment vars.
+this has large implications for things which use scripts in tools bin
+1. you have to specify full path for Exec lines since it doesn't know about tools bin
+2. (more important) nothing started by systemd will know about tools bin
+
+2 means that the problem propogates. Env vars inherit from parent. If everything comes from the user's login shell, then we are good since .profile sets PATH. 
+But what if something like i3 is started from systemd? then i3 wont know about tools bin and keybinds to start scripts there will fail without full path.
+
+unsolved problem:
+We need to get our enviroment vars into both the system and user systemd. 

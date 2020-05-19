@@ -3,7 +3,7 @@ Description=Compton window compositor
 PartOf=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/compton --config /usr/var/local/tools/root/config/compton.conf
+ExecStart=/usr/bin/compton --config /usr/var/local/tools/root/config/display/compton.conf
 Restart=always
 RestartSec=6
 

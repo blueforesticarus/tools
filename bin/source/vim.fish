@@ -1,6 +1,6 @@
 #!/bin/bash
-set KITTY_DEFAULT_OPACITY ( rg 'background_opacity ([0-9\.]*)$' (i root)/config/kitty/kitty.conf -o -r '$1' )
-set KITTY_DEFAULT_PADDING ( rg 'window_padding_width (.*)$' (i root)/config/kitty/kitty.conf -o -r '$1' )
+set KITTY_DEFAULT_OPACITY ( rg 'background_opacity ([0-9\.]*)$' (i root)/config/kitty.conf -o -r '$1' )
+set KITTY_DEFAULT_PADDING ( rg 'window_padding_width (.*)$' (i root)/config/kitty.conf -o -r '$1' )
 
 function vim 
     if test "$TERM" = "xterm-kitty"

@@ -15,8 +15,8 @@ eval $(
         sed -n -e 's/.*= "\(\w*\)", "\(\w*\)"/TITLE="\1";CLASS="\2"/p'
 )
 
-BASE1="for_window [instance=\"$TITLE\" class=\"$CLASS\"] "
-BASE2="for_window [class=\"$CLASS\"] "
+BASE1="for_window [instance=\"$TITLE\" class=\"$CLASS\"]"
+BASE2="for_window [class=\"$CLASS\"]"
 
 LINE1="floating enable, resize set $w $h, move position center"
 LINE2="floating enable,move $x $y, resize set $w $h"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Rsync everything
+
+[Service]
+Type=oneshot
+ExecStart=/usr/var/local/tools/root/bin/pushrsync
