@@ -26,7 +26,7 @@ source ~/.bashrc
 export ATHAME_VIM_PERSIST=1
 unset zle_bracketed_paste
 export PATH=GOBBLE:/z/bin:/z/bin:/z/bin:/z/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/phi/.local/bin:~/bin
-source /home/phi/save/dev/tools/util/shellrc
+source /usr/var/local/tools/root/util/shellrc
 
 alias vim=kitty_mod.sh
 export VISUAL=kitty_mod.sh

@@ -111,9 +111,11 @@ command W :w !sudo tee %:t >/dev/null
 
 " tab switches to normal mode for one command
 inoremap <Tab> <C-o>
-inoremap <F24> <Enter>
+inoremap <F24> <Tab>
 inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
+inoremap <Enter> <Esc>
+inoremap <Shift+Enter> <Enter>
 
 " auto save on focus lost
 :au FocusLost * silent! w 

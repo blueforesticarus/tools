@@ -1,3 +1,8 @@
+if [ ! -d /usr/var/local/tools ]; then 
+    sudo mkdir -p /usr/var/local/tools
+fi
+sudo touch /usr/var/local/tools/index
+
 D=`dirname "$(readlink -f "$0")"`
 D=`realpath "$D"`
 issym () {
@@ -222,11 +227,14 @@ mkdir -p $VAR/
 
 git submodule init
 git submodule update
+cd config/vim/extra_colors && make
+cd $D
 
 bash extern/external.sh
 
 mkdir -p $VAR/empty
-takeover /usr/share/nvim/colors $VAR/empty sudo
+takeover /usr/share/nvim/runtime/colors $VAR/empty sudo
+takeover /usr/share/vim/vim82/colors $VAR/empty sudo
 test "$(ls -A $VAR/empty)" && sudo rm -r $D/util/*
 
 setconf "commit" "`git rev-parse --verify HEAD`"
