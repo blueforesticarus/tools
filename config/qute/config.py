@@ -7,7 +7,7 @@ c.input.insert_mode.auto_leave = True
 
 # Automatically enter insert mode if an editable element is focused
 # after loading the page.
-c.input.insert_mode.auto_load = True
+c.input.insert_mode.auto_load = False 
 
 # Show a scrollbar.
 c.scrolling.bar = 'always'

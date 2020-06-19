@@ -90,7 +90,7 @@ vnoremap ; :
 nnoremap ; :
 
 "command to save with sudo
-command W :w !sudo tee %:t >/dev/null
+cnoremap w!! w !sudo dd of=% >/dev/null
 
 "default paste from yank buffer
 "vnoremap p "0p
@@ -115,14 +115,20 @@ inoremap <F24> <Tab>
 inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
 inoremap <Enter> <Esc>
+nnoremap <Enter> <Esc><Esc>
+vnoremap <Enter> <Esc>
 inoremap <Shift+Enter> <Enter>
 
 " auto save on focus lost
-:au FocusLost * silent! w 
+":au FocusLost * silent! w 
+:au FocusLost * w 
+
+" reload rc
+command! RC :source $MYVIMRC
 
 " insert date
-command DATE :put =strftime('%c')
-command ENDFILEDATE normal Go<esc>:DATE<CR>o
+command! DATE :put =strftime('%c')
+command! ENDFILEDATE normal Go<esc>:DATE<CR>o
 
 "select pasted
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
