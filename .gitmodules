@@ -25,3 +25,9 @@
 [submodule "config/vim/extra_colors"]
 	path = config/vim/extra_colors
 	url = https://github.com/blueforesticarus/more_vim_colorschemes
+[submodule "config/vim/plugins/vim-ripgrep"]
+	path = config/vim/plugins/vim-ripgrep
+	url = http://github.com/jremmen/vim-ripgrep.git
+[submodule "config/vim/plugins/undotree"]
+	path = config/vim/plugins/undotree
+	url = http://github.com/mbbill/undotree.git

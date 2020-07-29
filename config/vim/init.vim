@@ -116,12 +116,15 @@ inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
 inoremap <Enter> <Esc>
 nnoremap <Enter> <Esc><Esc>
+autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
 vnoremap <Enter> <Esc>
 inoremap <Shift+Enter> <Enter>
+nnoremap <Tab> <C-w><C-w>
 
 " auto save on focus lost
 ":au FocusLost * silent! w 
-:au FocusLost * w 
+au FocusLost * w 
+autocmd FocusLost * stopinsert | wall!
 
 " reload rc
 command! RC :source $MYVIMRC
@@ -133,3 +136,9 @@ command! ENDFILEDATE normal Go<esc>:DATE<CR>o
 "select pasted
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 colorscheme "print what colorscheme we are using
+
+"folds
+set foldmethod=indent
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"zj")<CR>
+nnoremap <C-h> zm
+nnoremap <C-l> zr

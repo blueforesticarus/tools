@@ -96,17 +96,24 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_show_hidden = 0
 
 nnoremap f :CtrlPBuffer<CR>
-nnoremap F :CtrlPCurFile<CR>
-nnoremap <C-F> :CtrlPCurWD<CR>
-nnoremap <C-p> :CtrlPMixed<CR>
+nnoremap <C-f> :CtrlPMixed<CR>
 
 "ctrlp filters
 let g:ctrlp_custom_ignore = {
     \ 'dir': '\v(\.git|\.hg|\.svn|build)$',
     \ 'file': '\v\.(exe|so|dll)$',
-    \ }
+    \ } 
 
 "newline in normal
 nnoremap J i<CR><ESC>
 "remove newline
 nnoremap K J
+
+"ripgrep config
+let g:rg_command = 'rg --vimgrep -S'
+nnoremap <C-c> :ccl <bar> lcl <bar> UndotreeHide <CR>
+nnoremap U <C-r>
+nnoremap <C-r> :Rg <CR>
+
+"undotree
+nnoremap <F5> :UndotreeToggle<cr>
