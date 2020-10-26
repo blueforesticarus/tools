@@ -48,7 +48,7 @@ while test $# -gt 0; do
 			ROOT=".root"
 			shift; 
 			;;	
-	    -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X | --fix | --term )
+	    --pull | -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X | --fix | --term )
             act="$1"
             shift
             ;;
@@ -244,7 +244,7 @@ rkey () {
 
 case "$act" in
 	--command | -c )
-		withpass "$COMMAND"
+		withpass ssh $USER@$IP "$COMMAND"
 		;;
     --fix )
         ssh-keygen -R "$IP"
@@ -305,4 +305,8 @@ case "$act" in
 		;;
     --terminfo | --term ) 
 	    infocmp $TERM | withpass ssh $USER@$IP "mkdir -p .terminfo && cat >/tmp/ti && tic /tmp/ti"
+        ;;
+    --pull )
+        hg pull http://$IP:8000
+        ;;
 esac

@@ -66,9 +66,6 @@ au FileType * syntax region Box  start=/#=\+/ end=/##=\+/ | hi def Box ctermfg=B
 "generate comment box
 nnoremap ,co ^v$h"by<Esc>O#<Esc>100A=<Esc>100\|D<CR>i#<CR><Esc>i##<Esc>100a=<Esc>100\|D<Esc>kA <Tab><Tab><Tab><Tab><Tab><Esc>"bp`[i
 
-"zs for next word, this is black magic I dont know how it works.
-noremap <C-Z> "kyiw :vnew sview \| 0read ! zs <C-r>k <CR><CR> <C-w>r :setlocal buftype=nofile<CR> <C-w><C-h> 
-
 "moving selections aroung
 vnoremap <C-j> :m '>+1<CR>gv
 vnoremap <C-k> :m '<-2<CR>gv
@@ -97,6 +94,7 @@ let g:ctrlp_show_hidden = 0
 
 nnoremap f :CtrlPBuffer<CR>
 nnoremap <C-f> :CtrlPMixed<CR>
+nnoremap F :CtrlPCurFile<CR>
 
 "ctrlp filters
 let g:ctrlp_custom_ignore = {
@@ -114,6 +112,22 @@ let g:rg_command = 'rg --vimgrep -S'
 nnoremap <C-c> :ccl <bar> lcl <bar> UndotreeHide <CR>
 nnoremap U <C-r>
 nnoremap <C-r> :Rg <CR>
+vnoremap <C-r> "ry :Rg -F "<C-r>""<CR>
 
 "undotree
 nnoremap <F5> :UndotreeToggle<cr>
+
+"syntastic
+let python_highlight_all=1
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+nnoremap <C-e> :lopen <CR>
+nnoremap ze :Errors <CR> :ll<CR> zO :ll<CR>
+"todo setup ale instead of syntastic

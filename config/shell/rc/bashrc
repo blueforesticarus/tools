@@ -13,3 +13,6 @@ alias x='grep -v'
 alias e=echo
 alias aur=yay
 source /usr/var/local/tools/root/util/shellrc #ADDED BY TOOLS SETUP.SH
+
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

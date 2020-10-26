@@ -67,6 +67,9 @@ c.auto_save.session = True
 # A list of user stylesheet filenames to use.
 c.content.user_stylesheets = "user.css"
 
+#spellcheck
+c.spellcheck.languages = ["en-US","es-ES"]
+
 config.source('font.py')
 config.source('keybind.py')
 config.source('qutewal.py')

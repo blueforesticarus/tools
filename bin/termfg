@@ -1,0 +1,43 @@
+#!/bin/bash
+txt="$2"
+if [ $# -lt 1 ]; then
+    txt="$(cat)"
+fi
+
+if [ "$1" = "0" -o "$1" = "black" ]; then 
+    color="\e[30m"
+elif [ "$1" = "2" -o "$1" = "red" ]; then 
+    color="\e[31m"
+elif [ "$1" = "3" -o "$1" = "green" ]; then 
+    color="\e[32m"
+elif [ "$1" = "4" -o "$1" = "yellow" ]; then 
+    color="\e[33m"
+elif [ "$1" = "5" -o "$1" = "blue" ]; then 
+    color="\e[34m"
+elif [ "$1" = "6" -o "$1" = "magenta" ]; then 
+    color="\e[35m"
+elif [ "$1" = "7" -o "$1" = "cyan" ]; then 
+    color="\e[36m"
+elif [ "$1" = "8" -o "$1" = "light_gray" ]; then 
+    color="\e[37m"
+elif [ "$1" = "9" -o "$1" = "dark_gray" ]; then 
+    color="\e[90m"
+elif [ "$1" = "10" -o "$1" = "light_red" ]; then 
+    color="\e[91m"
+elif [ "$1" = "11" -o "$1" = "light_green" ]; then 
+    color="\e[92m"
+elif [ "$1" = "12" -o "$1" = "light_yellow" ]; then 
+    color="\e[93m"
+elif [ "$1" = "13" -o "$1" = "light_blue" ]; then 
+    color="\e[94m"
+elif [ "$1" = "14" -o "$1" = "light_magenta" ]; then 
+    color="\e[95m"
+elif [ "$1" = "15" -o "$1" = "light_cyan" ]; then 
+    color="\e[96m"
+elif [ "$1" = "1" -o "$1" = "white" ]; then 
+    color="\e[97m"
+else
+    echo "INVALID COLOR $1" 1>&2
+fi
+
+echo -e -n "$color$txt\e[39m"

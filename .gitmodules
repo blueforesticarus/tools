@@ -31,3 +31,9 @@
 [submodule "config/vim/plugins/undotree"]
 	path = config/vim/plugins/undotree
 	url = http://github.com/mbbill/undotree.git
+[submodule "config/vim/plugins/vim-flake8"]
+	path = config/vim/plugins/vim-flake8
+	url = http://github.com/nvie/vim-flake8
+[submodule "config/vim/plugins/syntastic"]
+	path = config/vim/plugins/syntastic
+	url = http://github.com/vim-syntastic/syntastic

@@ -1,0 +1,13 @@
+#!/bin/bash
+#make+root
+#goes to closest parent dir with a makefile and runs make
+
+pushd .
+while [ ! -f Makefile ] && [ ! -f makefile ]; do
+    cd ../
+    if [ "`pwd`" == "/" ]; then 
+        exit 0
+    fi
+done;
+
+make $@
