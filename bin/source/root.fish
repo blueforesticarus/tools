@@ -1,4 +1,6 @@
 function root 
     #!/bin/bash
-    cd (hg root) || cd (git root)
+    cd (hg root) || cd (git root) && cd $argv
 end
+complete -c root -e
+complete -c root -f -a "(cd (hg root) && __fish_complete_directories | cut -d \t -f 1)" -d ""

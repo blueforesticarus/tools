@@ -37,3 +37,6 @@
 [submodule "config/vim/plugins/syntastic"]
 	path = config/vim/plugins/syntastic
 	url = http://github.com/vim-syntastic/syntastic
+[submodule "config/vim/plugins/vim-latex-live-preview"]
+	path = config/vim/plugins/vim-latex-live-preview
+	url = https://github.com/xuhdev/vim-latex-live-preview.git
