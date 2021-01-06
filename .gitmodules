@@ -25,3 +25,9 @@
 [submodule "config/vim/extra_colors"]
 	path = config/vim/extra_colors
 	url = https://github.com/blueforesticarus/more_vim_colorschemes
+[submodule "config/vim/plugins/rust.vim"]
+	path = config/vim/plugins/rust.vim
+	url = https://github.com/rust-lang/rust.vim
+[submodule "config/vim/plugins/syntastic"]
+	path = config/vim/plugins/syntastic
+	url = https://github.com/vim-syntastic/syntastic
