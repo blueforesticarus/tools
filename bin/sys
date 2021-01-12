@@ -3,7 +3,8 @@
 
 UNITS=()
 ACTION=()
-LIST=()
+LIST=( list-unit-files )
+EXACT=
 AALL=
 AFAILED=
 AACTIVE=
@@ -48,7 +49,7 @@ usage:
     -r => daemon-reload
 
     -l => list-units
-    -f => list-unit-files
+    -f => exact match
     -x : show failed services
     -a : show all services (includes inactive)
     -! : show all units (not just services)
@@ -102,7 +103,8 @@ EOF
                         LIST=( list-units )
                         ;;
                     f ) 
-                        LIST=( list-unit-files )
+                        EXACT=TRUE
+                        LIST=()
                         ;;
                     ! )
                         AALL=True
