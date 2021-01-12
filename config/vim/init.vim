@@ -119,6 +119,7 @@ autocmd BufReadPost quickfix nnoremap <buffer><silent> <esc> :q<CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> l :.cc<CR>zOzz:copen<CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> <Shift+Enter> :.cc<CR>zOzz:copen<CR>
 inoremap <Shift+Enter> <Enter>
+inoremap <Enter> <Esc>
 nnoremap <Tab> <C-w><C-w>
 
 " auto save on focus lost
