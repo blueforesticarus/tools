@@ -111,7 +111,6 @@ cnoremap w!! w !sudo dd of=% >/dev/null
 inoremap <F24> <Tab>
 inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
-inoremap <Enter> <Esc>
 nnoremap <silent> <Enter> :nohls <CR>
 autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> <esc> :q<CR>
@@ -119,7 +118,6 @@ autocmd BufReadPost quickfix nnoremap <buffer><silent> <esc> :q<CR>
 "autocmd BufReadPost quickfix nnoremap <buffer><silent> k k:.cc<CR>zOzz:copen<CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> l :.cc<CR>zOzz:copen<CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> <Shift+Enter> :.cc<CR>zOzz:copen<CR>
-vnoremap <Enter> <Esc>
 inoremap <Shift+Enter> <Enter>
 nnoremap <Tab> <C-w><C-w>
 
@@ -193,3 +191,17 @@ autocmd InsertLeave * set cul
 "    autocmd InsertEnter * call s:AddHighlight()   
 "    autocmd InsertLeave * call s:DeleteHighlight() 
 "augroup END
+
+"replace
+nnoremap <silent> gr :let @/='\<'.expand('<cword>').'\>'<CR>:%s///g<left><left>
+xnoremap <silent> gr "sy:let @/=@s<CR>:%s///g<left><left>
+nnoremap <silent> sr :let @/='\<'.expand('<cword>').'\>'<CR>cgn
+xnoremap <silent> sr "sy:let @/=@s<CR>cgn
+set inccommand=nosplit
+
+" Replace the highlighted matches with whatever you want.
+" This places your cursor directly in the replace area of the command.
+nnoremap r :%s///g<left><left>
+
+autocmd FileType c,cpp,h setlocal equalprg=clang-format\ -style='\{BasedOnStyle:\ llvm,\ IndentWidth:\ 4\}'
+

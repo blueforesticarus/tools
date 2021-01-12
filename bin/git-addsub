@@ -18,4 +18,4 @@ fi
 
 cd "$WD"
 echo "$URL" 
-git submodule add "$URL" "$1"
+git submodule add -f "$URL" "$1"

@@ -75,22 +75,19 @@ function fzf_key_bindings
     set -l dir $commandline[1]
     set -l fzf_query $commandline[2]
 
-    test -n "$FZF_ALT_C_COMMAND"; or set -l FZF_ALT_C_COMMAND "
-    command find -L \$dir -mindepth 1 \\( -path \$dir'*/\\.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' \\) -prune \
-    -o -type d -print 2> /dev/null | sed 's@^\./@@'"
+    set -l FZF_ALT_C_COMMAND $argv
     test -n "$FZF_TMUX_HEIGHT"; or set FZF_TMUX_HEIGHT 40%
     begin
       set -lx FZF_DEFAULT_OPTS "--height $FZF_TMUX_HEIGHT --reverse $FZF_DEFAULT_OPTS $FZF_ALT_C_OPTS"
       eval "$FZF_ALT_C_COMMAND | "(__fzfcmd)' +m --query "'$fzf_query'"' | read -l result
 
       if [ -n "$result" ]
-        cd $result
+        eval $result
 
         # Remove last token from commandline.
         commandline -t ""
       end
     end
-
     commandline -f repaint
   end
 
@@ -108,12 +105,14 @@ function fzf_key_bindings
 
   bind \ct fzf-file-widget
   bind \cr fzf-history-widget
-  bind \ec fzf-cd-widget
+  bind \co "fzf-cd-widget dirhistall"
+  bind \cu "fzf-cd-widget dirhistallinv"
 
   if bind -M insert > /dev/null 2>&1
     bind -M insert \ct fzf-file-widget
     bind -M insert \cr fzf-history-widget
-    bind -M insert \ec fzf-cd-widget
+    bind -M insert \co "fzf-cd-widget dirhistall"
+    bind -M insert \cu "fzf-cd-widget dirhistallinv"
   end
 
   function __fzf_parse_commandline -d 'Parse the current command line token and return split of existing filepath and rest of token'
@@ -157,5 +156,47 @@ function fzf_key_bindings
 
     echo $dir
   end
+  
+  function dirhist
+     dirh | nocolor | rg -o '/.*$' | rg -v -Fx (pwd) | cat
+  end
+  function locations
+     if count $argv > /dev/null
+         realpath $argv >> (i var)/dir/locations
+     else
+         cat (i var)/dir/locations
+     end
+  end
+  function dirhistglobal
+     touch (i var)/dir/history
+     if count $argv > /dev/null
+         cat (i var)/dir/history | rg -v -Fx (realpath $argv) > (i var)/dir/history.tmp
+         realpath $argv >> (i var)/dir/history.tmp
+         mv (i var)/dir/history.tmp (i var)/dir/history
+     else
+         cat (i var)/dir/history
+     end
+  end
+  function dirhistformat
+     xargs -r -l timeout .1s realpath --relative-base . 2>/dev/null | rg --passthru "^$HOME" -r '~' | rg -v -Fx '~' | rg -v -Fx '.' | rg --passthru '^([^/~].*)$' -r "./\$1"| tac
+  end
+  function dirhistall
+      begin
+        dirhist | dirhistformat
+        dirhistglobal | dirhistformat
+        locations | dirhistformat
+      end | nauniq 
+  end
+  function dirhistallinv
+      begin
+        locations | dirhistformat 
+        dirhistglobal | dirhistformat
+        dirhist | dirhistformat 
+      end | nauniq
+  end
 
+    function add_dirhist_global --on-variable PWD
+        dirhistglobal $PWD
+    end
+    add_dirhist_global
 end

@@ -184,10 +184,11 @@ takeover ~/.local/share/applications  $D/desktop
 takeover /etc/profile.d/env.sh      $D/config/shell/env.sh sudo
 takeover ~/.xinitrc                 $D/config/display/xinitrc
 takeover ~/.i3/config               $D/config/display/i3.conf
-takeover ~/.config/rofi/config      $D/config/display/rofi.conf
+takeover ~/.config/rofi/config.rasi $D/config/display/rofi.conf
 takeover ~/.config/dunst/dunstrc    $D/config/display/dunstrc
 takeover ~/.profile                 $D/config/shell/profile
 takeover ~/.config/fish/config.fish $D/config/shell/rc/config.fish || rc ~/.config/fish/fish.config setup.fish
+takeover ~/.config/fish/functions/fzf_key_bindings.fish $D/config/shell/key-bindings.fish
 takeover ~/.zshrc                   $D/config/shell/rc/zshrc       || rc ~/.zshrc                   shellrc
 takeover ~/.bashrc                  $D/config/shell/rc/bashrc      || rc ~/.bashrc                  shellrc
 

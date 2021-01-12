@@ -1,0 +1,66 @@
+#!/bin/bash
+
+server=http://$(hostname).local
+function hgf {
+    rev=$(hg parent | rg 'changeset:\s*\d*:(.*)' -o -r '$1')
+    for i in /var/hg/repos/*; do
+        p="$(realpath ./ --relative-base=$i)"
+        if ! [[ $p == /* ]]; then
+            w=$(realpath $i -s --relative-to /var/hg/repos/)
+            url=$server/$w/rev/$rev
+            echo $url
+            wget -S --spider $url  2>&1 | grep 'HTTP/1.1'
+            if [ ! -z "$copy" ]; then
+                echo $url | xclip -i -selection clipboard
+                echo $url | xclip -i -selection primary
+                echo "copied to clipboard"
+            fi
+            exit 0
+        fi
+    done
+}
+
+base=$server/file/
+function file {
+    for i in /var/www/*; do
+        p="$(realpath $path --relative-base=$i)"
+        if ! [[ $p == /* ]]; then
+            w=$(realpath $i -s --relative-to /var/www)/
+            wget -S --spider $url  2>&1 | grep 'HTTP/1.1'
+            url=$base$w$p
+            echo $url
+            if [ ! -z "$copy" ]; then
+                echo $url | xclip -i -selection clipboard
+                echo $url | xclip -i -selection primary
+                echo "copied to clipboard"
+            fi
+            exit 0
+        fi
+    done
+}
+copy=
+path=.
+hgm=
+while test $# -gt 0; do
+    case "$1" in
+        -c )
+            copy=1
+            ;;
+        --hg )
+            hgm=1
+            ;;
+        * )
+            path=$1
+            ;;
+    esac
+    shift
+done
+
+if [ ! -z "$hgm" ]; then
+    hgf
+else
+    file
+fi
+
+echo "couldn't find it"
+exit 1

@@ -40,3 +40,6 @@
 [submodule "config/vim/plugins/vim-latex-live-preview"]
 	path = config/vim/plugins/vim-latex-live-preview
 	url = https://github.com/xuhdev/vim-latex-live-preview.git
+[submodule "extern/i3-quickterm"]
+	path = extern/i3-quickterm
+	url = https://github.com/Lbonn/i3-quickterm.git
