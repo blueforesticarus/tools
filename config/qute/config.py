@@ -7,7 +7,7 @@ c.input.insert_mode.auto_leave = True
 
 # Automatically enter insert mode if an editable element is focused
 # after loading the page.
-c.input.insert_mode.auto_load = True
+c.input.insert_mode.auto_load = False 
 
 # Show a scrollbar.
 c.scrolling.bar = 'always'
@@ -66,6 +66,9 @@ c.auto_save.session = True
 
 # A list of user stylesheet filenames to use.
 c.content.user_stylesheets = "user.css"
+
+#spellcheck
+c.spellcheck.languages = ["en-US","es-ES"]
 
 config.source('font.py')
 config.source('keybind.py')

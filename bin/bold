@@ -1,0 +1,6 @@
+#!/bin/bash
+txt="$1"
+if [ $# -lt 1 ]; then
+    txt="$(cat)"
+fi
+echo -e -n "\033[1m$txt\033[0m"

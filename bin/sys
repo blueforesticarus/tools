@@ -193,7 +193,7 @@ for cmd in ${LIST[@]}; do
             Q="$($CMD $cmd $ARG --no-legend | grep $UNITS | cut -d' ' -f1)"
             U+=( $Q )
         done
-        UNITS=$U
+        UNITS=( ${U[@]} )
     fi
 done
 
@@ -214,23 +214,24 @@ if [ ! -z "$TIMERS" ]; then
     fi
 fi
 
+
 if [ ! -z "${ACTION[*]}" ]; then 
-if [ ! ${#UNITS[@]} -gt 1 ] || \
-   [ "${ACTION[*]}" == "status" ] || \
-   yesno -N "${ACTION[*]} ${#UNITS[@]} units?"
-then 
-    for u in ${UNITS[@]}; do
-        for a in ${ACTION[@]}; do
-            echo ">>> $CMD $a $u"
-            if ! $CMD $a $u; then
-                #systemctl status doesn't play nice so this is disabled
-                #echo -e "ERR: command returned error\n\t$ $CMD $a $u"
-                #exit 1 
-                :
-            fi
+    if [ ! ${#UNITS[@]} -gt 1 ] || \
+       [ "${ACTION[*]}" == "status" ] || \
+       yesno -N "${ACTION[*]} ${#UNITS[@]} units?"
+    then 
+        for u in ${UNITS[@]}; do
+            for a in ${ACTION[@]}; do
+                echo ">>> $CMD $a $u"
+                if ! $CMD $a $u; then
+                    #systemctl status doesn't play nice so this is disabled
+                    #echo -e "ERR: command returned error\n\t$ $CMD $a $u"
+                    #exit 1 
+                    :
+                fi
+            done
         done
-    done
-fi
+    fi
 fi
 
 if [ ! -z "$LOG" ]; then 

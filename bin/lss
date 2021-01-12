@@ -1,0 +1,8 @@
+#!/bin/bash
+COLS=$(tput cols)
+
+fd -d 1 -t d | column -c $COLS | dot prefix bold "Directory:" && echo
+fd -d 1 -g '*.h' | column -c $COLS | dot prefix bold "Header:" && echo
+fd -d 1 -g '*.c' | column -c $COLS | dot prefix bold "Source:" && echo
+fd -d 1 -g '*.py' | column -c $COLS | dot prefix bold "Python:" && echo
+fd -d 1 -E '*.py' -E '*.c' -E '*.h' | column -c $COLS | dot prefix bold "Other:" && echo

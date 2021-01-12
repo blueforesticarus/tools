@@ -1,0 +1,8 @@
+#!/bin/bash
+OUT="$(cat)"
+if [ ! -z "$OUT" ]; then 
+    echo $@
+    echo "$OUT"
+    exit 0
+fi
+exit 1

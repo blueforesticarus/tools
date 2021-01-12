@@ -1,5 +1,11 @@
 #!/bin/bash
 
+SKIP=0
+if [ "$1" = "--skip" ]; then
+    SKIP=1
+    shift
+fi
+
 TMP=`mktemp`
 cat $1 > $TMP
 lines=`cat $TMP | wc -l `
@@ -26,6 +32,14 @@ while read -r LINE; do
 	fi
 	let "count++"
 done < $VAL
+
+if [ $count -eq 0 ]; then 
+    echo "ERR: no options provided"
+    exit 1
+elif [ $count -eq 1 -a $SKIP -eq 1 ]; then
+    echo ${OPTIONS[0]}
+    exit 0
+fi
 
 count=0
 while read -r LINE; do

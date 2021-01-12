@@ -48,7 +48,7 @@ while test $# -gt 0; do
 			ROOT=".root"
 			shift; 
 			;;	
-	    -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X )
+	    --pull | -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X | --fix | --term )
             act="$1"
             shift
             ;;
@@ -241,13 +241,18 @@ rkey () {
 	rm $tmp
 }
 
+
 case "$act" in
 	--command | -c )
-		withpass "$COMMAND"
+		withpass ssh $USER@$IP "$COMMAND"
 		;;
+    --fix )
+        ssh-keygen -R "$IP"
+        ssh-keyscan -H "$IP" >> ~/.ssh/known_hosts
+        ;;
 	--ssh )
 		withpass "ssh -t -Y $USER@$IP"
-		;;
+        ;;
 	-K | --keys | --ids )
 		fkey
 		rkey
@@ -298,6 +303,10 @@ case "$act" in
 		cmd='set -x; for i in ~/mnt/*; do mountpoint $i && echo "disconnecting $i" && fusermount -u $i; done; rmdir ~/mnt/*; test ! -e ~/dev && rm -f ~/dev'
 		echo "$cmd" | withpass "ssh -o StrictHostKeyChecking=no $USER@$IP "
 		;;
-    --terminfo ) 
+    --terminfo | --term ) 
 	    infocmp $TERM | withpass ssh $USER@$IP "mkdir -p .terminfo && cat >/tmp/ti && tic /tmp/ti"
+        ;;
+    --pull )
+        hg pull http://$IP:8000
+        ;;
 esac

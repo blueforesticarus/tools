@@ -12,4 +12,7 @@ alias g=grep
 alias x='grep -v'
 alias e=echo
 alias aur=yay
-source /home/phi/save/dev/tools/util/shellrc #ADDED BY TOOLS SETUP.SH
+source /usr/var/local/tools/root/util/shellrc #ADDED BY TOOLS SETUP.SH
+
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

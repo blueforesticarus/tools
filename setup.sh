@@ -1,5 +1,21 @@
+if [ ! -d /usr/var/local/tools ]; then 
+    sudo mkdir -p /usr/var/local/tools
+fi
+sudo touch /usr/var/local/tools/index
+
 D=`dirname "$(readlink -f "$0")"`
 D=`realpath "$D"`
+issym () {
+    if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+if ! issym /usr/var/local/tools/root "$D"; then 
+    sudo ln -snfT "$D" /usr/var/local/tools/root
+fi
+
 source $D/util/shellrc
 cd $D
 
@@ -9,7 +25,11 @@ if [ -z "`$D/bin/i var`" ]; then
     sudo $D/bin/i var $LINE
 fi
 VAR="`$D/bin/i var`"
+echo "var: $VAR"
 
+if [ ! -f $VAR/setup ]; then
+    touch $VAR/setup
+fi
 chmod +w $VAR/setup
 config () {
     grep "`printf '^%s ' "$1"`" $VAR/setup | cut -d ' ' -f2-
@@ -45,14 +65,6 @@ sudo i root "`realpath $D`"
 
 mkdir -p $VAR/ip
 touch $VAR/ip/list #TODO iplist or conn or avail should do this, not setup
-
-issym () {
-    if [ -e "$1" ] && [ "A`realpath $1`" ==  "A`realpath $2`" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
 
 symlinktobin () {
     if yesno -N "Symlink to tools/bin"; then
@@ -96,6 +108,16 @@ takeover(){
             return 0
         fi
         if yesno -N "Take Over $1 ?" ; then
+            DIR="`dirname $1`"
+            
+            if [ ! -d "$DIR" ] && [ -e "$DIR" -o -h "$DIR" ]; then 
+                $3 mv "$DIR" "$DIR".old
+            fi
+
+            if [ ! -e "$DIR" ]; then 
+                $3 mkdir -p "$DIR"
+            fi
+
             if [ -e "$1" ]; then
                 $3 mv "$1" "$1".old
             fi
@@ -205,11 +227,14 @@ mkdir -p $VAR/
 
 git submodule init
 git submodule update
+cd config/vim/extra_colors && make
+cd $D
 
 bash extern/external.sh
 
 mkdir -p $VAR/empty
-takeover /usr/share/nvim/colors $D/util/empty sudo
+takeover /usr/share/nvim/runtime/colors $VAR/empty sudo
+takeover /usr/share/vim/vim82/colors $VAR/empty sudo
 test "$(ls -A $VAR/empty)" && sudo rm -r $D/util/*
 
 setconf "commit" "`git rev-parse --verify HEAD`"

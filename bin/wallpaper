@@ -253,8 +253,8 @@ if [ $SET -eq 1 ]; then
         echo "Tiling wallpaper"    
         feh -z --bg-tile --no-xinerama "$image"
     else
-        feh --conversion-timeout 1 -z --bg-fill "$image"
-        #feh --conversion-timeout 1 -z --bg-fill --no-xinerama "$image"
+        #feh --conversion-timeout 1 -z --bg-fill "$image" 
+        feh --conversion-timeout 1 -z --bg-fill --no-xinerama "$image"
     fi
 fi
 #y_res=$(xdpyinfo | grep dimensions | sed -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')

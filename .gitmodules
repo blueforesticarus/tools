@@ -21,7 +21,7 @@
 	url = https://github.com/blueforesticarus/rofi_android_theme.git
 [submodule "extern/i3-focus-last"]
 	path = extern/i3-focus-last
-	url = git@github.com:s-urbaniak/i3-focus-last.git
+	url = https://github.com/s-urbaniak/i3-focus-last.git
 [submodule "config/vim/extra_colors"]
 	path = config/vim/extra_colors
 	url = https://github.com/blueforesticarus/more_vim_colorschemes
@@ -31,3 +31,12 @@
 [submodule "config/vim/plugins/syntastic"]
 	path = config/vim/plugins/syntastic
 	url = https://github.com/vim-syntastic/syntastic
+[submodule "config/vim/plugins/vim-ripgrep"]
+	path = config/vim/plugins/vim-ripgrep
+	url = http://github.com/jremmen/vim-ripgrep.git
+[submodule "config/vim/plugins/undotree"]
+	path = config/vim/plugins/undotree
+	url = http://github.com/mbbill/undotree.git
+[submodule "config/vim/plugins/vim-flake8"]
+	path = config/vim/plugins/vim-flake8
+	url = http://github.com/nvie/vim-flake8

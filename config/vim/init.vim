@@ -53,9 +53,8 @@ set listchars=tab:>\ ,trail:.,extends:>,precedes:<,nbsp:+
 set scrolloff=1
 
 "clear search highlight on esc
-nnoremap <esc><esc> :nohls <esc>
-
-"syntax highlighting
+"nnoremap <esc><esc> :nohls <esc> "interferes with exiting quickfix, use enter instead 
+"
 colorscheme jellybeans "fallback
 call RandomScheme()
 nnoremap <F8> :call RandomScheme()<CR>:colorscheme<CR>
@@ -90,7 +89,7 @@ vnoremap ; :
 nnoremap ; :
 
 "command to save with sudo
-command W :w !sudo tee %:t >/dev/null
+cnoremap w!! w !sudo dd of=% >/dev/null
 
 "default paste from yank buffer
 "vnoremap p "0p
@@ -109,18 +108,32 @@ command W :w !sudo tee %:t >/dev/null
 "nnoremap ""P P
 "nnoremap ""P P
 
-" tab switches to normal mode for one command
-inoremap <Tab> <C-o>
-inoremap <F24> <Enter>
+inoremap <F24> <Tab>
 inoremap <Ctrl-Space> <Esc>
 inoremap <Ctrl-'> <Backspace>
+inoremap <Enter> <Esc>
+nnoremap <silent> <Enter> :nohls <CR>
+autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+autocmd BufReadPost quickfix nnoremap <buffer><silent> <esc> :q<CR>
+"autocmd BufReadPost quickfix nnoremap <buffer><silent> j j:.cc<CR>zOzz:copen<CR>
+"autocmd BufReadPost quickfix nnoremap <buffer><silent> k k:.cc<CR>zOzz:copen<CR>
+autocmd BufReadPost quickfix nnoremap <buffer><silent> l :.cc<CR>zOzz:copen<CR>
+autocmd BufReadPost quickfix nnoremap <buffer><silent> <Shift+Enter> :.cc<CR>zOzz:copen<CR>
+vnoremap <Enter> <Esc>
+inoremap <Shift+Enter> <Enter>
+nnoremap <Tab> <C-w><C-w>
 
 " auto save on focus lost
-:au FocusLost * silent! w 
+":au FocusLost * silent! w 
+au FocusLost * silent! w 
+autocmd FocusLost * stopinsert | wall!
+
+" reload rc
+command! RC :source $MYVIMRC
 
 " insert date
-command DATE :put =strftime('%c')
-command ENDFILEDATE normal Go<esc>:DATE<CR>o
+command! DATE :put =strftime('%c')
+command! ENDFILEDATE normal Go<esc>:DATE<CR>o
 
 "select pasted
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -150,3 +163,57 @@ colorscheme "print what colorscheme we are using
 :nnoremap ?s /<C-R>s
 :vnoremap ? "sy/<C-R>/
 
+"folds
+set foldmethod=indent
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"zj")<CR>
+nnoremap <C-h> zm
+nnoremap <C-l> zr
+
+"fold magic 
+nnoremap zv mazMzv`a
+"nnoremap <silent> <space> zj mazMzv`a zz
+
+"close buffer
+nnoremap <C-d> :ccl <bar> lcl <bar> UndotreeHide <bar> bd <CR> 
+
+"visual paste
+nnoremap gp `[v`]
+
+"move cursor in input/command mode
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+cnoremap <C-h> <Left>
+cnoremap <C-j> <Down>
+cnoremap <C-k> <Up>
+cnoremap <C-l> <Right>
+
+"no arrow keys in insert mode
+"inoremap <Left> <nop>
+"inoremap <Right> <nop>
+"inoremap <Up> <nop>
+"inoremap <Down> <nop>
+
+set cursorline
+"autocmd InsertEnter * highlight CursorLine guifg=white guibg=blue ctermfg=white ctermbg=blue
+"autocmd InsertLeave * highlight CursorLine guifg=white guibg=darkblue ctermfg=white ctermbg=darkblue
+autocmd InsertEnter * set nocul
+autocmd InsertLeave * set cul
+
+"highlight inserted text
+"highlight Inserted ctermbg=blue guibg=blue
+"function! s:AddHighlight() abort   
+"    let [_, lnum, col; rest] = getpos('.')
+"    let w:insert_hl = matchadd('Inserted', '\%'.col.'c\%'.lnum.'l\_.*\%#') 
+"endfunction
+"function! s:DeleteHighlight() abort   
+"    if exists('w:insert_hl')       
+"        call matchdelete(w:insert_hl)   
+"    endif 
+"endfunction  
+"augroup InsertHL   
+"    autocmd!   
+"    autocmd InsertEnter * call s:AddHighlight()   
+"    autocmd InsertLeave * call s:DeleteHighlight() 
+"augroup END

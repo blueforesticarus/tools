@@ -1,0 +1,10 @@
+#!/bin/bash
+
+N=$#
+ARG="${!N}"
+
+while [ $N -gt 1 ]; do 
+    let N=N-1
+    ARG="$(${!N} "$ARG")"
+done
+echo "$ARG"

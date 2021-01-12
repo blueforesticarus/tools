@@ -2,7 +2,6 @@
 #this just starts stuff, env and path live in env.sh and util/shellrc respectively
 #startx on tty 1, start $USER_SHELL on everything else, except tty 6 which is a failsafe incase something breaks.
 USER_SHELL=fish
-env
 
 #==================================================================================================
 #                           determine session type
