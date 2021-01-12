@@ -48,7 +48,7 @@ while test $# -gt 0; do
 			ROOT=".root"
 			shift; 
 			;;	
-	    --pull | -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X | --fix | --term )
+	    --clean | --pull | -T | --terminfo | --keytest | --nothing | --ids | --keys | --fid | --fkey | --rid | --rkey | -K | --copyid | --ssh | --fs | --rfs | --ffs | --mount | --rmount | --unmount | --umount | --runmount | --rumount | --xfs | --xrfs | --xffs | --xmount | -U | -X | --fix | --term )
             act="$1"
             shift
             ;;
@@ -241,7 +241,6 @@ rkey () {
 	rm $tmp
 }
 
-
 case "$act" in
 	--command | -c )
 		withpass ssh $USER@$IP "$COMMAND"
@@ -291,12 +290,14 @@ case "$act" in
 		runmount 
 		;;
 	-U )
-		for i in "`i mnt`"/*; do 
-			if mountpoint $i; then
-				echo "unmounting $i"
-				fusermount -u "$i"
-			fi
-		done
+        if ! [ -z "$(ls -A "`i mnt`")" ]; then 
+            for i in "`i mnt`"/*; do 
+                if mountpoint $i; then
+                    echo "unmounting $i"
+                    fusermount -u "$i"
+                fi
+            done
+        fi
 		rmdir "`i mnt`"/*
 		;;
 	-X )
@@ -309,4 +310,14 @@ case "$act" in
     --pull )
         hg pull http://$IP:8000
         ;;
+    --clean )
+        if ! [ -z "$(ls -A "`i mnt`")" ]; then 
+            for i in "`i mnt`"/*; do 
+                if ! mountpoint $i; then
+                    echo "deleting $i"
+                    rmdir $i
+                fi
+            done
+        fi
+		;;
 esac

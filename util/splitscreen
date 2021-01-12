@@ -1,0 +1,4 @@
+mousetrack on
+screen trans -shell -t en -s es
+screen trans -shell -t es -s en
+bindkey -t \t next

@@ -88,7 +88,7 @@ else:
                 #thing = str(thing)
                 import subprocess
                 text = ("I found this about %s\n" % thing)
-                cmd = 'zs ' + thing + " || : " 
+                cmd = 'rg ' + thing + " || : " 
                 print(cmd)
                 text += str(subprocess.check_output(cmd, shell=True))
                 p(text, False)

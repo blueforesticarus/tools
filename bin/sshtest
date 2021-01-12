@@ -1,5 +1,5 @@
 #!/bin/bash
-TIMEOUT=4
+TIMEOUT=30
 
 if [ "$1" == "--fix" ]; then
     shift

@@ -137,3 +137,13 @@ let g:rustfmt_autosave = 1
 nnoremap <C-e> :lopen <CR>
 nnoremap ze :Errors <CR> :ll<CR> zO :ll<CR>
 "todo setup ale instead of syntastic
+
+let g:livepreview_previewer = 'zathura'
+
+"taglist
+nnoremap <silent> <F9> :TlistToggle<CR>
+nnoremap <Tab> <C-w><C-w>
+
+"maximiser
+nnoremap <silent>zf :MaximizerToggle<CR>
+

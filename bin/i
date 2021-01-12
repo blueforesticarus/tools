@@ -10,6 +10,8 @@ if ! [ -z "$2" ]; then
 elif [ -z "$1" ]; then
 	cat $ROOT/index
 	exit 0
+elif [ "$1" = "-" ]; then
+	echo "$ROOT/index"
 fi
 
 awk -v val="$1" '$1==val' $ROOT/index | cut -f2 

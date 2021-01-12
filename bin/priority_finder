@@ -1,0 +1,6 @@
+#!/bin/bash
+fd . --hidden --follow --exclude .git $@ 
+fd ~ --hidden --follow --exclude .git -E `realpath .` $@ 
+fd / --hidden --follow --exclude .git -E `realpath .` -E `realpath ~` $@
+
+

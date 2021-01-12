@@ -5,6 +5,10 @@ MRE=$(shell lsdate $$(i root)/bin $$(i root)/util/Makefile | head -1 | cut -d '=
 default:
 	@echo -e "Erich Spaker's Dev Tools. ¡Muy Bueno! Edition\nRevised $$(ago -f "$(MRE)") :: \e[2m$$(realpath -s -m --relative-to="`i root`" "`trim $(MRE)`")\e[22m"
 
+perms:
+	sudo chown -R $$USER `i root`/bin
+	sudo chmod -R +x `i root`/bin/*
+
 terminfo:
 	@conn --terminfo
 

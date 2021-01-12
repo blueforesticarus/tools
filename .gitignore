@@ -7,3 +7,4 @@ config/vim/.netrwhist
 config/nvim/.netrwhist
 config/qute/bookmarks
 
+config/qute/qsettings/QtProject.conf
