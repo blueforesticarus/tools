@@ -1,0 +1,15 @@
+#!/bin/bash
+#monitor manager
+#TODO, use cairo to make simpler quick arandr replacement
+N=`xrandr --listmonitors | grep -oP 'Monitors: \K[0-9]+'`
+if [ $N -gt 1 ]; then
+    if [ -z "$1" ]; then 
+        mons -e $1
+    else
+        mons -e $( echo -e 'left\nright\ntop\nbottom' | rofi -dmenu )
+    fi
+else
+    mons -o 
+fi
+
+wallpaper -w #(fix wallpaper)

@@ -110,3 +110,18 @@ let g:ctrlp_custom_ignore = {
 nnoremap J i<CR><ESC>
 "remove newline
 nnoremap K J
+
+"syntastic settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+nnoremap gl :lopen<CR>
+nnoremap gk :lclose<CR>
+
+
+"rust settings
+let g:rustfmt_autosave = 1

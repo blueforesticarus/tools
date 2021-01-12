@@ -29,7 +29,8 @@ closed () {
         if HDMI ; then
             xrandr --output eDP1 --off
         else
-            systemctl suspend
+            #systemctl suspend
+            ( echo "suspend" && date ) >> `i var`/lid.debug
         fi
     fi
 }

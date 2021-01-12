@@ -125,3 +125,28 @@ command ENDFILEDATE normal Go<esc>:DATE<CR>o
 "select pasted
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 colorscheme "print what colorscheme we are using
+
+"substitute
+:nnoremap sw "sye:%s/<C-R>s/
+:nnoremap siw "syiw:%s/<C-R>s/
+:nnoremap saw "syaw:%s/<C-R>s/
+:nnoremap sW "syE:%s/<C-R>s/
+:nnoremap siW "syiW:%s/<C-R>s/
+:nnoremap saW "syaW:%s/<C-R>s/
+:nnoremap ss :%s/<C-R>s/
+:nnoremap sp :%s/<C-R>0/
+:nnoremap s/ :%s/<C-R>//
+:vnoremap s "sy:%s/<C-R>s/
+
+"find
+:nnoremap ?w "sye /<C-R>s
+:nnoremap ?iw "syiw/<C-R>s
+:nnoremap ?aw "syaw/<C-R>s
+:nnoremap ?W "syE/<C-R>s
+:nnoremap ?iW "syiW/<C-R>s
+:nnoremap ?aW "syaW/<C-R>s
+:nnoremap ?? /<C-R>/
+:nnoremap ?p /<C-R>0
+:nnoremap ?s /<C-R>s
+:vnoremap ? "sy/<C-R>/
+
