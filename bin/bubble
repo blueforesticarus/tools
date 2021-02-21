@@ -1,3 +1,4 @@
+#!/bin/bash
 RIGHT_INVERT=0
 LEFT_INVERT=0
 

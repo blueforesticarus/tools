@@ -1,4 +1,5 @@
-REPO=$( git-starred -us -q | fzf --preview 'git-readme {}' )
+#!/bin/bash
+REPO=$1 #$( git-starred -us -q | fzf --preview 'git-readme {}' )
 if [ ! -z "$REPO" ]; then
     if [ -z "$1" ]; then
         DIR="`i git`"

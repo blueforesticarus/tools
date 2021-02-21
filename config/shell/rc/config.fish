@@ -38,13 +38,13 @@ end
 
 function fish_term_letter
     set PID %self
-    if ! set -q LETTER; or ! test -f /run/fishes/$LETTER
+    if ! set -q LETTER; or ! test -f /var/fishes/$LETTER
         for L in $alphabet
-            if ! test -d /run/fishes/$L
+            if ! test -d /var/fishes/$L
                 set LETTER $L 
-                ln -snfT /proc/$PID /run/fishes/$LETTER
+                ln -snfT /proc/$PID /var/fishes/$LETTER
                 break
-            else if test (readlink /run/fishes/$L) = /proc/$PID
+            else if test (readlink /var/fishes/$L) = /proc/$PID
                 set LETTER $L
                 break
             end
@@ -55,7 +55,7 @@ function fish_term_letter
 end
 
 function clear_term_letters
-    rm -rf /run/fishes/*
+    rm -rf /var/fishes/*
     set -e -U LETTER
 end
 
