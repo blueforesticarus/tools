@@ -93,7 +93,7 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_show_hidden = 0
 
 nnoremap f :CtrlPBuffer<CR>
-nnoremap <C-f> :CtrlPMixed<CR>
+nnoremap <C-o> :CtrlPMixed<CR>
 nnoremap F :CtrlPCurFile<CR>
 
 "ctrlp filters

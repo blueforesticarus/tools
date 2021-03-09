@@ -106,7 +106,6 @@ function fzf_key_bindings
   bind \ct fzf-file-widget
   bind \cr fzf-history-widget
   bind \co "fzf-cd-widget dirhistall"
-  bind \cu "fzf-cd-widget dirhistallinv"
 
   if bind -M insert > /dev/null 2>&1
     bind -M insert \ct fzf-file-widget
@@ -158,13 +157,13 @@ function fzf_key_bindings
   end
   
   function dirhist
-     dirh | nocolor | rg -o '/.*$' | rg -v -Fx (pwd) | cat
+     dirh | nocolor | rg -o '/.*$' | tac
   end
   function locations
      if count $argv > /dev/null
          realpath $argv >> (i var)/dir/locations
      else
-         cat (i var)/dir/locations
+         tac (i var)/dir/locations
      end
   end
   function dirhistglobal
@@ -174,18 +173,19 @@ function fzf_key_bindings
          realpath $argv >> (i var)/dir/history.tmp
          mv (i var)/dir/history.tmp (i var)/dir/history
      else
-         cat (i var)/dir/history
+         tac (i var)/dir/history 
      end
   end
   function dirhistformat
-     xargs -r -l timeout .1s realpath --relative-base . 2>/dev/null | rg --passthru "^$HOME" -r '~' | rg -v -Fx '~' | rg -v -Fx '.' | rg --passthru '^([^/~].*)$' -r "./\$1"| tac
+     xargs -P 8 -r -I {} bash -c 'timeout -s 9 .1s realpath --relative-base=. {} 2>/dev/null' \
+     rg --passthru "^$HOME" -r '~' | rg '[^\.~]+' | rg --passthru '^([^/~].*)$' -r "./\$1"
   end
   function dirhistall
       begin
         dirhist | dirhistformat
         dirhistglobal | dirhistformat
         locations | dirhistformat
-      end | nauniq 
+      end
   end
   function dirhistallinv
       begin

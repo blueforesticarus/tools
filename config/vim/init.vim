@@ -163,13 +163,13 @@ colorscheme "print what colorscheme we are using
 :vnoremap ? "sy/<C-R>/
 
 "folds
-set foldmethod=indent
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"zj")<CR>
-nnoremap <C-h> zm
-nnoremap <C-l> zr
+"set foldmethod=indent
+"nnoremap <silent> <Space> @=(foldlevel('.')?'za':"zj")<CR>
+"nnoremap <C-h> zm
+"nnoremap <C-l> zr
 
 "fold magic 
-nnoremap zv mazMzv`a
+"nnoremap zv mazMzv`a
 "nnoremap <silent> <space> zj mazMzv`a zz
 
 "close buffer

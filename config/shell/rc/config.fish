@@ -3,10 +3,11 @@ set EDITOR vvim
 set VISUAL vvim
 #cat ~/.cache/wal/sequences
 
+source /usr/var/local/tools/root/util/setup.fish
 bind \e\[23\;2~ backward-kill-word
 bind \b backward-kill-bigword
-
-source /usr/var/local/tools/root/util/setup.fish
+bind \cu 'nav .. . is_make is_mount is_repo is_home; commandline -f repaint'
+bind \ch 'nav . .. is_mount_not_root; commandline -f repaint'
 
 # Adapted from /usr/share/fish/functions/fish_prompt.fish @ line 4
 function fish_prompt --description 'Write out the prompt'
@@ -38,14 +39,14 @@ end
 
 function fish_term_letter
     set PID %self
-    if ! set -q LETTER; or ! test -f /run/fishes/$LETTER
-        for L in $alphabet
-            if ! test -d /run/fishes/$L
-                set LETTER $L 
-                ln -snfT /proc/$PID /run/fishes/$LETTER
+    if ! set -q LETTER; or ! test -f /usr/var/local/fishes/$LETTER
+        for Le in $alphabet
+            if ! test -d /usr/var/local/fishes/$Le
+                set LETTER $Le 
+                ln -snfT /proc/$PID /usr/var/local/fishes/$LETTER
                 break
-            else if test (readlink /run/fishes/$L) = /proc/$PID
-                set LETTER $L
+            else if test (readlink /usr/var/local/fishes/$Le) = /proc/$PID
+                set LETTER $Le
                 break
             end
         end
@@ -55,8 +56,16 @@ function fish_term_letter
 end
 
 function clear_term_letters
-    rm -rf /run/fishes/*
+    rm -rf /usr/var/local/fishes/*
     set -e -U LETTER
+end
+
+function pwds 
+    for Le in $alphabet
+        if set -q $Le
+            echo "$Le $$Le"
+        end
+    end | nauniq --skip-chars=2
 end
 
 set alphabet (echo -e (printf '\\\x%x ' (seq 65 90)) | fmt -w1)

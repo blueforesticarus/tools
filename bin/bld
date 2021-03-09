@@ -1,0 +1,13 @@
+#!/usr/bin/fish
+nav . . is_make
+set f ( ls -t | rg -e 'makefile' -e 'Makefile' -e '\.mak$' -e 'wscript' | head -1 )
+if test "$f" = "wscript"
+    if test -f './waf'
+        ./waf $argv
+    else
+        waf $argv
+    end
+else
+    make -f $f
+end
+
