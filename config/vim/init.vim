@@ -55,7 +55,7 @@ set scrolloff=1
 "clear search highlight on esc
 "nnoremap <esc><esc> :nohls <esc> "interferes with exiting quickfix, use enter instead 
 "
-colorscheme jellybeans "fallback
+"colorscheme jellybeans "fallback
 call RandomScheme()
 nnoremap <F8> :call RandomScheme()<CR>:colorscheme<CR>
 

@@ -2,7 +2,7 @@ execute pathogen#infect('plugins/{}')
 execute pathogen#infect('extra_colors/{}')
 
 "XXX not used
-"colorscheme jellybeans "default
+colorscheme peachpuff "default
 function! s:color_override()
 	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim | grep -v _unused')
 	if color != ""
@@ -119,9 +119,9 @@ nnoremap <F5> :UndotreeToggle<cr>
 
 "syntastic
 let python_highlight_all=1
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
 nnoremap gl :lopen<CR>
 nnoremap gk :lclose<CR>

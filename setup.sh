@@ -1,3 +1,18 @@
+function require (){
+    if ! which $1 ; then
+        REQUIRE=1
+    fi
+}
+
+#todo, missing alot of deps
+require xdotool
+
+#UNTESTED
+if [ ! -z $REQUIRE ]; then
+    echo "install deps"
+    exit
+fi
+
 if [ ! -d /usr/var/local/tools ]; then 
     sudo mkdir -p /usr/var/local/tools
 fi

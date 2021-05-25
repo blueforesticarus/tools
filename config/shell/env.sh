@@ -5,7 +5,7 @@ source /usr/var/local/tools/root/util/path.env
 
 #variables set once at login
 export GOPATH=~/.go
-export QT_SCALE_FACTOR=1.4
+export QT_SCALE_FACTOR=.75
 
 #fzf using fd instead of find
 export FZF_DEFAULT_COMMAND='fd --hidden --follow'

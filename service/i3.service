@@ -4,7 +4,6 @@ PartOf=graphical-session.target
 
 [Service]
 ExecStart=/usr/bin/i3
-Restart=on-failure
 
 [Install]
 RequiredBy=xsession.target

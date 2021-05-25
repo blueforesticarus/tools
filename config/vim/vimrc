@@ -1,9 +1,0 @@
-"simple vimrc, complex config in dot/vim/.vimrc_extra
-"author: Erich Spaker, Feb 2020
-source ~/.vim/vimrc_extra
-source ~/.config/nvim/init.vim
-
-"ensure arrow keys work in insert mode
-set esckeys
-
-
