@@ -2,7 +2,6 @@ execute pathogen#infect('plugins/{}')
 execute pathogen#infect('extra_colors/{}')
 
 "XXX not used
-"colorscheme jellybeans "default
 function! s:color_override()
 	let color = system('ls ~/.vim/colors | head -1 | xargs basename -s .vim | grep -v _unused')
 	if color != ""
@@ -27,7 +26,10 @@ function! RandomScheme()
   execute 'colorscheme' fnameescape(choices[index])
 endfunction
 
+call RandomScheme()
+nnoremap <F8> :call RandomScheme()<CR>:colorscheme<CR>
 "airline extensions
+
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
@@ -119,9 +121,9 @@ nnoremap <F5> :UndotreeToggle<cr>
 
 "syntastic
 let python_highlight_all=1
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
 nnoremap gl :lopen<CR>
 nnoremap gk :lclose<CR>

@@ -56,8 +56,6 @@ set scrolloff=1
 "nnoremap <esc><esc> :nohls <esc> "interferes with exiting quickfix, use enter instead 
 "
 "colorscheme jellybeans "fallback, but it isnt installed?
-call RandomScheme()
-nnoremap <F8> :call RandomScheme()<CR>:colorscheme<CR>
 
 syntax on
 set t_Co=256

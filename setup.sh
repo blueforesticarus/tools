@@ -1,4 +1,20 @@
-sudo pacman -S - < cat deps.txt
+function require (){
+    if ! which $1 ; then
+        REQUIRE=1
+    fi
+}
+
+#todo, missing alot of deps
+require xdotool
+require ripgrep
+require go
+require wget
+
+#UNTESTED
+if [ ! -z $REQUIRE ]; then
+    echo "install deps"
+    exit
+fi
 
 if [ ! -d /usr/var/local/tools ]; then 
     sudo mkdir -p /usr/var/local/tools
@@ -186,7 +202,8 @@ takeover ~/.config/spotifyd/spotifyd.conf $D/config/spotifyd.conf
 takeover ~/.local/share/applications  $D/desktop
 
 #autostartx autologin enviroment and shellrc
-takeover /etc/profile.d/env.sh      $D/config/shell/env.sh sudo
+takeover /etc/profile.d/0_env.sh      $D/config/shell/env.sh sudo
+takeover /etc/profile.d/1_path.sh     $D/util/path.env sudo
 takeover ~/.xinitrc                 $D/config/display/xinitrc
 takeover ~/.i3/config               $D/config/display/i3.conf
 takeover ~/.config/rofi/config.rasi $D/config/display/rofi.conf
