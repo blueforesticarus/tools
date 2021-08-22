@@ -9,6 +9,7 @@ systemctl --user import-environment PATH
 #xrandr --dpi 144
 #export QT_SCALE_FACTOR=1.26
 systemctl --user import-environment QT_SCALE_FACTOR
+systemctl --user import-environment GDK_DPI_SCALE
 
 xset -b off
 xset r rate 300 50

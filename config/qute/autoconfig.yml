@@ -6,7 +6,7 @@
 
 config_version: 2
 settings:
-  hints.hide_unmatched_rapid_hints:
-    global: true
-  hints.leave_on_load:
-    global: true
+  content.media.audio_capture:
+    https://www.facebook.com: true
+  content.notifications.enabled:
+    https://www.facebook.com: true
