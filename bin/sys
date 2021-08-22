@@ -12,6 +12,7 @@ LOGLEVEL=
 LOGBOOTS=" -b "
 LOGTAIL=
 LOG=
+EXACT=
 
 if [ -z "$1" ]; then
     LIST=( list-units )
@@ -48,7 +49,8 @@ usage:
     -r => daemon-reload
 
     -l => list-units
-    -f => list-unit-files
+    -y => list-unit-files
+    -f => match exact, overriden by -l or -a
     -x : show failed services
     -a : show all services (includes inactive)
     -! : show all units (not just services)
@@ -101,8 +103,11 @@ EOF
                     l ) 
                         LIST=( list-units )
                         ;;
-                    f ) 
+                    y ) 
                         LIST=( list-unit-files )
+                        ;;
+                    f )
+                        EXACT=True
                         ;;
                     ! )
                         AALL=True
@@ -168,6 +173,10 @@ fi
 
 if [ ! -z "$DAEMON_RELOAD" ]; then
     $CMD daemon-reload
+fi
+
+if [ -z "$LIST" ] && [ -z "$EXACT" ] && [ ! -z "$UNITS" ]; then
+    LIST=( list-units )
 fi
 
 for cmd in ${LIST[@]}; do
