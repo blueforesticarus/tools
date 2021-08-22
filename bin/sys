@@ -14,11 +14,15 @@ LOGTAIL=
 LOG=
 EXACT=
 
+USERMODE=
+GLOBALMODE=
+
 if [ -z "$1" ]; then
     LIST=( list-units )
-    USERMODE=True
-    AACTIVE=True
+    AFAILED=True
 fi
+
+ARGS="$@"
 
 while [ ! -z "$1" ]; do
     case $1 in
@@ -35,7 +39,8 @@ ex:
 
 usage:
     -u => --user
-    -g => --global
+    -g => root systemd
+    (defaults to auto)
     
     -R => restart
     -S => start
@@ -156,7 +161,8 @@ EOF
     esac 
 done
 
-if [ -z "$USERMODE" -a -z "$GLOBALMODE" ]; then
+
+if [ ! -z "$GLOBALMODE" ]; then
     if [ ${#ACTION[@]} -eq 1 ] && 
        [ "${ACTION[0]}" == "status" ] && 
        [ -z "DAEMON_RELOAD" ]; 
@@ -165,10 +171,12 @@ if [ -z "$USERMODE" -a -z "$GLOBALMODE" ]; then
     else
         CMD="sudo systemctl"
     fi
-elif [ ! -z "$GLOBALMODE" ]; then
-    CMD="systemctl --global"
-else
+elif [ ! -z "$USERMODE" ]; then
     CMD="systemctl --user"
+else
+    $0 $ARGS -g
+    $0 $ARGS -u
+    exit
 fi
 
 if [ ! -z "$DAEMON_RELOAD" ]; then
@@ -193,13 +201,13 @@ for cmd in ${LIST[@]}; do
 
     if [ -z "$UNITS" ]; then
         SYSTEMD_COLORS=1 $CMD $cmd $ARG | sed '/^$/q'  
-        Q="$($CMD $cmd $ARG --no-legend | cut -d' ' -f1)"
+        Q="$($CMD $cmd $ARG --no-legend | xargs | cut -d' ' -f1)"
         UNITS+=( $Q )
     else
         U=()
         for u in ${UNITS[@]}; do
-            $CMD $cmd $ARG --no-legend | grep $UNITS
-            Q="$($CMD $cmd $ARG --no-legend | grep $UNITS | cut -d' ' -f1)"
+            $CMD $cmd $ARG --no-legend | grep $u
+            Q="$($CMD $cmd $ARG --no-legend | grep $u | xargs | cut -d' ' -f1)"
             U+=( $Q )
         done
         UNITS=( ${U[@]} )
@@ -222,7 +230,6 @@ if [ ! -z "$TIMERS" ]; then
         UNITS=( "${U[@]}" )
     fi
 fi
-
 
 if [ ! -z "${ACTION[*]}" ]; then 
     if [ ! ${#UNITS[@]} -gt 1 ] || \
