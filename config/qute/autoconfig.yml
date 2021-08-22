@@ -6,7 +6,5 @@
 
 config_version: 2
 settings:
-  hints.hide_unmatched_rapid_hints:
-    global: true
-  hints.leave_on_load:
-    global: true
+  content.notifications:
+    https://2.watch-video.net: true

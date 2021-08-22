@@ -31,7 +31,8 @@ c.fonts.prompts = monospace
 c.fonts.statusbar = monospace
 
 # Font used in the tab bar.
-c.fonts.tabs = monospace
+#c.fonts.tabs.selected = monospace
+#c.fonts.tabs.unselected = monospace
 
 # Font used for the hints.
 c.fonts.hints = "bold 15px 'DejaVu Sans Mono'"

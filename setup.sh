@@ -1,3 +1,5 @@
+sudo pacman -S - < cat deps.txt
+
 if [ ! -d /usr/var/local/tools ]; then 
     sudo mkdir -p /usr/var/local/tools
 fi
@@ -160,17 +162,20 @@ fi
 
 takeover_vim () {
     takeover $1/autoload      $2/autoload
-    takeover $1/extra_colors  $2/extra_colors
-    takeover $1/plugins       $2/plugins
+
+    takeover $1/extra_colors $3/extra_colors
+    mkdir -p $3/extra_colors
+    ln -snf $2/extra_colors/*   $3/extra_colors/
+    
+    takeover $1/plugins       $3/plugins
+    mkdir -p $3/plugins
+    ln -snf $2/plugins/*        $3/plugins/
+    
     takeover $1/pathogen      $2/pathogen
     takeover $1/syntax        $2/syntax
 }
 
-takeover_vim ~/.vim          $D/config/vim
-takeover ~/.vimrc            $D/config/vim/vimrc
-takeover ~/.vim/vimrc_extra  $D/config/vim/vimrc_extra
-
-takeover_vim ~/.config/nvim  $D/config/vim
+takeover_vim ~/.config/nvim  $D/config/vim $VAR/vim
 takeover ~/.config/nvim/init.vim $D/config/vim/init.vim
 takeover ~/.config/nvim/extra.vim $D/config/vim/extra.vim
 
@@ -228,14 +233,15 @@ mkdir -p $VAR/
 
 git submodule init
 git submodule update
-cd config/vim/extra_colors && make
+cd $D/config/vim/extra_colors
+git submodule init
+git submodule update
 cd $D
 
 bash extern/external.sh
 
 mkdir -p $VAR/empty
 takeover /usr/share/nvim/runtime/colors $VAR/empty sudo
-takeover /usr/share/vim/vim82/colors $VAR/empty sudo
 test "$(ls -A $VAR/empty)" && sudo rm -r $D/util/*
 
 setconf "commit" "`git rev-parse --verify HEAD`"

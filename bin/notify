@@ -39,7 +39,7 @@ notify_user(){
 
     typeset IFS=$'\n'
 
-    user=phi    
+    user=user    
     bus_addr=unix:path=/run/user/1000/bus #hardcode my uid
     # run notify-send with the correct user
     DBUS_SESSION_BUS_ADDRESS="$bus_addr" sudo -u $user -E /usr/bin/notify-send -u "$urgency" -i "$icon" "$title" "$message"

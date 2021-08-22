@@ -2,10 +2,6 @@
 KITTY_DEFAULT_OPACITY="$( rg 'background_opacity ([0-9\.]*)$' `i root`/config/kitty.conf -o -r '$1')"
 KITTY_DEFAULT_PADDING="$( rg 'window_padding_width (.*)$' `i root`/config/kitty.conf -o -r '$1' )"
 
-vim () {
-    no_padding nvim
-}
-
 no_padding () {
     if [ "$TERM" = "xterm-kitty" ]; then  
         kitty @set-spacing padding=0 

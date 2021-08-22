@@ -30,7 +30,7 @@ NAME=${VVIM_NAME-$APP}
 if [ -t 0 ] && [ -z "$DISOWN" ]; then
     #in a terminal
     if [ "$TERM" = "xterm-kitty" ] ; then 
-        source /usr/var/local/tools/root/bin/source/vim.sh
+        source /usr/var/local/tools/root/bin/source/nopadding.sh
         no_padding $APP $@
     else
         $APP $@

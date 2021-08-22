@@ -1,3 +1,19 @@
+from qutebrowser.api import interceptor
+
+def filter_yt(info: interceptor.Request):
+    """Block the given request if necessary."""
+    url = info.request_url
+    if (
+        url.host() == "www.youtube.com"
+        and url.path() == "/get_video_info"
+        and "&adformat=" in url.query()
+    ):
+        info.block()
+
+
+interceptor.register(filter_yt)
+config.load_autoconfig()
+
 c.confirm_quit = ["downloads","multiple-tabs"]
 c.downloads.location.directory = "~/net"
 c.editor.command = ["kitty", "nvim '{}'"]
@@ -24,6 +40,7 @@ c.scrolling.smooth = True
 #   - default-page: Load the default page.
 #   - close: Close the window.
 c.tabs.last_close = "default-page"
+c.tabs.mode_on_change = "restore"
 
 # Padding around text for tabs
 c.tabs.padding = {

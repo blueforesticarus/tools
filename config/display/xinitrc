@@ -16,5 +16,8 @@ setxkbmap -option caps:ctrl_modifier
 wallpaper -l -r
 wallpaper --set -c -r
 
+source ~/.screenlayout/default.sh
+
+#systemctl --user import-environment DISPLAY
 systemctl --user start --wait xsession.target
 #exec /usr/bin/i3
