@@ -1,0 +1,5 @@
+[Unit]
+Description=Run jupyterlab as a service
+
+[Service]
+ExecStart=/usr/bin/jupyter lab --notebook-dir=/home --no-browser
