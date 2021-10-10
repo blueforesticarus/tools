@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=NovelWriter
+Comment=Markdown based writing software.
+Exec=novelWriter
+Terminal=false
