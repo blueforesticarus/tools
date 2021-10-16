@@ -1,5 +1,6 @@
 "simple vimrc, complex config in dot/vim/.vimrc_extra
 "author: Erich Spaker, Feb 2020
+
 source ~/.config/nvim/extra.vim
 
 "disable vi compatibility mode
@@ -107,16 +108,16 @@ cnoremap w!! w !sudo dd of=% >/dev/null
 "nnoremap ""P P
 
 inoremap <F24> <Tab>
-inoremap <Ctrl-Space> <Esc>
-inoremap <Ctrl-'> <Backspace>
-nnoremap <silent> <Enter> :nohls <CR>
+nnoremap <silent> <S-CR> :nohls <CR>
+nnoremap <silent> <Enter> :w <CR>
 autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> <esc> :q<CR>
 "autocmd BufReadPost quickfix nnoremap <buffer><silent> j j:.cc<CR>zOzz:copen<CR>
 "autocmd BufReadPost quickfix nnoremap <buffer><silent> k k:.cc<CR>zOzz:copen<CR>
 autocmd BufReadPost quickfix nnoremap <buffer><silent> l :.cc<CR>zOzz:copen<CR>
-autocmd BufReadPost quickfix nnoremap <buffer><silent> <Shift+Enter> :.cc<CR>zOzz:copen<CR>
+"autocmd BufReadPost quickfix nnoremap <buffer><silent> <Shift+Enter> :.cc<CR>zOzz:copen<CR>
 inoremap <Shift+Enter> <Enter>
+inoremap <Enter> <esc>
 nnoremap <Tab> <C-w><C-w>
 
 " auto save on focus lost
@@ -226,4 +227,3 @@ set inccommand=nosplit
 nnoremap r :%s///g<left><left>
 
 autocmd FileType c,cpp,h setlocal equalprg=clang-format\ -style='\{BasedOnStyle:\ llvm,\ IndentWidth:\ 4\}'
-

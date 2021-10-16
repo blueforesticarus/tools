@@ -1,7 +1,7 @@
 #installed to /etc/profile.d/env.sh and
 
 #variables set once at login
-export GOPATH=~/.go
+export GOPATH=/home/user/.cache/go
 export QT_SCALE_FACTOR=1
 export GDK_DPI_SCALE=0.75
 

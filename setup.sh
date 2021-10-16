@@ -6,7 +6,7 @@ function require (){
 
 #todo, missing alot of deps
 require xdotool
-require ripgrep
+require rg
 require go
 require wget
 
@@ -30,6 +30,14 @@ issym () {
         return 1
     fi
 }
+ishard () {
+    if ( ! issym $@ ) && [ "$1" -ef "$2" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 if ! issym /usr/var/local/tools/root "$D"; then 
     sudo ln -snfT "$D" /usr/var/local/tools/root
 fi
@@ -120,7 +128,13 @@ rc () {
 }
     
 takeover(){
-    if ! issym "$1" "$2"; then
+    if [ -z "$HARD" ]; then
+        prog=issym
+    else
+        prog=ishard
+    fi
+
+    if ! $prog "$1" "$2"; then
         if [ "`config "$2"`" == "0" ]; then
             echo "Skipping disabled: $1 => $2" >&2
             return 0
@@ -144,7 +158,11 @@ takeover(){
                 $3 rm "$1" 
             fi
 
-            $3 ln -snf "$2" "$1" 
+            if [ -z "$HARD" ]; then
+                $3 ln -snf "$2" "$1" 
+            else
+                $3 ln -nf "$2" "$1" 
+            fi
             setconf "$2" 1
             return 0
         else
@@ -191,6 +209,7 @@ takeover_vim () {
     takeover $1/syntax        $2/syntax
 }
 
+HARD=
 takeover_vim ~/.config/nvim  $D/config/vim $VAR/vim
 takeover ~/.config/nvim/init.vim $D/config/vim/init.vim
 takeover ~/.config/nvim/extra.vim $D/config/vim/extra.vim
@@ -220,8 +239,10 @@ takeover /etc/udev/rules.d/99-batify.rules          $D/udev/99-batify.rules     
 takeover /etc/acpi/handler.sh                       $D/config/acpi.sh                sudo 
 
 #systemd (user)
+HARD=True
 takeover ~/.config/systemd/user/spotifyd.service    $D/service/spotifyd.service
 takeover ~/.config/systemd/user/conky.service       $D/service/conky.service
+takeover ~/.config/systemd/user/easyeffects.service $D/service/easyeffects.service
 takeover ~/.config/systemd/user/compton.service     $D/service/compton.service
 takeover ~/.config/systemd/user/dunst.service       $D/service/dunst.service
 takeover ~/.config/systemd/user/i3focuslast.service $D/service/i3focuslast.service
@@ -229,12 +250,15 @@ takeover ~/.config/systemd/user/i3.service          $D/service/i3.service
 takeover ~/.config/systemd/user/xsession.target     $D/service/xsession.target
 takeover ~/.config/systemd/user/pushrsync.service   $D/service/pushrsync.service
 takeover ~/.config/systemd/user/pushrsync.timer     $D/service/pushrsync.timer
+takeover ~/.config/systemd/user/jupyter.service     $D/service/jupyter.service
+takeover ~/.config/systemd/user/jupyter.socket      $D/service/jupyter.socket
 
 #systemd (system)
 takeover /etc/systemd/system/checkupdates.service $D/service/checkupdates.service  sudo
 takeover /etc/systemd/system/checkupdates.timer   $D/service/checkupdates.timer    sudo
 takeover /etc/systemd/system/mirrorlist.service   $D/service/mirrorlist.service    sudo 
 takeover /etc/systemd/system/mirrorlist.timer     $D/service/mirrorlist.timer      sudo
+HARD=
 
 systemctl --user daemon-reload
 

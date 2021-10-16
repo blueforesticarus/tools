@@ -1,0 +1,9 @@
+[Unit]
+Description=Pipewire easyeffects
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/easyeffects --gapplication-service
+
+[Install]
+WantedBy=graphical-session.target

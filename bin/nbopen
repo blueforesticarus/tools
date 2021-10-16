@@ -1,0 +1,5 @@
+#!/bin/bash
+systemctl --user start jupyter
+DIR="$(realpath --relative-to $HOME $1)"
+URL="http://localhost:4444/tree/$DIR"
+xdg-open $URL

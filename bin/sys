@@ -184,7 +184,7 @@ if [ ! -z "$DAEMON_RELOAD" ]; then
 fi
 
 if [ -z "$LIST" ] && [ -z "$EXACT" ] && [ ! -z "$UNITS" ]; then
-    LIST=( list-units )
+    LIST=( list-unit-files )
 fi
 
 for cmd in ${LIST[@]}; do

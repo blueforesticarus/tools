@@ -1,6 +1,6 @@
 #this configures $PATH and functions for fish
 #AKA fish versions of path.env and shellrc respectively
-source /etc/profile.d/env.sh
+source /etc/profile.d/0_env.sh
 function appendpath
     set -x PATH $argv (string match -v $argv $PATH)
 end

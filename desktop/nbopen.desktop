@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Jupyter Notebook
+# This is for opening files, not launching the notebook from a menu
+NoDisplay=true
+Exec=/usr/var/local/tools/root/bin/nbopen %f
+Terminal=false
+MimeType=application/x-ipynb+json;

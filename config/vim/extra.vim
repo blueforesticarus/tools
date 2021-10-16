@@ -121,9 +121,9 @@ nnoremap <F5> :UndotreeToggle<cr>
 
 "syntastic
 let python_highlight_all=1
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
 
 nnoremap gl :lopen<CR>
 nnoremap gk :lclose<CR>
@@ -148,4 +148,6 @@ nnoremap <Tab> <C-w><C-w>
 
 "maximiser
 nnoremap <silent>zf :MaximizerToggle<CR>
+
+
 

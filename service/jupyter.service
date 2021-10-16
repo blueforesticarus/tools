@@ -2,4 +2,7 @@
 Description=Run jupyterlab as a service
 
 [Service]
-ExecStart=/usr/bin/jupyter lab --notebook-dir=/home --no-browser
+ExecStart=/usr/bin/jupyter notebook --notebook-dir=/home --no-browser
+
+[Install]
+WantedBy = default.target

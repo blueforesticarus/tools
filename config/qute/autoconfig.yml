@@ -6,6 +6,8 @@
 
 config_version: 2
 settings:
+  content.blocking.enabled:
+    global: false
   content.media.audio_capture:
     https://www.facebook.com: true
   content.notifications.enabled:
