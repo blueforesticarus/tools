@@ -1,20 +1,28 @@
 #!/bin/bash
 #copies most recent download to the current directory
 
-NET="1"
-if [[ "$1" == '--' ]]; then
-    ls -t ~/net | head -n10 | grep -n ""
-    exit
-
-    #select d in `ls -t ~/net | head -n10`; do
-    #    FILE="$d"
-    #done
-fi
-if [[ -n "$1" ]]; then
-	NET="$1"
-    echo "$NET"
+DIR="`i net`"
+if [ -z "$DIR" ]; then
+    echo -e "ERROR: must set net dir:\n\tsudo i net <net>"
+    exit 1
 fi
 
-FILE="`ls -t ~/net | head -n$NET | tail -n1`"
+MAX=10
 
-cp ~/net/"$FILE" ./
+FILES="$(cd "$DIR" && fd -t f --max-depth 2 --exec stat --printf='%Y\t%n\n' | sort -nr | head -n"$MAX" | cut -f2)"
+if [[ "$1" == "--" ]]; then
+    IFS=$'\n'
+    select d in $FILES; do
+        FILE="$d"
+        break
+    done
+else
+    N=1
+    if [[ -n "$1" ]]; then
+        N="$1"
+    fi
+    FILE=$(echo "$FILES" | head -n"$N")
+fi
+
+yesno -Y $FILE || exit
+cp "$DIR/$FILE" ./
