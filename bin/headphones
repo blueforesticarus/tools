@@ -1,0 +1,27 @@
+#!/bin/bash
+
+SPEAKER_CARD=alsa_card.pci-0000_00_1f.3
+SPEAKER_PROFILE_ON=output:analog-stereo+input:analog-stereo
+SPEAKER_PROFILE_OFF=input:analog-stereo
+
+HEADPHONE_CARD=alsa_card.pci-0000_01_00.1
+HEADPHONE_PROFILE_ON=output:hdmi-stereo
+HEADPHONE_PROFILE_OFF=off
+
+SET_HEADPHONES=$1
+if [ -z "$SET_HEADPHONES" ]; then
+    current="$(pactl list cards | rg --multiline '(?s)Name: '$SPEAKER_CARD'.*?Active Profile: ([^\n]*)' -o -r '$1')"
+    if [ "$current" = "$SPEAKER_PROFILE_ON" ]; then 
+        SET_HEADPHONES="1"
+    else
+        SET_HEADPHONES="0"
+    fi
+fi
+
+if [ "$SET_HEADPHONES" = "1" ]; then 
+    pactl set-card-profile $SPEAKER_CARD $SPEAKER_PROFILE_OFF
+    pactl set-card-profile $HEADPHONE_CARD $HEADPHONE_PROFILE_ON
+elif [ "$SET_HEADPHONES" = "0" ]; then
+    pactl set-card-profile $SPEAKER_CARD $SPEAKER_PROFILE_ON
+    pactl set-card-profile $HEADPHONE_CARD $HEADPHONE_PROFILE_OFF
+fi
